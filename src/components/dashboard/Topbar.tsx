@@ -1,8 +1,8 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LiveClock } from "@/components/ui/live-clock";
+import { Input } from "../ui/input";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { LiveClock } from "../ui/live-clock";
 
 export default function Topbar() {
   return (

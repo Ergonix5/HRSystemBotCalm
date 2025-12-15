@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Home, Building2, Award, Shield, Users, Megaphone, Calendar, Plane, UserCheck, FileText, Settings, User, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Logo } from "@/components/ui/logo";
+import { Button } from "../ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Logo } from "../ui/logo";
 import Link from "next/link";
 
 const menu = [

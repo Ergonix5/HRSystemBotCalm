@@ -1,4 +1,4 @@
-import { DashboardCard } from "@/components/dashboard/dashboard-card"
+import { DashboardCard } from "../../components/dashboard/dashboard-card"
 import { Users, UserCheck, Calendar, Briefcase, Building, Megaphone, Clock, FileText } from "lucide-react"
 
 export default function Dashboard() {
