@@ -39,7 +39,7 @@ export function DashboardCard({
       <CardContent>
         <div className="text-2xl font-bold bg-linear-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{value}</div>
         {subtitle && (
-          <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
+          <p className="text-xl text-gray-500 mt-1">{subtitle}</p>
         )}
         {change && (
           <p className={`text-xs mt-1 font-medium ${getChangeColor()}`}>{change}</p>
