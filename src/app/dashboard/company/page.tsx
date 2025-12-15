@@ -1,4 +1,4 @@
-import { DashboardCard } from "@/components/dashboard/dashboard-card"
+import { DashboardCard } from "../../../components/dashboard/dashboard-card"
 import { Building2, CheckCircle, XCircle } from "lucide-react"
 
 export default function Company() {

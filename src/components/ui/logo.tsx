@@ -1,4 +1,4 @@
-import { LOGO_TEXT } from "@/lib/constants"
+import { LOGO_TEXT } from "@/src/lib/constants"
 
 interface LogoProps {
   className?: string
