@@ -27,19 +27,19 @@ export function DashboardCard({
   }
 
   return (
-    <Card className="bg-linear-to-br from-gray-50/80 via-white/60 to-gray-100/40 backdrop-blur-sm border-gray-200/50 transition-all duration-300 hover:scale-[1.02]">
+    <Card data-slot="card" className="bg-linear-to-t from-primary/5 to-card shadow-xs dark:bg-card dark:from-card dark:to-card">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium text-gray-600">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
             {title}
           </CardTitle>
-          {Icon && <Icon className="h-5 w-5 text-gray-700 opacity-80" />}
+          {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold bg-linear-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{value}</div>
+        <div className="text-2xl font-bold">{value}</div>
         {subtitle && (
-          <p className="text-xl text-gray-500 mt-1">{subtitle}</p>
+          <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
         )}
         {change && (
           <p className={`text-xs mt-1 font-medium ${getChangeColor()}`}>{change}</p>
