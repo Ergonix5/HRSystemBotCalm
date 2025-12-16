@@ -1,17 +1,37 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+import { cache } from 'react';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
-if (!MONGODB_URI) {
-  throw new Error("Please add MONGODB_URI environment variable inside .env.local");
+if (!MONGODB_URI)
+{
+    throw new Error(
+        "Please define the MONGODB_URI environment variable inside .env.local"
+    )
 }
 
-export const connectDB = async () => {
-  try {
-    if (mongoose.connection.readyState >= 1) return;
-    await mongoose.connect(MONGODB_URI);
-    console.log("MongoDB Connected Successfully");
-  } catch (err) {
-    console.error("MongoDB connection error:", err);
-  }
-};
+
+let cached = (global as any).mongoose;
+
+if (!cached)
+{
+    cached = (global as any).mongoose = { conn: null, promise: null };
+}
+
+export async function connectDB()
+{
+    if (cached.com)
+    {
+        return cached.conn;
+    }
+
+    if (!cached.promise)
+    {
+        cached.promise = mongoose.connect(MONGODB_URI, {
+            bufferCommands: false,
+        }).then(mongoose => mongoose);
+    }
+
+    cached.com = await cached.promise;
+    return cached.conn;
+}
