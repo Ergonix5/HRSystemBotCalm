@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Home, Building2, Award, Shield, Users, Megaphone, Calendar, Plane, UserCheck, FileText, Settings, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -28,23 +28,29 @@ const bottomMenu = [
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  // Update CSS custom property for main content margin
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-width', isCollapsed ? '4rem' : '16rem');
+  }, [isCollapsed]);
+
   return (
     <TooltipProvider>
-      <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white border-r shadow-sm p-4 hidden md:flex flex-col transition-all duration-300 relative`}>
-        <div className="flex items-center mb-6">
+      <div className="relative">
+      <aside className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-white border-r shadow-sm hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 overflow-hidden`}>
+        <div className="flex items-center p-4 border-b">
           <Logo className={isCollapsed ? "text-sm" : ""} />
         </div>
         
-        <Button
+        {/* <Button
           variant="ghost"
           size="sm"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 z-10 bg-white border shadow-sm rounded-full p-1 h-6 w-6"
-        >
-          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-        </Button>
+          className="absolute right-2 top-2 z-10 bg-gray-100 hover:bg-gray-200 border shadow-sm rounded-md p-2 h-8 w-8"
+        > */}
 
-        <nav className="space-y-2 flex-1">
+
+
+        <nav className="flex-1 p-2 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
           {menu.map((item) => (
             isCollapsed ? (
               <Tooltip key={item.name} delayDuration={0}>
@@ -52,9 +58,10 @@ export default function Sidebar() {
                   <Link href={item.href}>
                     <Button
                       variant="ghost"
-                      className="w-full justify-center px-2"
+                      size="sm"
+                      className="w-full justify-center h-10"
                     >
-                      <item.icon size={18} />
+                      <item.icon size={16} />
                     </Button>
                   </Link>
                 </TooltipTrigger>
@@ -66,17 +73,18 @@ export default function Sidebar() {
               <Link key={item.name} href={item.href}>
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-2"
+                  size="sm"
+                  className="w-full justify-start gap-3 h-10 px-3"
                 >
-                  <item.icon size={18} />
-                  {item.name}
+                  <item.icon size={16} />
+                  <span className="text-sm">{item.name}</span>
                 </Button>
               </Link>
             )
           ))}
         </nav>
 
-        <nav className="space-y-2 mt-6 pt-4 border-t">
+        <nav className="p-2 space-y-1 border-t">
           {bottomMenu.map((item) => (
             isCollapsed ? (
               <Tooltip key={item.name} delayDuration={0}>
@@ -84,9 +92,10 @@ export default function Sidebar() {
                   <Link href={item.href}>
                     <Button
                       variant="ghost"
-                      className="w-full justify-center px-2"
+                      size="sm"
+                      className="w-full justify-center h-10"
                     >
-                      <item.icon size={18} />
+                      <item.icon size={16} />
                     </Button>
                   </Link>
                 </TooltipTrigger>
@@ -98,16 +107,26 @@ export default function Sidebar() {
               <Link key={item.name} href={item.href}>
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-2"
+                  size="sm"
+                  className="w-full justify-start gap-3 h-10 px-3"
                 >
-                  <item.icon size={18} />
-                  {item.name}
+                  <item.icon size={16} />
+                  <span className="text-sm">{item.name}</span>
                 </Button>
               </Link>
             )
           ))}
         </nav>
       </aside>
+      <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className={`fixed ${isCollapsed ? 'left-12' : 'left-60'} top-6 z-50 bg-white border shadow-sm rounded-full p-1 h-6 w-6 transition-all duration-300`}
+        >
+          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </Button>
+      </div>
     </TooltipProvider>
   );
 }
