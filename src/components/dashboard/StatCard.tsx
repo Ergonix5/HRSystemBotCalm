@@ -16,7 +16,7 @@ export function StatCard({ title, value, subtitle, change, changeType = "neutral
   }[changeType]
 
   return (
-    <Card>
+    <Card className="hover:scale-105 cursor-pointer">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
       </CardHeader>

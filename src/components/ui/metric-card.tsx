@@ -9,7 +9,7 @@ interface MetricCardProps {
 }
 
 export const MetricCard = ({ title, value, icon: Icon, style, description }: MetricCardProps) => (
-  <div className="flex flex-col space-y-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+  <div className="flex flex-col space-y-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer">
     <div className="flex items-center justify-between">
       <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{title}</span>
       <Icon className="h-4 w-4" style={style} />
