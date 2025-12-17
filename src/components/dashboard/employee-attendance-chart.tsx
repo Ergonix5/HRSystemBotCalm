@@ -213,7 +213,7 @@ export function AttendanceAnalyticsDashboard() {
           />
         </div>
 
-        <CardContent className="h-96">
+        <CardContent className="h-97">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}

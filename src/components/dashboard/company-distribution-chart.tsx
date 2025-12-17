@@ -84,7 +84,7 @@ export function CompanyDistributionChart() {
       <div className="p-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-100"
+          className="mx-auto aspect-square max-h-64"
         >
           <PieChart>
             <ChartTooltip
