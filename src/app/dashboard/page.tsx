@@ -1,4 +1,5 @@
 import { DashboardCard } from "../../components/dashboard/dashboard-card"
+import StudentAttendanceChart from "../../components/dashboard/employee-attendance-chart"
 import { Users, UserCheck, Calendar, Briefcase, Building, Megaphone, Clock, FileText } from "lucide-react"
 
 export default function Dashboard() {
@@ -78,6 +79,10 @@ export default function Dashboard() {
           changeType="neutral"
           icon={FileText}
         />
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <StudentAttendanceChart />
       </div>
     </div>
   )
