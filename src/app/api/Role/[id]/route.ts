@@ -9,17 +9,46 @@ type Params = { params: Promise<{ id: string }> };
 /**
  * GET /api/Role/[id] - Fetch single Role by ID
  */
-export async function GET(_req: Request, { params }: Params) {
+// export async function GET(_req: Request, { params }: Params) {
+//   try {
+//     // Connect to database
+//     await connectDB();
+//     // Extract ID from dynamic route params
+//     const { id } = await params;
+//     // Find designation by MongoDB ObjectId
+//     const Roles = await Role.findById(id);
+//     // Return 404 if not found
+//     if (!Roles) return NextResponse.json({ message: "Not found" }, { status: 404 });
+//     return NextResponse.json(Roles);
+//   } catch (err: any) {
+//     return NextResponse.json({ message: err.message }, { status: 400 });
+//   }
+// }
+
+export async function GET(req: Request, { params }: Params) {
   try {
-    // Connect to database
     await connectDB();
-    // Extract ID from dynamic route params
-    const { id } = await params;
-    // Find designation by MongoDB ObjectId
-    const Roles = await Role.findById(id);
-    // Return 404 if not found
-    if (!Roles) return NextResponse.json({ message: "Not found" }, { status: 404 });
-    return NextResponse.json(Roles);
+
+    const { searchParams } = new URL(req.url);
+    const organizationId = (searchParams.get("organizationId") ?? "").trim();
+
+    if (!organizationId) {
+      return NextResponse.json(
+        { message: "organizationId is required" },
+        { status: 400 }
+      );
+    }
+
+    const { id } =await params;
+
+    // secure: role must belong to org
+    const role = await Role.findOne({ _id: id, organization: organizationId });
+
+    if (!role) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(role, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });
   }
