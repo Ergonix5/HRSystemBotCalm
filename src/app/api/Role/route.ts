@@ -5,34 +5,52 @@ import { validateBody } from "../../../lib/validate";
 import { roleCreateSchema } from "../../../validators/role.schema";
 import { paginate } from "../../service/pagination.service";
 
-/**
- * GET /api/Role - Fetch paginated Role with search
- * Query params: page, limit, q (search query)
- */
+
 export async function GET(req: Request) {
   try {
-    // Connect to database
     await connectDB();
 
-    // Extract query parameters from URL
     const { searchParams } = new URL(req.url);
+    // use if condition to get all details to superadmin
 
-    // Parse and validate pagination parameters
+    const organizationId = (searchParams.get("organizationId") ?? "").trim();
+    if (!organizationId) {
+      return NextResponse.json(
+        { message: "organizationId is required" },
+        { status: 400 }
+      );
+    }
+
     const page = Math.max(1, Number(searchParams.get("page") ?? 1));
     const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit") ?? 10)));
     const q = (searchParams.get("q") ?? "").trim();
 
-    // Get paginated results with search functionality
-    const result = await paginate(Role, {
+    // IMPORTANT: change search fields to match your model
+    // role_name + description (you don't have title)
+    const filter: any = { organization: organizationId };
+
+    if (q) {
+      filter.$or = [
+        { role_name: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+        { role_id: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      Role.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Role.countDocuments(filter),
+    ]);
+
+    return NextResponse.json({
       page,
       limit,
-      q,
-      searchFields: ["title", "description"], // Search in title and description fields
-      sortBy: "createdAt",
-      sortOrder: -1, // Newest first
+      total,
+      totalPages: Math.ceil(total / limit),
+      data,
     });
-
-    return NextResponse.json(result, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
