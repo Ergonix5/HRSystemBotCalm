@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Users, CalendarDays, AlertTriangle } from 'lucide-react';
+import { Spinner } from '@/src/components/ui/spinner';
 import {
   BarChart,
   Bar,
@@ -179,9 +180,10 @@ export function AttendanceAnalyticsDashboard() {
           <CardDescription>Visualizing Monthly Attendance & Absence</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[350px] w-full flex items-center justify-center">
-            <div className="text-gray-400 dark:text-gray-500 flex items-center gap-2">
-              <CalendarDays className="h-5 w-5 animate-pulse" /> Loading Attendance Data...
+          <div className="h-87 w-full flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <Spinner />
+              <p className="text-sm text-muted-foreground">Loading Attendance Data...</p>
             </div>
           </div>
         </CardContent>
@@ -194,7 +196,7 @@ export function AttendanceAnalyticsDashboard() {
     <div className="p-4 sm:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <Card className="max-w-4xl mx-auto w-full">
         <CardHeader>
-          <CardTitle>Employee Attendance Analytics - Full Year Trend</CardTitle>
+          <CardTitle>Employee Attendance Analytics</CardTitle>
           <CardDescription>Side-by-side comparison of days Present/Absent and the overall Presence Rate (Jan - Dec 2024)</CardDescription>
         </CardHeader>
 
@@ -212,7 +214,7 @@ export function AttendanceAnalyticsDashboard() {
           />
         </div>
 
-        <CardContent className="h-[350px] md:h-[400px]">
+        <CardContent className="h-87 md:h-100">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -282,7 +284,7 @@ export function AttendanceAnalyticsDashboard() {
 
         <CardFooter className="flex-col items-start gap-2 text-sm">
           {/* Use inline style object for dynamic trend color */}
-          <div className={`flex gap-2 leading-none font-semibold`} style={changeStyle}>
+          <div className="flex gap-2 leading-none font-semibold" style={changeStyle}>
             {isPositiveChange ? 'Improvement' : 'Decline'} in attendance rate by {Math.abs(rateChange).toFixed(2)}%
             <ChangeIcon className="h-4 w-4" />
           </div>
@@ -301,7 +303,7 @@ const MetricCard = ({ title, value, icon: Icon, style, description }: { title: s
     <div className="flex items-center justify-between">
       <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{title}</span>
       {/* Icon color applied via style prop */}
-      <Icon className={`h-4 w-4`} style={style} />
+      <Icon className="h-4 w-4" style={style} />
     </div>
     <div className="text-2xl font-bold text-gray-900 dark:text-white">
       {value}
