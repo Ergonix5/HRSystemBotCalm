@@ -1,4 +1,3 @@
-
 import { Schema, models, model } from "mongoose";
 
 const designationShema = new Schema(
@@ -24,5 +23,5 @@ const designationShema = new Schema(
   { timestamps: true }
 );
 
-
-export const Designation =models.Designation || model ("designations",designationShema);
+export const Designation =
+  models.Designation || model("designations", designationShema);
