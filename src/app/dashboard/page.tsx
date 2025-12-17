@@ -1,11 +1,12 @@
 import { DashboardCard } from "../../components/dashboard/dashboard-card"
 import StudentAttendanceChart from "../../components/dashboard/employee-attendance-chart"
+import { CompanyDistributionChart } from "../../components/dashboard/company-distribution-chart"
 import { Users, UserCheck, Calendar, Briefcase, Building, Megaphone, Clock, FileText } from "lucide-react"
 
 export default function Dashboard() {
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Employee Dashboard</h1>
+    <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Employee Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <DashboardCard
@@ -83,6 +84,7 @@ export default function Dashboard() {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <StudentAttendanceChart />
+        <CompanyDistributionChart />
       </div>
     </div>
   )

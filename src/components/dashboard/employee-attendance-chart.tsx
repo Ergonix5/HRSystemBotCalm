@@ -18,25 +18,25 @@ import {
 // --- UI Components (using inline Tailwind for single-file mandate) ---
 
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 transition-all ${className}`}>
+  <div className={`bg-white shadow-xl rounded-xl p-6 ${className}`}>
     {children}
   </div>
 );
 
 const CardHeader = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`mb-4 border-b border-gray-100 dark:border-gray-700 pb-4 ${className}`}>
+  <div className={`mb-4 border-b border-gray-100 pb-4 ${className}`}>
     {children}
   </div>
 );
 
 const CardTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <h2 className={`text-2xl font-bold text-gray-900 dark:text-gray-50 ${className}`}>
+  <h2 className={`text-2xl font-bold text-gray-900 ${className}`}>
     {children}
   </h2>
 );
 
 const CardDescription = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <p className={`text-sm text-gray-500 dark:text-gray-400 mt-1 ${className}`}>
+  <p className={`text-sm text-gray-500 mt-1 ${className}`}>
     {children}
   </p>
 );
@@ -48,7 +48,7 @@ const CardContent = ({ children, className = '' }: { children: React.ReactNode; 
 );
 
 const CardFooter = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 ${className}`}>
+  <div className={`mt-6 pt-4 border-t border-gray-100 ${className}`}>
     {children}
   </div>
 );
@@ -112,15 +112,15 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
     const total = presentValue + absentValue;
 
     return (
-      <div className="bg-white dark:bg-gray-700 p-3 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg text-sm">
-        <p className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">{label}</p>
-        <p className="text-gray-700 dark:text-gray-300">
+      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg text-sm">
+        <p className="font-semibold text-lg mb-2 text-gray-900">{label}</p>
+        <p className="text-gray-700">
           <span className="font-medium" style={{ color: chartConfig.present.color }}>Present:</span> {presentValue} days
         </p>
-        <p className="text-gray-700 dark:text-gray-300">
+        <p className="text-gray-700">
           <span className="font-medium" style={{ color: chartConfig.absent.color }}>Absent:</span> {absentValue} days
         </p>
-        <p className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-600 font-bold text-gray-800 dark:text-gray-100">
+        <p className="mt-2 pt-2 border-t border-gray-100 font-bold text-gray-800">
           <span style={{ color: chartConfig.rate.color }}>Rate:</span> {rateValue}% (Total {total})
         </p>
       </div>
@@ -193,12 +193,11 @@ export function AttendanceAnalyticsDashboard() {
 
   // --- Main Chart Render ---
   return (
-    <div className="p-4 sm:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <Card className="max-w-4xl mx-auto w-full">
-        <CardHeader>
-          <CardTitle>Employee Attendance Analytics</CardTitle>
-          <CardDescription>Side-by-side comparison of days Present/Absent and the overall Presence Rate (Jan - Dec 2024)</CardDescription>
-        </CardHeader>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Employee Attendance Analytics</CardTitle>
+        <CardDescription>Side-by-side comparison of days Present/Absent and the overall Presence Rate (Jan - Dec 2024)</CardDescription>
+      </CardHeader>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 pb-4">
@@ -214,7 +213,7 @@ export function AttendanceAnalyticsDashboard() {
           />
         </div>
 
-        <CardContent className="h-87 md:h-100">
+        <CardContent className="h-96">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -288,35 +287,32 @@ export function AttendanceAnalyticsDashboard() {
             {isPositiveChange ? 'Improvement' : 'Decline'} in attendance rate by {Math.abs(rateChange).toFixed(2)}%
             <ChangeIcon className="h-4 w-4" />
           </div>
-          <div className="text-gray-500 dark:text-gray-400 leading-none">
+          <div className="text-gray-500 leading-none">
             The line graph shows the monthly Presence Rate trend, measured against the right Y-axis (80% to 100%).
           </div>
         </CardFooter>
-      </Card>
-    </div>
+    </Card>
   );
 }
 
 // A helper component for displaying key metrics
 const MetricCard = ({ title, value, icon: Icon, style, description }: { title: string; value: string | number; icon: React.ComponentType<any>; style?: React.CSSProperties; description: string }) => (
-  <div className="flex flex-col space-y-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+  <div className="flex flex-col space-y-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
     <div className="flex items-center justify-between">
-      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{title}</span>
-      {/* Icon color applied via style prop */}
+      <span className="text-xs font-medium text-gray-500">{title}</span>
       <Icon className="h-4 w-4" style={style} />
     </div>
-    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+    <div className="text-2xl font-bold text-gray-900">
       {value}
     </div>
-    <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{description}</p>
+    <p className="text-xs text-gray-400 truncate">{description}</p>
   </div>
 );
 
 // The default export must be the main component
 export default function App() {
-    // Add dark mode classes for better contrast
     return (
-        <div className="font-sans antialiased bg-gray-50 dark:bg-gray-900">
+        <div className="font-sans antialiased bg-gray-50">
             <AttendanceAnalyticsDashboard />
         </div>
     );
