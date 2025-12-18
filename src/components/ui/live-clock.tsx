@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from "react"
 
-export function LiveClock() {
-  const [time, setTime] = useState<Date | null>(null)
+interface LiveClockProps {
+  className?: string
+}
+
+export function LiveClock({ className }: LiveClockProps) {
+  const [time, setTime] = useState(new Date())
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setTime(new Date())
+    setMounted(true)
     const timer = setInterval(() => {
       setTime(new Date())
     }, 1000)
@@ -14,9 +19,9 @@ export function LiveClock() {
     return () => clearInterval(timer)
   }, [])
 
-  if (!time) {
+  if (!mounted) {
     return (
-      <div className="text-sm text-muted-foreground">
+      <div className={`text-sm text-muted-foreground ${className || ''}`}>
         <div>--/--/----</div>
         <div className="font-mono">--:--:-- --</div>
       </div>
@@ -24,7 +29,7 @@ export function LiveClock() {
   }
 
   return (
-    <div className="text-sm text-muted-foreground">
+    <div className={`text-sm text-muted-foreground ${className || ''}`}>
       <div>{time.toLocaleDateString()}</div>
       <div className="font-mono">{time.toLocaleTimeString()}</div>
     </div>

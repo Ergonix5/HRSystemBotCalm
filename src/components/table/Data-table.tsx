@@ -13,26 +13,32 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 import { Input } from "../../components/ui/input"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem } from "../../components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuItem } from "../../components/ui/dropdown-menu"
 import { Button } from "../../components/ui/button"
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from "../../components/ui/table"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Filter } from "lucide-react"
 import { DataTablePagination } from "./DataTablePagination"
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   data: TData[]
+  filterColumn?: string
+  showStatusFilter?: boolean
+  showCompanyFilter?: boolean
 }
 
-export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
+export function DataTable<TData>({ columns, data, filterColumn = "company_name", showStatusFilter = false, showCompanyFilter = false }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [selectedStatus, setSelectedStatus] = React.useState("All Status")
+  const [selectedCompany, setSelectedCompany] = React.useState("All Companies")
 
   const table = useReactTable({
     data,
     columns,
+    getRowId: (row: any) => row.company_id,
     state: { sorting, columnFilters, columnVisibility, rowSelection },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -45,14 +51,99 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
   })
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
+    <div className="py-10">
+    <div className="w-full border rounded-md p-4 space-y-4 ">
+      <div className="flex items-center py-4 gap-4">
         <Input
           placeholder="Filter..."
-          value={(table.getColumn("company_name")?.getFilterValue() as string) ?? ""}
-          onChange={(e) => table.getColumn("company_name")?.setFilterValue(e.target.value)}
+          value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
+          onChange={(e) => table.getColumn(filterColumn)?.setFilterValue(e.target.value)}
           className="max-w-sm"
         />
+        
+        {showStatusFilter && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
+                {selectedStatus} <ChevronDown className="h-4 w-4 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("status")?.setFilterValue("")
+                setSelectedStatus("All Status")
+              }}>
+                All Status
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                console.log("Setting active filter")
+                const statusColumn = table.getColumn("status")
+                console.log("Status column:", statusColumn)
+                statusColumn?.setFilterValue("active")
+                setSelectedStatus("Active")
+              }}>
+                Active
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("status")?.setFilterValue("inactive")
+                setSelectedStatus("Inactive")
+              }}>
+                Inactive
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        
+        {showCompanyFilter && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
+                {selectedCompany} <ChevronDown className="h-4 w-4 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("company_name")?.setFilterValue("")
+                setSelectedCompany("All Companies")
+              }}>
+                All Companies
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("company_name")?.setFilterValue("Ergonix")
+                setSelectedCompany("Ergonix")
+              }}>
+                Ergonix
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("company_name")?.setFilterValue("Techify")
+                setSelectedCompany("Techify")
+              }}>
+                Techify
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("company_name")?.setFilterValue("BuildPro")
+                setSelectedCompany("BuildPro")
+              }}>
+                BuildPro
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("company_name")?.setFilterValue("GreenLeaf")
+                setSelectedCompany("GreenLeaf")
+              }}>
+                GreenLeaf
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn("company_name")?.setFilterValue("DataFlow")
+                setSelectedCompany("DataFlow")
+              }}>
+                DataFlow
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -111,6 +202,7 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
       </div>
 
       <DataTablePagination table={table} />
+    </div>
     </div>
   )
 }
