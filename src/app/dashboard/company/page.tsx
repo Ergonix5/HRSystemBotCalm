@@ -16,7 +16,7 @@ export default function Company() {
     <div className="p-6 ">
       <h1 className="text-3xl font-bold mb-6">Companies</h1>
       
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
         <DashboardCard
           title="Total Companies"
           value="4"
@@ -39,7 +39,7 @@ export default function Company() {
           icon={XCircle}
         />
      
-      </div> */}
+      </div>
 
       {/* table */}
      

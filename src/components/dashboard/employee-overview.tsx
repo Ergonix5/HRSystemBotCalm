@@ -75,10 +75,10 @@ const employees: Employee[] = [
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "Present": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-    case "Late": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-    case "Half Day": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-    default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+    case "Present": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-100"
+    case "Late": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 hover:bg-yellow-100"
+    case "Half Day": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-100"
+    default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300 hover:bg-gray-100"
   }
 }
 
@@ -89,7 +89,7 @@ const getAvatarColor = (name: string) => {
     "bg-purple-500",
     "bg-pink-500",
     "bg-indigo-500",
-    "bg-red-500"
+    "bg-orange-500"
   ]
   return colors[name.length % colors.length]
 }
@@ -101,7 +101,7 @@ export function EmployeeOverview() {
         <CardTitle>Today's Employee Overview</CardTitle>
         <p className="text-sm text-muted-foreground">Real-time attendance and employee status</p>
         <CardAction>
-          <Button className="bg-black hover:bg-[#B91434]">View All Employees</Button>
+          <Button variant="outline" className="border-[#B91434] hover:bg-[#b81737] hover:text-white">View All Employees</Button>
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-3 max-h-96 overflow-y-auto">
@@ -144,7 +144,7 @@ export function EmployeeOverview() {
               <Badge className={getStatusColor(employee.status)}>
                 {employee.status}
               </Badge>
-              <Badge variant={employee.isActive ? "default" : "secondary"}>
+              <Badge className={employee.isActive ? "bg-blue-100 text-blue-800 dark:bg-green-900 dark:text-green-300" : ""} variant={employee.isActive ? "secondary" : "secondary"}>
                 {employee.isActive ? "Active" : "Inactive"}
               </Badge>
               <p className="text-xs text-muted-foreground flex items-center">

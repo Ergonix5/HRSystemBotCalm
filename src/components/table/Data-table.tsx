@@ -165,13 +165,13 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
       </div>
 
       <div className="rounded-md border">
-        <div className="max-h-[400px] overflow-auto scrollbar-none">
+        <div className="max-h-125 overflow-auto relative">
           <Table>
-            <TableHeader className="sticky top-0 bg-white z-10 border-b">
+            <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
+                <TableRow key={headerGroup.id} className="border-b">
                   {headerGroup.headers.map(header => (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="bg-background">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
