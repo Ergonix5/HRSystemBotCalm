@@ -5,19 +5,18 @@ import { DashboardCard } from "../../../components/dashboard/dashboard-card"
 import { Building2, CheckCircle, XCircle } from "lucide-react"
 
 const data: Company[] = [
-  { company_id: "COM_001", company_name: "Ergonix", company_description: "Software Solutions" },
-  { company_id: "COM_002", company_name: "Techify", company_description: "Tech Consulting" },
-  { company_id: "COM_003", company_name: "BuildPro", company_description: "Construction Services" },
-  { company_id: "COM_004", company_name: "GreenLeaf", company_description: "Sustainable Products" },
-  { company_id: "COM_001", company_name: "Ergonix", company_description: "Software Solutions" },
- 
+  { company_id: "COM_001", company_name: "Ergonix", company_description: "Software Solutions", status: "active" },
+  { company_id: "COM_002", company_name: "Techify", company_description: "Tech Consulting", status: "inactive" },
+  { company_id: "COM_003", company_name: "BuildPro", company_description: "Construction Services", status: "active" },
+  { company_id: "COM_004", company_name: "GreenLeaf", company_description: "Sustainable Products", status: "active" },
+  { company_id: "COM_005", company_name: "DataFlow", company_description: "Data Analytics", status: "inactive" },
 ]
 export default function Company() {
   return (
     <div className="p-6 ">
       <h1 className="text-3xl font-bold mb-6">Companies</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
         <DashboardCard
           title="Total Companies"
           value="4"
@@ -40,11 +39,11 @@ export default function Company() {
           icon={XCircle}
         />
      
-      </div>
+      </div> */}
 
       {/* table */}
      
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} filterColumn="company_name" showStatusFilter={true} />
 
     </div>
   )

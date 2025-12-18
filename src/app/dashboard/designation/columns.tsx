@@ -3,10 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "../../../components/ui/button"
 import { Checkbox } from "../../../components/ui/checkbox"
-import { Eye, Edit, Trash2, ArrowUpDown } from "lucide-react"
-import { Company } from "../../types/types"
+import { ArrowUpDown } from "lucide-react"
+import { Designation } from "../../types/types" 
 import { TableActions } from "../../../components/table/table_actions" 
-export const columns: ColumnDef<Company>[] = [
+
+export const columns: ColumnDef<Designation>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -30,13 +31,24 @@ export const columns: ColumnDef<Company>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "company_id",
+    accessorKey: "designation_id",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Company ID <ArrowUpDown />
+        Designation ID <ArrowUpDown />
+      </Button>
+    ),
+  },
+  {
+    accessorKey: "title",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Title <ArrowUpDown />
       </Button>
     ),
   },
@@ -47,12 +59,12 @@ export const columns: ColumnDef<Company>[] = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Company Name <ArrowUpDown />
+        Company <ArrowUpDown />
       </Button>
     ),
   },
   {
-    accessorKey: "company_description",
+    accessorKey: "description",
     header: "Description",
   },
   {
@@ -63,8 +75,8 @@ export const columns: ColumnDef<Company>[] = [
       return (
         <span
           className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
-            status === "active" 
-              ? "bg-green-100 text-green-800" 
+            status === "active"
+              ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
           }`}
         >
@@ -79,13 +91,12 @@ export const columns: ColumnDef<Company>[] = [
   enableHiding: false,
   cell: ({ row }) => (
     <TableActions
-      id={row.original.company_id}
-      type="company"
-      onView={(id) => console.log("View company", id)}
-      onEdit={(id) => console.log("Edit company", id)}
-      onDelete={(id) => console.log("Delete company", id)}
+      id={row.original.designation_id}
+      type="designation"
+      onView={(id) => console.log("View designation", id)}
+      onEdit={(id) => console.log("Edit designation", id)}
+      onDelete={(id) => console.log("Delete designation", id)}
     />
   ),
 }
-
 ]
