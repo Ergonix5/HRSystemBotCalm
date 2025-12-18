@@ -3,14 +3,24 @@
 import { Button } from "../../components/ui/button"
 import { Eye, Edit, Trash2 } from "lucide-react"
 
-interface CompanyActionsProps {
-  companyId: string
+interface TableActionsProps {
+  id: string              
+  type?: "company" | "designation" |"employee"
+  onView?: (id: string) => void
+  onEdit?: (id: string) => void
+  onDelete?: (id: string) => void
 }
 
-export const CompanyActions: React.FC<CompanyActionsProps> = ({ companyId }) => {
-  const handleView = () => console.log("View", companyId)
-  const handleEdit = () => console.log("Edit", companyId)
-  const handleDelete = () => console.log("Delete", companyId)
+export const TableActions: React.FC<TableActionsProps> = ({
+  id,
+  type,
+  onView,
+  onEdit,
+  onDelete,
+}) => {
+  const handleView = () => onView ? onView(id) : console.log("View", type, id)
+  const handleEdit = () => onEdit ? onEdit(id) : console.log("Edit", type, id)
+  const handleDelete = () => onDelete ? onDelete(id) : console.log("Delete", type, id)
 
   return (
     <div className="flex items-center gap-2">
