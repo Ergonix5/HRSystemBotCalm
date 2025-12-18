@@ -194,7 +194,7 @@
 @layer components {
   /* Card gradient styles */
   .card-gradient {
-    @apply from-primary/5 to-card bg-gradient-to-t shadow-xs;
+    @apply from-primary/5 to-card bg-linear-to-t shadow-xs;
   }
   
   .dark .card-gradient {
