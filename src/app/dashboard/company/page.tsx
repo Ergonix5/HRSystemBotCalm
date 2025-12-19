@@ -67,7 +67,7 @@ export default function Company() {
         {/* Topic */}
       <div className="flex justify-between mb-6">
         <div>
-          <h1 className="font-bold text-2xl mb-2">Companies Management</h1>
+          <h1 className="font-bold text-2xl mb-2">Organizations Management</h1>
           <p className="text-gray-700">Manage organizations information and settings</p>
         </div>
         <Button className="mt-4" variant="outline"><Plus />Add New Company</Button>

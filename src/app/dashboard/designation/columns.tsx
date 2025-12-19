@@ -52,17 +52,17 @@ export const columns: ColumnDef<Designation>[] = [
       </Button>
     ),
   },
-  {
-    accessorKey: "company_name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Company <ArrowUpDown />
-      </Button>
-    ),
-  },
+  // {
+  //   accessorKey: "company_name",
+  //   header: ({ column }) => (
+  //     <Button
+  //       variant="ghost"
+  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //     >
+  //       Company <ArrowUpDown />
+  //     </Button>
+  //   ),
+  // },
   {
     accessorKey: "description",
     header: "Description",
