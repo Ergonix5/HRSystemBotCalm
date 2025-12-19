@@ -1,3 +1,5 @@
+"use client"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
@@ -74,6 +76,17 @@ const getAvatarColor = (name: string) => {
 }
 
 export function PendingLeaveRequests() {
+  const [requests, setRequests] = useState(leaveRequests)
+  const [removingIds, setRemovingIds] = useState<string[]>([])
+
+  const handleApprove = (id: string) => {
+    setRemovingIds(prev => [...prev, id])
+    setTimeout(() => {
+      setRequests(prev => prev.filter(req => req.id !== id))
+      setRemovingIds(prev => prev.filter(reqId => reqId !== id))
+    }, 300)
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -83,13 +96,20 @@ export function PendingLeaveRequests() {
             <p className="text-sm text-muted-foreground">Requires your approval</p>
           </div>
           <Badge variant="destructive" className="bg-red-500 text-white">
-            3 Pending
+            {requests.length} Pending
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-3 max-h-96 overflow-y-auto">
-        {leaveRequests.map((request) => (
-          <div key={request.id} className="p-3 border rounded-lg space-y-2">
+        {requests.map((request) => (
+          <div 
+            key={request.id} 
+            className={`p-3 border rounded-lg space-y-2 transition-all duration-300 ${
+              removingIds.includes(request.id) 
+                ? 'opacity-0 scale-95 translate-x-full' 
+                : 'opacity-100 scale-100 translate-x-0'
+            }`}
+          >
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
                 <Avatar className={`h-10 w-10 ${getAvatarColor(request.employeeName)}`}>
@@ -125,13 +145,21 @@ export function PendingLeaveRequests() {
                 {request.reason}
               </p>
             </div>
-            
+
+
+
+
             <div className="flex space-x-2 pt-2">
-              <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="border-green-600 hover:bg-green-600 hover:text-white"
+                onClick={() => handleApprove(request.id)}
+              >
                 <Check className="w-4 h-4 mr-1" />
                 Approve
               </Button>
-              <Button size="sm" variant="outline" className="flex-1">
+              <Button size="sm" variant="outline" className="border-red-600 hover:bg-red-600 hover:text-white">
                 <X className="w-4 h-4 mr-1" />
                 Reject
               </Button>

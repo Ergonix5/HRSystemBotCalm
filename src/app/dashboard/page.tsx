@@ -3,6 +3,7 @@ import StudentAttendanceChart from "../../components/dashboard/employee-attendan
 import { CompanyDistributionChart } from "../../components/dashboard/company-distribution-chart"
 import { EmployeeOverview } from "../../components/dashboard/employee-overview"
 import { PendingLeaveRequests } from "../../components/dashboard/pending-leave-requests"
+import { RecentActivities } from "../../components/dashboard/recent-activities"
 import { Users, UserCheck, Calendar, Briefcase, Building, Megaphone, Clock, FileText } from "lucide-react"
 
 export default function Dashboard() {
@@ -93,8 +94,9 @@ export default function Dashboard() {
         <div className="lg:col-span-2">
           <EmployeeOverview />
         </div>
-        <div>
+        <div className="space-y-4">
           <PendingLeaveRequests />
+          <RecentActivities />
         </div>
       </div>
     </div>
