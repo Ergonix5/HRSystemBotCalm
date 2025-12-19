@@ -8,7 +8,8 @@ import { type Employee } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
+import {EmployeeForm} from "../../../components/forms/addEmployee"
 
 // Mock employee data
 const employeesData: Employee[] = [
@@ -24,7 +25,7 @@ const employeesData: Employee[] = [
     address: "Colombo, Sri Lanka",
     date_of_birth: "1995-04-12",
     join_date: "2022-01-15",
-    status: "active",
+    status: "Active",
   },
   {
     employee_id: "EMP_002",
@@ -38,7 +39,7 @@ const employeesData: Employee[] = [
     address: "Kandy, Sri Lanka",
     date_of_birth: "1992-08-21",
     join_date: "2021-03-20",
-    status: "inactive",
+    status: "Inactive",
   },
   {
     employee_id: "EMP_003",
@@ -52,7 +53,7 @@ const employeesData: Employee[] = [
     address: "Galle, Sri Lanka",
     date_of_birth: "1990-02-10",
     join_date: "2020-07-10",
-    status: "active",
+    status: "Active",
   },
   {
     employee_id: "EMP_004",
@@ -66,13 +67,13 @@ const employeesData: Employee[] = [
     address: "Negombo, Sri Lanka",
     date_of_birth: "1988-11-30",
     join_date: "2019-11-05",
-    status: "active",
+    status: "Active",
   }, 
 ]
 export default function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
+  const [isFormOpen, setIsFormOpen] = useState(false)
   const handleViewEmployee = (employeeId: string) => {
     const employee = employeesData.find(emp => emp.employee_id === employeeId)
     if (employee) {
@@ -94,8 +95,13 @@ export default function EmployeesPage() {
           <h1 className="font-bold text-2xl mb-2">Employees Management</h1>
           <p className="text-gray-700">Manage employee information and records</p>
         </div>
-        <Button className="mt-4" variant="outline"><Plus />Add New Employee</Button>
-      </div>
+<Button
+  className="mt-4"
+  variant="outline"
+  onClick={() => setIsFormOpen(true)} // <-- Add this
+>
+  <Plus /> Add New Employee
+</Button>      </div>
         <DataTable
         columns={columns(handleViewEmployee)}
         data={employeesData}
@@ -110,6 +116,21 @@ export default function EmployeesPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+
+        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                    <DialogContent className="max-w-2xl">
+                    
+                      <EmployeeForm
+                        onSubmit={(data) => {
+                          console.log('employee data:', data)
+                          setIsFormOpen(false)
+                        }}
+                        onCancel={() => setIsFormOpen(false)}
+                      />
+                    </DialogContent>
+                  </Dialog>
     </div>
+
+
   )
 }
