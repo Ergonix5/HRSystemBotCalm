@@ -138,12 +138,13 @@ export function CompanyDistributionChart() {
             const percentage = ((item.employees / totalEmployees) * 100).toFixed(1)
             const companyName = chartConfig[item.company as keyof typeof chartConfig]?.label || item.company
             return (
-              <div key={item.company} className="flex justify-between items-center">
+             
+              <div key={item.company} className="flex justify-between ml-10 items-center">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.fill }}></div>
                   <span className="text-gray-700">{companyName}</span>
                 </div>
-                <div className="text-right">
+                <div className="text-right mr-20">
                   <div className="font-semibold text-gray-900">{item.employees}</div>
                   <div className="text-xs text-gray-500">{percentage}%</div>
                 </div>
@@ -151,10 +152,12 @@ export function CompanyDistributionChart() {
             )
           })}
         </div>
-        <div className="mt-4 pt-3 border-t border-gray-100 text-center">
+
+        {/* total Employees */}
+        {/* <div className="mt-4 pt-3 border-t border-gray-100 text-center">
           <div className="text-sm font-medium text-gray-600">Total Employees</div>
           <div className="text-2xl font-bold text-gray-900">{totalEmployees}</div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

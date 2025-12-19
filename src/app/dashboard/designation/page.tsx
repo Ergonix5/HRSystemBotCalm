@@ -3,6 +3,8 @@
 import { DataTable } from "../../../components/table/Data-table"
 import { columns as designationColumns } from "../designation/columns" 
 import { type Designation } from "../../types/types"
+import { Button } from "../../../components/ui/button"
+import { Plus } from "lucide-react"
 
 
 // Mock designation data
@@ -22,10 +24,20 @@ const designationData: Designation[] = [
 export default function DesignationPage() {
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Designations</h1>
+     
 
       {/* table */}
-      <DataTable columns={designationColumns} data={designationData} filterColumn="title" showStatusFilter={true} showCompanyFilter={true} />
+      <div className="border p-5 rounded-md"> 
+<div className="flex justify-between mb-6">
+        <div>
+          <h1 className="font-bold text-2xl mb-2">Designations Management</h1>
+          <p className="text-gray-700">Manage job positions and role information</p>
+        </div>
+        <Button className="mt-4" variant="outline"><Plus />Add New Designation</Button>
+      </div>  
+      {/* data table */}
+<DataTable columns={designationColumns} data={designationData} filterColumn="title" showStatusFilter={true} />
+</div>
     </div>
   )
 }
