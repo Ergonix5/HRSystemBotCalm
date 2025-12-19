@@ -14,7 +14,7 @@ import WorkHoursTab from "../../../components/employee-portal/profile/hours/Work
 import NotificationsTab from "../../../components/employee-portal/profile/notifications/NotificationsTab";
 
 export default function Profile() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -28,10 +28,10 @@ export default function Profile() {
         return <WorkHoursTab />;
       case "notifications":
         return <NotificationsTab />;
-      default:
+      case "profile":
         return (
           <>
-            <div className="grid grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-4 gap-4 mb-6">
               <StatsCard 
                 icon={Calendar}
                 current={18}
@@ -69,17 +69,19 @@ export default function Profile() {
                 percentage={71}
               />
             </div>
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-6">
               <UpcomingLeaves />
               <RecentActivity />
             </div>
           </>
         );
+      default:
+        return <DashboardTab />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4">
       <ProfileHeader />
       <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
       {renderTabContent()}

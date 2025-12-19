@@ -103,7 +103,7 @@ export function EmployeeOverview() {
         <p className="text-sm text-muted-foreground">Real-time attendance and employee status</p>
         <CardAction>
        
-            <Button variant="outline" className="border-[#B91434] hover:bg-[#b81737] hover:text-white">View All Employees</Button>
+            <Button variant="custom">View All Employees</Button>
           
         </CardAction>
       </CardHeader>

@@ -10,6 +10,7 @@ import {
   CalendarDays, 
   Briefcase 
 } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 
 // --- Mock UI Components (Inlined for single-file portability) ---
 interface CardProps {
@@ -31,23 +32,7 @@ const Card = ({ className = "", children }: CardProps) => (
   </div>
 );
 
-const Button = ({ className = "", children, onClick, disabled = false, variant = "primary" }: ButtonProps) => {
-  const baseStyles = "inline-flex items-center justify-center font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]";
-  const variants: Record<string, string> = {
-    primary: "bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg",
-    outline: "border-2 border-gray-200 hover:border-gray-300 text-gray-700 bg-transparent"
-  };
-  
-  return (
-    <button 
-      onClick={onClick} 
-      disabled={disabled} 
-      className={`${baseStyles} ${variants[variant]} ${className}`}
-    >
-      {children}
-    </button>
-  );
-};
+
 
 export default function App() {
   return (
@@ -140,7 +125,7 @@ function RequestLeaveTab() {
             <span className="font-medium text-gray-900">{selectedLeaveType}</span>
           </div>
         </div>
-        <Button onClick={handleReset} disabled={false} className="w-full py-3 rounded-lg">
+        <Button variant="custom" onClick={handleReset} disabled={false} className="w-full py-3 rounded-lg">
           Submit Another Request
         </Button>
       </Card>
@@ -280,9 +265,10 @@ function RequestLeaveTab() {
 
           {/* Submit Button */}
           <Button 
+            variant="custom"
             onClick={handleSubmit}
             disabled={status === "submitting" || !!error}
-            className="w-full py-3 rounded-lg bg-gray-900 hover:bg-black text-white"
+            className="w-full py-3 rounded-lg"
           >
             {status === "submitting" ? (
               <span className="flex items-center gap-2">
