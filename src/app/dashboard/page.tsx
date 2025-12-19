@@ -3,12 +3,17 @@ import StudentAttendanceChart from "../../components/dashboard/employee-attendan
 import { CompanyDistributionChart } from "../../components/dashboard/company-distribution-chart"
 import { EmployeeOverview } from "../../components/dashboard/employee-overview"
 import { PendingLeaveRequests } from "../../components/dashboard/pending-leave-requests"
-import { Users, UserCheck, Calendar, Briefcase, Building, Megaphone, Clock, FileText } from "lucide-react"
+import { RecentActivities } from "../../components/dashboard/pending-recent-activities"
+import { Button } from "../../components/ui/button"
+import { Users, UserCheck, Calendar, Briefcase, Building, Megaphone, Clock, FileText, Eye } from "lucide-react"
+import Link from "next/link"
 
 export default function Dashboard() {
   return (
     <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Employee Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Dashboard</h1>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <DashboardCard
@@ -89,12 +94,15 @@ export default function Dashboard() {
         <CompanyDistributionChart />
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div className="lg:col-span-2">
           <EmployeeOverview />
         </div>
-        <div>
+        <div className="space-y-4">
           <PendingLeaveRequests />
+        </div>
+        <div className="space-y-4">
+          <RecentActivities />
         </div>
       </div>
     </div>

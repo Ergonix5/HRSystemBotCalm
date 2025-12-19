@@ -16,8 +16,9 @@ import { Input } from "../../components/ui/input"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuItem } from "../../components/ui/dropdown-menu"
 import { Button } from "../../components/ui/button"
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from "../../components/ui/table"
-import { ChevronDown, Filter } from "lucide-react"
+import { ChevronDown, Filter, Plus } from "lucide-react"
 import { DataTablePagination } from "./DataTablePagination"
+import { organization } from '../../app/models/organization.model';
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -51,9 +52,12 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
   })
 
   return (
-    <div className="py-10">
-    <div className="w-full border rounded-md p-4 space-y-4 ">
-      <div className="flex items-center py-4 gap-4">
+    
+    <div className="w-full  space-y-4 ">
+
+      
+
+      <div className="flex items-center  gap-4">
         <Input
           placeholder="Filter..."
           value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
@@ -143,7 +147,8 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        
+
+       
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -165,13 +170,13 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
       </div>
 
       <div className="rounded-md border">
-        <div className="max-h-[400px] overflow-auto scrollbar-none">
+        <div className="max-h-[500px] overflow-y-auto scrollbar-none">
           <Table>
-            <TableHeader className="sticky top-0 bg-white z-10 border-b">
+            <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
+                <TableRow key={headerGroup.id} className="border-b">
                   {headerGroup.headers.map(header => (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="bg-background">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
@@ -203,6 +208,6 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
 
       <DataTablePagination table={table} />
     </div>
-    </div>
+    
   )
 }
