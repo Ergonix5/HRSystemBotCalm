@@ -7,7 +7,7 @@ import { ArrowUpDown } from "lucide-react"
 import { Employee } from "../../types/types"
 import { TableActions } from "../../../components/table/table_actions"
 
-export const columns: ColumnDef<Employee>[] = [
+export const columns = (onView: (id: string) => void): ColumnDef<Employee>[] => [
 
   /* 
      Row Selection Column
@@ -156,7 +156,7 @@ export const columns: ColumnDef<Employee>[] = [
       <TableActions
         id={row.original.employee_id}
         type="employee"
-        onView={(id) => console.log("View employee", id)}
+        onView={onView}
         onEdit={(id) => console.log("Edit employee", id)}
         onDelete={(id) => console.log("Delete employee", id)}
       />

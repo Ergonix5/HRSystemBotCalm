@@ -5,14 +5,19 @@ import { DataTable } from "../../../components/table/Data-table"
 import { columns } from "../company/columns"
 import { type Company } from "../../types/types"
 import { DashboardCard } from "../../../components/dashboard/dashboard-card"
-import { Building2, CheckCircle, XCircle, Plus } from "lucide-react"
+import { Building2, CheckCircle, XCircle, Plus, View } from "lucide-react"
 import { getOrganizations } from "../../../lib/api"
 import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
+import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
+
+
 
 export default function Company() {
   const [organizations, setOrganizations] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -26,8 +31,16 @@ export default function Company() {
   }, [])
 
   const totalCompanies = organizations.length
-  const activeCompanies = organizations.filter(o => o.status === "active").length
-  const inactiveCompanies = organizations.filter(o => o.status === "inactive").length
+  const activeCompanies = organizations.filter(o => o.status === "Active").length
+  const inactiveCompanies = organizations.filter(o => o.status === "Inactive").length
+
+  const handleViewCompany = (companyId: string) => {
+    const company = organizations.find(org => org.company_id === companyId)
+    if (company) {
+      setSelectedCompany(company)
+      setIsModalOpen(true)
+    }
+  }
 
   if (loading) {
     return (
@@ -75,11 +88,22 @@ export default function Company() {
 
     {/* data table */}
       <DataTable
-        columns={columns}
+        columns={columns(handleViewCompany)}
         data={organizations}
         filterColumn="company_name"
         showStatusFilter={true}  /></div>
+
+      <CompanyDetailsModal
+        company={selectedCompany}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+
+
+
     </div>
+
+   
 
   )
 }

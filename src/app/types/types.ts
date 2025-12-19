@@ -5,7 +5,8 @@ export type Company = {
   company_id: string
   company_name: string
   company_description: string
-  status: "active" | "inactive"
+  company_logo?: string
+  status: "Active" | "Inactive"
 }
 
 //Designation Table
@@ -14,7 +15,7 @@ export type Designation = {
   title: string            
   company_name: string   
   description?: string     
-  status: "active" | "inactive" 
+  status: "Active" | "Inactive"
 }
 
 
@@ -31,5 +32,6 @@ export type Employee = {
   address: string
   date_of_birth: string
   join_date: string
-  status: "active" | "inactive"
+  profile_pic?: string
+  status: "Active" | "Inactive"
 }

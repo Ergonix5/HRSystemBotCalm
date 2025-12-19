@@ -1,10 +1,12 @@
+"use client"
 
-
+import { useState } from "react"
 import { DataTable } from "../../../components/table/Data-table"
 import { columns as designationColumns } from "../designation/columns" 
 import { type Designation } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
+import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 
 
 // Mock designation data
@@ -22,6 +24,17 @@ const designationData: Designation[] = [
 ]
 
 export default function DesignationPage() {
+  const [selectedDesignation, setSelectedDesignation] = useState<Designation | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleViewDesignation = (designationId: string) => {
+    const designation = designationData.find(des => des.designation_id === designationId)
+    if (designation) {
+      setSelectedDesignation(designation)
+      setIsModalOpen(true)
+    }
+  }
+
   return (
     <div className="p-6">
      
@@ -36,8 +49,14 @@ export default function DesignationPage() {
         <Button className="mt-4" variant="outline"><Plus />Add New Designation</Button>
       </div>  
       {/* data table */}
-<DataTable columns={designationColumns} data={designationData} filterColumn="title" showStatusFilter={true} />
+<DataTable columns={designationColumns(handleViewDesignation)} data={designationData} filterColumn="title" showStatusFilter={true} />
 </div>
+
+      <DesignationDetailsModal
+        designation={selectedDesignation}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   )
 }

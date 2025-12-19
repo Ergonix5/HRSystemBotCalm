@@ -6,7 +6,8 @@ import { Checkbox } from "../../../components/ui/checkbox"
 import { Eye, Edit, Trash2, ArrowUpDown } from "lucide-react"
 import { Company } from "../../types/types"
 import { TableActions } from "../../../components/table/table_actions" 
-export const columns: ColumnDef<Company>[] = [
+
+export const columns = (onView: (id: string) => void): ColumnDef<Company>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -81,7 +82,7 @@ export const columns: ColumnDef<Company>[] = [
     <TableActions
       id={row.original.company_id}
       type="company"
-      onView={(id) => console.log("View company", id)}
+      onView={onView}
       onEdit={(id) => console.log("Edit company", id)}
       onDelete={(id) => console.log("Delete company", id)}
     />
