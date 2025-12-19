@@ -1,11 +1,13 @@
 
 "use client"
 
+import { useState } from "react"
 import { DataTable } from "../../../components/table/Data-table"
 import { columns  } from "./colomns"
 import { type Employee } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
+import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
 
 
 // Mock employee data
@@ -68,6 +70,17 @@ const employeesData: Employee[] = [
   }, 
 ]
 export default function EmployeesPage() {
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleViewEmployee = (employeeId: string) => {
+    const employee = employeesData.find(emp => emp.employee_id === employeeId)
+    if (employee) {
+      setSelectedEmployee(employee)
+      setIsModalOpen(true)
+    }
+  }
+
   return (
     <div className="p-6">
       {/* Topic */}
@@ -84,14 +97,19 @@ export default function EmployeesPage() {
         <Button className="mt-4" variant="outline"><Plus />Add New Employee</Button>
       </div>
         <DataTable
-        columns={columns}
+        columns={columns(handleViewEmployee)}
         data={employeesData}
         filterColumn="name"
         showStatusFilter={true}
         showCompanyFilter={true}
       />
       </div>
-    
+
+      <EmployeeDetailsModal
+        employee={selectedEmployee}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   )
 }

@@ -30,9 +30,9 @@ export const TableActions: React.FC<TableActionsProps> = ({
       <Button variant="ghost" size="sm" onClick={handleEdit}>
         <Edit className="h-4 w-4 text-lime-700" />
       </Button>
-      {/* <Button variant="ghost" size="sm" onClick={handleDelete}>
+      <Button variant="ghost" size="sm" onClick={handleDelete}>
         <Trash2 className="h-4 w-4 text-red-600" />
-      </Button> */}
+      </Button>
     </div>
   )
 }
