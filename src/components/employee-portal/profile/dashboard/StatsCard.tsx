@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "../ui/card";
+import { Card } from "../../../ui/card";
 import { LucideIcon } from "lucide-react";
 
 interface StatsCardProps {

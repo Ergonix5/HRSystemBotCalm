@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "../ui/card";
+import { Card } from "../../../ui/card";
 
 export default function UpcomingLeaves() {
   return (
