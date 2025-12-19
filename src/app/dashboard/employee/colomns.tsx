@@ -1,13 +1,17 @@
-// app/employees/columns.tsx
 "use client"
+
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "../../../components/ui/button"
 import { Checkbox } from "../../../components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
-import { Employee } from "../../types/types"  // Make sure you have Employee type
+import { Employee } from "../../types/types"
 import { TableActions } from "../../../components/table/table_actions"
 
 export const columns: ColumnDef<Employee>[] = [
+
+  /* 
+     Row Selection Column
+      */
   {
     id: "select",
     header: ({ table }) => (
@@ -30,6 +34,10 @@ export const columns: ColumnDef<Employee>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+
+  /* 
+     Employee ID
+      */
   {
     accessorKey: "employee_id",
     header: ({ column }) => (
@@ -41,17 +49,20 @@ export const columns: ColumnDef<Employee>[] = [
       </Button>
     ),
   },
+
+  /* 
+     Full Name (Computed)
+      */
   {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Name <ArrowUpDown />
-      </Button>
-    ),
+    id: "name",
+    header: "Name",
+    cell: ({ row }) =>
+      `${row.original.first_name} ${row.original.last_name}`,
   },
+
+  /* 
+     Email
+      */
   {
     accessorKey: "email",
     header: ({ column }) => (
@@ -63,32 +74,46 @@ export const columns: ColumnDef<Employee>[] = [
       </Button>
     ),
   },
+
+  /* 
+     Phone Number
+      */
   {
     accessorKey: "phone",
     header: "Phone",
   },
+
+  /* 
+     Company
+      */
   {
-    accessorKey: "company_name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Company <ArrowUpDown />
-      </Button>
-    ),
+    accessorKey: "company_id",
+    header: "Company",
   },
+
+  /* 
+     Designation
+      */
   {
-    accessorKey: "designation",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Designation <ArrowUpDown />
-      </Button>
-    ),
+    accessorKey: "designation_id",
+    header: "Designation",
   },
+
+  /* 
+     Date of Birth
+      */
+  {
+    accessorKey: "date_of_birth",
+    header: "Date of Birth",
+    cell: ({ row }) => {
+      const dob = row.getValue("date_of_birth") as string
+      return <span>{new Date(dob).toLocaleDateString()}</span>
+    },
+  },
+
+  /* 
+     Join Date
+      */
   {
     accessorKey: "join_date",
     header: "Join Date",
@@ -97,6 +122,10 @@ export const columns: ColumnDef<Employee>[] = [
       return <span>{new Date(date).toLocaleDateString()}</span>
     },
   },
+
+  /* 
+     Status
+      */
   {
     accessorKey: "status",
     header: "Status",
@@ -115,18 +144,22 @@ export const columns: ColumnDef<Employee>[] = [
       )
     },
   },
- {
-  id: "actions",
-  header: "Actions",
-  enableHiding: false,
-  cell: ({ row }) => (
-    <TableActions
-      id={row.original.employee_id}
-      type="employee"
-      onView={(id) => console.log("View employee", id)}
-      onEdit={(id) => console.log("Edit employee", id)}
-      onDelete={(id) => console.log("Delete employee", id)}
-    />
-  ),
-}
+
+  /* 
+     Row Actions
+      */
+  {
+    id: "actions",
+    header: "Actions",
+    enableHiding: false,
+    cell: ({ row }) => (
+      <TableActions
+        id={row.original.employee_id}
+        type="employee"
+        onView={(id) => console.log("View employee", id)}
+        onEdit={(id) => console.log("Edit employee", id)}
+        onDelete={(id) => console.log("Delete employee", id)}
+      />
+    ),
+  },
 ]

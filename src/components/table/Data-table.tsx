@@ -16,7 +16,7 @@ import { Input } from "../../components/ui/input"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuItem } from "../../components/ui/dropdown-menu"
 import { Button } from "../../components/ui/button"
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from "../../components/ui/table"
-import { ChevronDown, Filter, Plus } from "lucide-react"
+import { ChevronDown, Filter, Plus, Search ,SlidersHorizontal } from "lucide-react"
 import { DataTablePagination } from "./DataTablePagination"
 import { organization } from '../../app/models/organization.model';
 
@@ -59,17 +59,17 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
 
       <div className="flex items-center  gap-4">
         <Input
-          placeholder="Filter..."
+          placeholder=" Search..."
           value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
           onChange={(e) => table.getColumn(filterColumn)?.setFilterValue(e.target.value)}
-          className="max-w-sm"
+          className="bg-gray-50"
         />
-        
+
         {showStatusFilter && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
                 {selectedStatus} <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </DropdownMenuTrigger>
@@ -103,7 +103,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
                 {selectedCompany} <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </DropdownMenuTrigger>
