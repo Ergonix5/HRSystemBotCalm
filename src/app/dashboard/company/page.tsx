@@ -10,6 +10,8 @@ import { getOrganizations } from "../../../lib/api"
 import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
+import { CompanyForm } from "../../../components/forms/addcompany"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
 
 
 
@@ -18,6 +20,7 @@ export default function Company() {
   const [loading, setLoading] = useState(true)
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -98,6 +101,19 @@ export default function Company() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-2xl">
+        
+          <CompanyForm
+            onSubmit={(data) => {
+              console.log('Company data:', data)
+              setIsFormOpen(false)
+            }}
+            onCancel={() => setIsFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
 
 
