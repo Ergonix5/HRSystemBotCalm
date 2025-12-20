@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Send, Briefcase } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 import LeaveTypeSelector from "./LeaveTypeSelector";
 import DateRangeSelector from "./DateRangeSelector";
 import LeaveBalanceInfo from "./LeaveBalanceInfo";
@@ -24,15 +25,7 @@ const Card = ({ className = "", children }: CardProps) => (
   </div>
 );
 
-const Button = ({ className = "", children, onClick, disabled = false }: ButtonProps) => (
-  <button 
-    onClick={onClick} 
-    disabled={disabled} 
-    className={`inline-flex items-center justify-center font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg ${className}`}
-  >
-    {children}
-  </button>
-);
+
 
 export default function App() {
   return (
@@ -155,9 +148,10 @@ function RequestLeaveTab() {
 
 
           <Button 
+            variant="custom"
             onClick={handleSubmit}
             disabled={status === "submitting" || !!error}
-            className="w-full py-3 rounded-lg border-[#B91434] hover:bg-[#B91434] text-white"
+            className="w-full py-3 rounded-lg"
           >
             {status === "submitting" ? (
               <span className="flex items-center gap-2">
