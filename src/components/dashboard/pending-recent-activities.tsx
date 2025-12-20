@@ -104,7 +104,7 @@ export function RecentActivities() {
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 mt-1">
+              <div className="shrink-0 mt-1">
                 {getActivityIcon(activity.type)}
               </div>
               

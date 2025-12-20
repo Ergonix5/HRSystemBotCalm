@@ -1,9 +1,12 @@
+import { id } from "zod/v4/locales"
+
 //Company Table
 export type Company = {
   company_id: string
   company_name: string
   company_description: string
-  status: "active" | "inactive"
+  company_logo?: string
+  status: "Active" | "Inactive"
 }
 
 //Designation Table
@@ -12,18 +15,23 @@ export type Designation = {
   title: string            
   company_name: string   
   description?: string     
-  status: "active" | "inactive" 
+  status: "Active" | "Inactive"
 }
 
 
 //Employee Table
 export type Employee = {
   employee_id: string
-  name: string
+  company_id: string
+  role_id: string
+  designation_id: string
+  first_name: string
+  last_name: string
   email: string
   phone: string
-  company_name: string
-  designation: string
+  address: string
+  date_of_birth: string
   join_date: string
-  status: "active" | "inactive"
+  profile_pic?: string
+  status: "Active" | "Inactive"
 }
