@@ -40,7 +40,7 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
-      Role.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Role.find(filter).sort({ createdAt: -1 }).populate("organization").skip(skip).limit(limit),
       Role.countDocuments(filter),
     ]);
 
