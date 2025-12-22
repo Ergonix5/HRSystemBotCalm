@@ -64,6 +64,10 @@ export async function GET(req: Request) {
   }
 }
 
+
+
+
+
 /**
  * POST /api/Employee - Create new employee
  * Body: { organization, designation, role, first_name, last_name, email, password, ... }

@@ -6,13 +6,12 @@ import { columns } from "../company/columns"
 import { type Company } from "../../types/types"
 import { DashboardCard } from "../../../components/dashboard/dashboard-card"
 import { Building2, CheckCircle, XCircle, Plus, View } from "lucide-react"
-import { getOrganizations } from "../../../lib/api"
 import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
 import { CompanyForm } from "../../../components/forms/addcompany"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
-
+import { getOrganizations } from "@/src/lib/api"
 
 
 export default function Company() {
@@ -32,6 +31,7 @@ export default function Company() {
 
     loadData()
   }, [])
+
 
   const totalCompanies = organizations.length
   const activeCompanies = organizations.filter(o => o.status === "Active").length
