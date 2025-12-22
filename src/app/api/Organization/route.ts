@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/src/lib/db";
-import { organization } from "../../models/organization.model";
+import { Organization } from "../../models/organization.model";
 import { validateBody } from "../../../lib/validate";
 import { oraganiationCreateSchema } from "../../../validators/organization.schema";
 import { paginate } from "../../service/pagination.service";
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     const q = (searchParams.get("q") ?? "").trim();
 
     // Get paginated results with search functionality
-    const result = await paginate(organization, {
+    const result = await paginate(Organization, {
       page,
       limit,
       q,
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     if (!result.ok) return result.res;
 
     // Create new designation in database
-    const created = await organization.create(result.data);
+    const created = await Organization.create(result.data);
     
     // Return success response with created data
     return NextResponse.json(
