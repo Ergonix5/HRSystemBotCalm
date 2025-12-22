@@ -5,12 +5,12 @@ import { Bell } from "lucide-react";
 
 export default function ProfileHeader() {
   return (
-    <div className="flex items-center justify-between mb-8">
+    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-4 md:gap-0">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Employee Portal</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Employee Portal</h1>
         <p className="text-gray-600">Welcome back, John Doe</p>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 md:gap-4">
         <Bell className="h-5 w-5 text-gray-600" />
         <div className="text-right">
           <p className="text-sm text-gray-600">Employee ID</p>

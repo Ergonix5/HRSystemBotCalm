@@ -55,6 +55,7 @@ export default function NavigationTabs({
   onTabChange,
 }: NavigationTabsProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNavExpanded, setIsNavExpanded] = useState(true);
 
   const handleTabClick = (key: string) => {
     onTabChange?.(key);
@@ -64,22 +65,51 @@ export default function NavigationTabs({
   return (
     <>
       {/* Desktop & Tablet Navigation */}
-      <nav className="hidden md:flex fixed top-4 ml-150 mt-10 -translate-x-1/2 z-50 items-center bg-white/95 backdrop-blur-md border border-gray-200 shadow-lg rounded-xl p-1 gap-0.5 transition-all duration-300">
-        {tabs.map(({ key, label, icon: Icon }) => (
-          <button
-            key={key}
-            onClick={() => handleTabClick(key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              activeTab === key
-                ? "bg-[#B91434] text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            }`}
-          >
-            <Icon className="h-4 w-4" />
-            <span>{label}</span>
-          </button>
-        ))}
+      <nav className="hidden md:flex lg:fixed lg:top-4 lg:left-1/2 lg:mt-10 lg:-translate-x-1/2 z-50 lg:flex-row lg:items-center lg:bg-white/95 lg:backdrop-blur-md lg:border lg:border-gray-200 lg:shadow-lg lg:rounded-xl lg:p-1 lg:gap-0.5 transition-all duration-300">
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex items-center gap-0.5">
+          {tabs.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => handleTabClick(key)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                activeTab === key
+                  ? "bg-[#B91434] text-white shadow-md"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
       </nav>
+
+      {/* Tablet Navigation */}
+      <div className="md:block lg:hidden fixed bottom-6 right-6 z-50">
+        <div className={`${isNavExpanded ? 'flex flex-col-reverse' : 'hidden'} mb-2 gap-2`}>
+          {tabs.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => handleTabClick(key)}
+              className={`flex items-center justify-center w-12 h-12 rounded-full shadow-lg transition-all duration-200 ${
+                activeTab === key
+                  ? "bg-[#B91434] text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+            </button>
+          ))}
+        </div>
+        
+        <button
+          onClick={() => setIsNavExpanded(!isNavExpanded)}
+          className="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg text-gray-600 hover:bg-gray-100 transition-all duration-200"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </div>
 
       {/* Mobile Bottom Navigation Bar */}
       <nav className="md:hidden fixed bottom-6 left-4 right-4 z-50 flex items-center justify-around bg-white/90 backdrop-blur-lg border border-gray-100 shadow-2xl rounded-2xl p-2">
