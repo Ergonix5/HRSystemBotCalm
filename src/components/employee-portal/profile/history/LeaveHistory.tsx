@@ -1,298 +1,221 @@
-import React, { useState, useMemo } from "react";
-import { Search, Calendar, Clock, CheckCircle2, AlertCircle, MoreVertical, User, Plane, Stethoscope, Briefcase, XCircle } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
+import React, { useState, useMemo } from 'react';
+import { 
+  Search, 
+  Clock, 
+  CheckCircle2, 
+  XCircle, 
+  AlertCircle,
+  Download,
+  Plus,
+  Calendar
+} from 'lucide-react';
+import { Button } from '../../../ui/button';
+import { Badge } from '../../../ui/badge';
+// import { Progress } from '../../../ui/progress';
+import { Card, CardContent, CardHeader } from '../../../ui/card';
+import { Input } from '../../../ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../ui/table';
 
-// Types
-export interface LeaveRecord {
-  id: string;
-  type: "Vacation" | "Sick Leave" | "Personal" | "Bereavement";
-  startDate: string;
-  endDate: string;
-  days: number;
-  status: "approved" | "pending" | "rejected";
-  appliedDate: string;
-  reason?: string;
-}
+const LeaveHistory = () => {
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
-// UI Components
-const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-white rounded-xl border border-slate-200 shadow-sm ${className}`}>{children}</div>
-);
+  const leaveStats = [
+    { label: 'Annual Leave', used: 12, total: 20 },
+    { label: 'Sick Leave', used: 4, total: 10 },
+    { label: 'Personal Leave', used: 2, total: 5 },
+  ];
 
-const CardContent = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`p-4 ${className}`}>{children}</div>
-);
-
-const Badge = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 ${className}`}>
-    {children}
-  </span>
-);
-
-// LeaveHeader Component
-function LeaveHeader() {
-  return (
-    <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">Leave Management</h1>
-        <p className="text-slate-500 text-sm">View and manage your historical time-off requests.</p>
-      </div>
-      <Button variant="custom" className="px-3 py-1.5 rounded-lg font-medium shadow-sm flex items-center gap-2 w-fit text-sm">
-        <Calendar className="h-4 w-4" />
-        Request Leave
-      </Button>
-    </div>
-  );
-}
-
-// LeaveStatsCard Component
-interface LeaveStatsCardProps {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-}
-
-function LeaveStatsCard({ label, value, icon }: LeaveStatsCardProps) {
-  return (
-    <Card className="border-slate-200">
-      <CardContent className="flex items-center gap-3 py-3">
-        <div className="p-1.5 rounded-md bg-slate-50 text-slate-600 border border-slate-100">
-          {React.cloneElement(icon as React.ReactElement<any>, { className: "h-4 w-4" })}
-        </div>
-        <div>
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
-          <p className="text-lg font-bold">{value}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// LeaveFilters Component
-interface LeaveFiltersProps {
-  searchTerm: string;
-  statusFilter: string;
-  onSearchChange: (value: string) => void;
-  onStatusChange: (value: string) => void;
-}
-
-function LeaveFilters({ searchTerm, statusFilter, onSearchChange, onStatusChange }: LeaveFiltersProps) {
-  return (
-    <div className="flex flex-col sm:flex-row gap-2 mb-4">
-      <div className="relative flex-1">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-        <input 
-          type="text"
-          placeholder="Search history..."
-          className="w-full pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-slate-400 bg-slate-50/50 text-sm"
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-      </div>
-      <select 
-        className="px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50/50 text-sm focus:outline-none focus:border-slate-400 outline-none"
-        value={statusFilter}
-        onChange={(e) => onStatusChange(e.target.value)}
-      >
-        <option value="all">All Status</option>
-        <option value="approved">Approved</option>
-        <option value="pending">Pending</option>
-        <option value="rejected">Rejected</option>
-      </select>
-    </div>
-  );
-}
-
-// LeaveRecordCard Component
-interface LeaveRecordCardProps {
-  record: LeaveRecord;
-}
-
-function getStatusConfig(status: string) {
-  switch (status) {
-    case "approved":
-      return { 
-        icon: <CheckCircle2 className="h-3.5 w-3.5" />, 
-        label: "Approved",
-        colorClass: "bg-slate-900" 
-      };
-    case "pending":
-      return { 
-        icon: <AlertCircle className="h-3.5 w-3.5" />, 
-        label: "Pending Review",
-        colorClass: "bg-slate-400" 
-      };
-    case "rejected":
-      return { 
-        icon: <XCircle className="h-3.5 w-3.5" />, 
-        label: "Rejected",
-        colorClass: "bg-slate-200" 
-      };
-    default:
-      return { 
-        icon: null, 
-        label: status,
-        colorClass: "bg-slate-100" 
-      };
-  }
-}
-
-function getTypeIcon(type: string) {
-  switch (type) {
-    case "Vacation": return <Plane className="h-4 w-4" />;
-    case "Sick Leave": return <Stethoscope className="h-4 w-4" />;
-    case "Personal": return <User className="h-4 w-4" />;
-    default: return <Briefcase className="h-4 w-4" />;
-  }
-}
-
-function LeaveRecordCard({ record }: LeaveRecordCardProps) {
-  const status = getStatusConfig(record.status);
-  
-  return (
-    <Card className="group border-slate-200">
-      <CardContent className="p-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <div className="p-1.5 rounded-md bg-slate-50 text-slate-500 border border-slate-100 shrink-0">
-              {getTypeIcon(record.type)}
-            </div>
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-slate-900 text-sm">{record.type}</h3>
-                <Badge className="flex items-center gap-1 py-0 px-1.5 h-4 text-[9px]">
-                  <span className={`w-1 h-1 rounded-full ${status.colorClass}`} />
-                  {status.label}
-                </Badge>
-              </div>
-              
-              <div className="flex items-center gap-3 text-xs text-slate-500">
-                <div className="flex items-center gap-1 font-medium">
-                  <Calendar className="h-2.5 w-2.5" />
-                  {record.startDate === record.endDate 
-                    ? record.startDate 
-                    : `${record.startDate} — ${record.endDate}`
-                  }
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-2.5 w-2.5" />
-                  <span>{record.days} days</span>
-                </div>
-              </div>
-              {record.reason && (
-                <p className="text-xs text-slate-400 italic">
-                  &ldquo;{record.reason}&rdquo;
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center border-t sm:border-t-0 pt-2 sm:pt-0">
-            <div className="text-[9px] uppercase tracking-wider text-slate-400">
-              Applied <span className="font-bold text-slate-600">{record.appliedDate}</span>
-            </div>
-            <button className="p-1 hover:bg-slate-50 rounded text-slate-400 sm:mt-1">
-              <MoreVertical className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Mock data
-const leaveHistory: LeaveRecord[] = [
-  {
-    id: "1",
-    type: "Vacation",
-    startDate: "Dec 20, 2024",
-    endDate: "Dec 25, 2024",
-    days: 6,
-    status: "approved",
-    appliedDate: "Dec 1, 2024",
-    reason: "Annual family trip"
-  },
-  {
-    id: "2",
-    type: "Sick Leave",
-    startDate: "Nov 15, 2024",
-    endDate: "Nov 15, 2024",
-    days: 1,
-    status: "approved",
-    appliedDate: "Nov 15, 2024",
-    reason: "Doctor appointment"
-  },
-  {
-    id: "3",
-    type: "Personal",
-    startDate: "Oct 10, 2024",
-    endDate: "Oct 12, 2024",
-    days: 3,
-    status: "pending",
-    appliedDate: "Oct 5, 2024",
-    reason: "Moving to a new apartment"
-  },
-  {
-    id: "4",
-    type: "Vacation",
-    startDate: "Sep 5, 2024",
-    endDate: "Sep 7, 2024",
-    days: 3,
-    status: "rejected",
-    appliedDate: "Aug 20, 2024",
-    reason: "Project deadline conflict"
-  }
-];
-
-// Main LeaveHistory Component
-export default function LeaveHistory() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const leaveHistory = [
+    {
+      id: 'LV-001',
+      type: 'Annual Leave',
+      startDate: '2023-12-10',
+      endDate: '2023-12-15',
+      days: 5,
+      status: 'Approved',
+      reason: 'Family Vacation',
+      approver: 'Sarah Jenkins'
+    },
+    {
+      id: 'LV-002',
+      type: 'Sick Leave',
+      startDate: '2023-11-02',
+      endDate: '2023-11-03',
+      days: 2,
+      status: 'Approved',
+      reason: 'Seasonal Flu',
+      approver: 'Sarah Jenkins'
+    },
+    {
+      id: 'LV-003',
+      type: 'Personal Leave',
+      startDate: '2023-10-15',
+      endDate: '2023-10-15',
+      days: 1,
+      status: 'Rejected',
+      reason: 'Urgent Bank Work',
+      approver: 'Mike Ross'
+    },
+    {
+      id: 'LV-004',
+      type: 'Annual Leave',
+      startDate: '2024-01-20',
+      endDate: '2024-01-22',
+      days: 3,
+      status: 'Pending',
+      reason: 'Friend\'s Wedding',
+      approver: 'Pending'
+    }
+  ];
 
   const filteredHistory = useMemo(() => {
-    return leaveHistory.filter(record => {
-      const matchesSearch = record.type.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          record.reason?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === "all" || record.status === statusFilter;
-      return matchesSearch && matchesStatus;
+    return leaveHistory.filter(item => {
+      const matchesStatus = filterStatus === 'All' || item.status === filterStatus;
+      const matchesSearch = item.type.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                           item.reason.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesSearch;
     });
-  }, [searchTerm, statusFilter]);
+  }, [filterStatus, searchTerm]);
 
-  const stats = {
-    total: leaveHistory.reduce((acc, curr) => acc + curr.days, 0),
-    approved: leaveHistory.filter(r => r.status === 'approved').reduce((acc, curr) => acc + curr.days, 0),
-    pending: leaveHistory.filter(r => r.status === 'pending').length
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Approved': return <CheckCircle2 className="mr-1 h-3 w-3" />;
+      case 'Rejected': return <XCircle className="mr-1 h-3 w-3" />;
+      case 'Pending': return <Clock className="mr-1 h-3 w-3" />;
+      default: return <AlertCircle className="mr-1 h-3 w-3" />;
+    }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-white min-h-screen text-slate-900">
-      <LeaveHeader />
-      
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-        <LeaveStatsCard label="Used Days" value={stats.total} icon={<Clock />} />
-        <LeaveStatsCard label="Approved Days" value={stats.approved} icon={<CheckCircle2 />} />
-        <LeaveStatsCard label="Pending Requests" value={stats.pending} icon={<AlertCircle />} />
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Leave History</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400">Manage your time off requests and view balance.</p>
+        </div>
+       <Button variant="custom">View All Employees</Button>
       </div>
 
-      <LeaveFilters 
-        searchTerm={searchTerm}
-        statusFilter={statusFilter}
-        onSearchChange={setSearchTerm}
-        onStatusChange={setStatusFilter}
-      />
+      <div className="grid gap-4 md:grid-cols-3">
+        {leaveStats.map((stat, i) => (
+          <Card key={i} className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{stat.label}</p>
+              <Calendar className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-bold text-slate-800 dark:text-slate-100">{stat.used}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">/ {stat.total} days</span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">
+                {stat.total - stat.used} days available
+              </p>
+              {/* <Progress value={(stat.used / stat.total) * 100} className="bg-slate-200 dark:bg-slate-700" /> */}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-      <div className="space-y-2">
-        {filteredHistory.length > 0 ? (
-          filteredHistory.map((record) => (
-            <LeaveRecordCard key={record.id} record={record} />
-          ))
-        ) : (
-          <div className="text-center py-16 border border-dashed border-slate-200 rounded-xl">
-            <p className="text-slate-400 text-sm">No records found matching your criteria.</p>
+  
+
+      <Card className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <CardHeader>
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="relative w-full md:w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input 
+                placeholder="Search requests..."
+                className="pl-9 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100"
+                value={searchTerm}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <div className="flex items-center gap-1.5">
+              {['All', 'Approved', 'Pending', 'Rejected'].map((status) => (
+                <Button
+                  key={status}
+                  variant={filterStatus === status ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className={filterStatus === status ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
+                  onClick={() => setFilterStatus(status)}
+                >
+                  {status}
+                </Button>
+              ))}
+              <div className="h-4 w-px bg-slate-300 dark:bg-slate-600 mx-1" />
+              <Button variant="outline" size="icon" className="border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400">
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-slate-200 dark:border-slate-700">
+                <TableHead className="text-slate-600 dark:text-slate-400 font-medium">Type</TableHead>
+                <TableHead className="text-slate-600 dark:text-slate-400 font-medium">Period</TableHead>
+                <TableHead className="text-slate-600 dark:text-slate-400 font-medium">Status</TableHead>
+                <TableHead className="text-slate-600 dark:text-slate-400 font-medium">Approver</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredHistory.length > 0 ? (
+                filteredHistory.map((item) => (
+                  <TableRow key={item.id} className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <TableCell>
+                      <div className="font-medium text-slate-800 dark:text-slate-100">{item.type}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{item.reason}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-slate-800 dark:text-slate-100">
+                        {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {item.days} {item.days === 1 ? 'Day' : 'Days'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={item.status === 'Approved' ? 'default' : item.status === 'Rejected' ? 'destructive' : 'secondary'}
+                        className={
+                          item.status === 'Approved' 
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
+                            : item.status === 'Rejected' 
+                            ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                            : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+                        }
+                      >
+                        {getStatusIcon(item.status)}
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-xs font-medium text-slate-700 dark:text-slate-300">
+                          {item.approver[0]}
+                        </div>
+                        <span className="text-sm text-slate-700 dark:text-slate-300">{item.approver}</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-32 text-center text-slate-500 dark:text-slate-400">
+                    No results found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default LeaveHistory;

@@ -176,7 +176,7 @@ export default function NavigationTabs({
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className="fixed bottom-32 right-6 z-[60] md:bottom-20 flex items-center justify-center w-12 h-12 bg-[#B91434] text-white rounded-full shadow-lg hover:bg-[#A01229] transition-all duration-200"
+        className="fixed bottom-32 right-6 z- [60] md:bottom-20 flex items-center justify-center w-12 h-12 bg-[#B91434] text-white rounded-full shadow-lg hover:bg-[#A01229] transition-all duration-200"
       >
         <ChevronUp className="h-5 w-5" />
       </button>
