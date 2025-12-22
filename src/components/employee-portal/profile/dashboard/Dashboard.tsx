@@ -116,7 +116,7 @@ function RecentActivity() {
 export default function Dashboard() {
   return (
     <>
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
         <StatsCard 
           icon={Calendar}
           current={18}
@@ -154,7 +154,7 @@ export default function Dashboard() {
           percentage={71}
         />
       </div>
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         <UpcomingLeaves />
         <RecentActivity />
       </div>
