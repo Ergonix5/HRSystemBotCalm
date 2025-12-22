@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DataTable } from "../../../components/table/Data-table"
 import { columns as designationColumns } from "../designation/columns" 
 import { type Designation } from "../../types/types"
@@ -9,28 +9,50 @@ import { Plus } from "lucide-react"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import {DesignationForm} from "../../../components/forms/addDesignation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
-
-// Mock designation data
-const designationData: Designation[] = [
-  { designation_id: "DES_001", title: "Software Engineer", company_name: "Ergonix", description: "Develops and maintains software applications", status: "Active" },
-  { designation_id: "DES_002", title: "Project Manager", company_name: "Techify", description: "Oversees project delivery and timelines", status: "Inactive" },
-  { designation_id: "DES_003", title: "Civil Engineer", company_name: "BuildPro", description: "Plans and supervises construction projects", status: "Active" },
-  { designation_id: "DES_004", title: "Sustainability Analyst", company_name: "GreenLeaf", description: "Analyzes and implements sustainable practices", status: "Active" },
-  { designation_id: "DES_005", title: "Data Analyst", company_name: "DataFlow", description: "Interprets and analyzes data to drive business decisions", status: "Inactive" },
-  { designation_id: "DES_006", title: "UI/UX Designer", company_name: "Ergonix", description: "Designs user interfaces and improves user experience", status: "Active" },
-  { designation_id: "DES_007", title: "QA Engineer", company_name: "Techify", description: "Tests software to ensure quality and reliability", status: "Active" },
-  { designation_id: "DES_008", title: "Site Supervisor", company_name: "BuildPro", description: "Manages construction site operations", status: "Inactive" },
-  { designation_id: "DES_009", title: "Product Manager", company_name: "GreenLeaf", description: "Defines product strategy and roadmap", status: "Active" },
-  { designation_id: "DES_010", title: "Business Analyst", company_name: "DataFlow", description: "Analyzes business requirements and processes", status: "Active" },
-]
+import { getDesignations } from "@/src/lib/api"
+// import { api } from "../../../lib/api"
 
 export default function DesignationPage() {
+  const [designations, setDesignations] = useState<Designation[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedDesignation, setSelectedDesignation] = useState<Designation | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFormOpen, setIsFormOpen] = useState(false)
 
+  // useEffect(() => {
+  //   const fetchDesignations = async () => {
+  //     try {
+  //       const data = await api.designations.getAll()
+  //       setDesignationData(data)
+  //     } catch (error) {
+  //       console.error('Error fetching designations:', error)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+
+  //   fetchDesignations()
+  // }, [])
+
+  
+   useEffect(() => {
+    async function loadData() {
+      setLoading(true)
+      const data = await getDesignations()
+      setDesignations(data)
+      setLoading(false)
+    }
+
+    loadData()
+  }, [])
+
+  if (loading) {
+    return <div>Loading designations...</div>
+  }
+
+
   const handleViewDesignation = (designationId: string) => {
-    const designation = designationData.find(des => des.designation_id === designationId)
+    const designation = designations.find(des => des.designation_id === designationId)
     if (designation) {
       setSelectedDesignation(designation)
       setIsModalOpen(true)
@@ -56,7 +78,13 @@ export default function DesignationPage() {
   <Plus /> Add New Designation
 </Button>      </div>  
       {/* data table */}
-<DataTable columns={designationColumns(handleViewDesignation)} data={designationData} filterColumn="title" showStatusFilter={true} />
+{loading ? (
+        <div className="flex justify-center items-center h-32">
+          <div className="text-gray-500">Loading designations...</div>
+        </div>
+      ) : (
+        <DataTable columns={designationColumns(handleViewDesignation)} data={designations} filterColumn="title" showStatusFilter={true} />
+      )}
 </div>
 
       <DesignationDetailsModal
