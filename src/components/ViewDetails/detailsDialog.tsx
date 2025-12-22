@@ -1,8 +1,15 @@
 "use client"
+import {
+  DialogHeader,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "../ui/dialog"
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Button } from "../ui/button"
-import React from "react"
+
 
 interface Detail {
   label: string
@@ -30,7 +37,7 @@ export function DetailsModal({
   headerImage,
 }: DetailsModalProps) {
   const StatusBadge = ({ status }: { status: string }) => {
-    const active = status.toLowerCase() === "active"
+    const active = status === "Active"
     return (
       <span
         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
@@ -52,15 +59,21 @@ export function DetailsModal({
       <DialogContent className="max-w-lg p-0 bg-white overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
 
         {/* Header */}
-        <DialogHeader className="px-6 py-5 border-b sticky top-0 bg-white z-10 flex flex-col items-center">
-          {headerImage && (
-            <div className="w-16 h-16 rounded-full overflow-hidden mb-3 border-2 border-gray-200">
-              <img src={headerImage} alt={title} className="w-full h-full object-cover" />
-            </div>
-          )}
-          <DialogTitle className="text-lg font-semibold text-gray-900">{title}</DialogTitle>
-          {subtitle && <p className="text-xs text-gray-500 mt-1 text-center">{subtitle}</p>}
-        </DialogHeader>
+       <DialogHeader className="px-6 py-5 border-b sticky top-0 bg-white z-10 flex flex-col items-center">
+  {headerImage && (
+    <div className="w-16 h-16 rounded-full overflow-hidden mb-3 border-2 border-gray-200">
+      <img src={headerImage} alt={title} className="w-full h-full object-cover" />
+    </div>
+  )}
+
+  <DialogTitle className="text-lg font-semibold text-gray-900">
+    {title}
+  </DialogTitle>
+
+  <DialogDescription className="text-xs text-gray-500 mt-1 text-center">
+    {subtitle ?? "Details information dialog"}
+  </DialogDescription>
+</DialogHeader>
 
         {/* Body */}
         <div className="relative flex-1 overflow-y-auto">

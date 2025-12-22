@@ -35,3 +35,23 @@ export type Employee = {
   profile_pic?: string
   status: "Active" | "Inactive"
 }
+
+
+export type Role= {
+  role_id: string; 
+  roleName: string;
+  description: string;
+  status: 'Active' | 'Inactive';
+  userCount: number;
+  permissions: string[];
+  color: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type Permission ={
+  id: string;
+  name: string;
+  description: string;
+  category: 'Users' | 'Content' | 'Reports' | 'Settings';
+}

@@ -6,24 +6,15 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Info, 
-  ChevronRight, 
   CalendarDays, 
   Briefcase 
 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 
-// --- Mock UI Components (Inlined for single-file portability) ---
+// UI Components
 interface CardProps {
   className?: string;
   children: React.ReactNode;
-}
-
-interface ButtonProps {
-  className?: string;
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  variant?: "primary" | "outline";
 }
 
 const Card = ({ className = "", children }: CardProps) => (
@@ -32,17 +23,7 @@ const Card = ({ className = "", children }: CardProps) => (
   </div>
 );
 
-
-
-export default function App() {
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans">
-      <RequestLeaveTab />
-    </div>
-  );
-}
-
-function RequestLeaveTab() {
+export default function WorkHours() {
   const [selectedLeaveType, setSelectedLeaveType] = useState("Vacation");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
