@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Send, Briefcase, Calendar, Clock, AlertCircle, CalendarDays, Info, CheckCircle2 } from "lucide-react";
+import { Send, Briefcase, Calendar, Clock, AlertCircle, CalendarDays, Info, CheckCircle2, ChevronDown } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
 
 // UI Components
 interface CardProps {
@@ -15,36 +21,63 @@ const Card = ({ className = "", children }: CardProps) => (
 );
 
 // LeaveTypeSelector Component
+interface LeaveType {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 interface LeaveTypeSelectorProps {
   selectedType: string;
   onTypeChange: (type: string) => void;
+  leaveTypes?: LeaveType[];
+  loading?: boolean;
 }
 
-function LeaveTypeSelector({ selectedType, onTypeChange }: LeaveTypeSelectorProps) {
-  const leaveTypes = ["Vacation", "Sick Leave", "Personal", "Other"];
+function LeaveTypeSelector({ 
+  selectedType, 
+  onTypeChange, 
+  leaveTypes = [],
+  loading = false 
+}: LeaveTypeSelectorProps) {
+  const defaultLeaveTypes: LeaveType[] = [
+    { id: "vacation", name: "Vacation" },
+    { id: "sick", name: "Sick Leave" },
+    { id: "personal", name: "Personal" },
+    { id: "other", name: "Other" }
+  ];
+
+  const availableTypes = leaveTypes.length > 0 ? leaveTypes : defaultLeaveTypes;
 
   return (
     <div>
-      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Leave Type</label>
-      <div className="grid grid-cols-2 gap-3">
-        {leaveTypes.map((type) => (
-          <button
-            key={type}
-            onClick={() => onTypeChange(type)}
-            className={`flex items-center gap-3 p-3 rounded-lg border text-left transition-all ${
-              selectedType === type
-                ? "border-[#B91434] bg-[#B91434]/5 ring-1 ring-[#B91434]"
-                : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <div className={`w-2 h-2 rounded-full ${
-              type === selectedType ? "bg-[#B91434]" : "bg-gray-300"
-            }`}></div>
-            <span className={`text-sm font-medium ${
-              selectedType === type ? "text-[#B91434]" : "text-gray-700"
-            }`}>{type}</span>
-          </button>
-        ))}
+      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Leave Type</label>
+      <div className="relative">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              disabled={loading}
+              className="w-full flex items-center justify-between pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#B91434]/20 focus:border-[#B91434] outline-none transition-all text-sm text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className={selectedType ? "text-gray-900" : "text-gray-500"}>
+                {loading ? "Loading leave types..." : selectedType || "Select leave type"}
+              </span>
+              <ChevronDown className="h-4 w-4 text-gray-400" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-full min-w-[var(--radix-dropdown-menu-trigger-width)]">
+            {availableTypes.map((type) => (
+              <DropdownMenuItem
+                key={type.id}
+                onClick={() => onTypeChange(type.name)}
+                className="cursor-pointer"
+              >
+                {type.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Briefcase className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
       </div>
     </div>
   );
@@ -252,13 +285,37 @@ function SuccessMessage({
 
 // Main RequestLeave Component
 export default function RequestLeave() {
-  const [selectedLeaveType, setSelectedLeaveType] = useState("Vacation");
+  const [selectedLeaveType, setSelectedLeaveType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
   const [status, setStatus] = useState("idle"); // idle, submitting, success
   const [duration, setDuration] = useState(0);
+  const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
+  const [loadingTypes, setLoadingTypes] = useState(false);
   const [error, setError] = useState("");
+
+  // Fetch leave types from backend
+  useEffect(() => {
+    const fetchLeaveTypes = async () => {
+      setLoadingTypes(true);
+      try {
+        // Replace with your actual API endpoint
+        const response = await fetch('/api/leave-types');
+        if (response.ok) {
+          const types = await response.json();
+          setLeaveTypes(types);
+        }
+      } catch (error) {
+        console.error('Failed to fetch leave types:', error);
+        // Will fall back to default types
+      } finally {
+        setLoadingTypes(false);
+      }
+    };
+
+    fetchLeaveTypes();
+  }, []);
 
   // Mock data for leave balances
   const balances: Record<string, number> = {
@@ -347,6 +404,8 @@ export default function RequestLeave() {
             <LeaveTypeSelector 
               selectedType={selectedLeaveType}
               onTypeChange={setSelectedLeaveType}
+              leaveTypes={leaveTypes}
+              loading={loadingTypes}
             />
 
             <DateRangeSelector 

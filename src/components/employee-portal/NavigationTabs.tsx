@@ -65,7 +65,7 @@ export default function NavigationTabs({
   return (
     <>
       {/* Desktop & Tablet Navigation */}
-      <nav className="hidden md:flex lg:fixed lg:top-4 lg:left-1/2 lg:mt-10 lg:-translate-x-1/2 z-50 lg:flex-row lg:items-center lg:bg-white/95 lg:backdrop-blur-md lg:border lg:border-gray-200 lg:shadow-lg lg:rounded-xl lg:p-1 lg:gap-0.5 transition-all duration-300">
+      <nav className="hidden md:flex lg:fixed lg:top-4 xl:ml-25 lg:left-1/2 lg:mt-10 lg:-translate-x-1/2 z-50 lg:flex-row lg:items-center lg:bg-white/95 lg:backdrop-blur-md lg:border lg:border-gray-200 lg:shadow-lg lg:rounded-xl lg:p-1 lg:gap-0.5 transition-all duration-300">
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-0.5">
           {tabs.map(({ key, label, icon: Icon }) => (
