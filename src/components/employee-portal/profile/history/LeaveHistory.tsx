@@ -102,7 +102,7 @@ const LeaveHistory = () => {
           <Card key={i} className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{stat.label}</p>
-              <Calendar className="h-4 w-4 text-blue-500" />
+              <Calendar className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-1">
