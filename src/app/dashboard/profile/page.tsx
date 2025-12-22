@@ -3,86 +3,46 @@
 import { useState } from "react";
 import { Calendar, FileText, Clock, BarChart3 } from "lucide-react";
 import ProfileHeader from "../../../components/employee-portal/profile/profile/ProfileHeader";
-import NavigationTabs from "../../../components/employee-portal/profile/NavigationTabs";
-import StatsCard from "../../../components/employee-portal/profile/dashboard/StatsCard";
-import UpcomingLeaves from "../../../components/employee-portal/profile/dashboard/UpcomingLeaves";
-import RecentActivity from "../../../components/employee-portal/profile/dashboard/RecentActivity";
-import DashboardTab from "../../../components/employee-portal/profile/dashboard/DashboardTab";
-import RequestLeaveTab from "../../../components/employee-portal/profile/request/RequestLeaveTab";
-import LeaveHistoryTab from "../../../components/employee-portal/profile/history/LeaveHistoryTab";
-import WorkHoursTab from "../../../components/employee-portal/profile/hours/WorkHoursTab";
-import NotificationsTab from "../../../components/employee-portal/profile/notifications/NotificationsTab";
+import NavigationTabs from "../../../components/employee-portal/NavigationTabs";
+import Dashboard from "../../../components/employee-portal/profile/dashboard/Dashboard";
+import RequestLeave from "../../../components/employee-portal/profile/request/RequestLeave";
+import LeaveHistory from "../../../components/employee-portal/profile/history/LeaveHistory";
+import WorkHours from "../../../components/employee-portal/profile/hours/WorkHours";
+import Notifications from "../../../components/employee-portal/profile/notifications/Notifications";
 
 export default function Profile() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "dashboard":
-        return <DashboardTab />;
+        return <Dashboard />;
       case "request":
-        return <RequestLeaveTab />;
+        return <RequestLeave />;
       case "history":
-        return <LeaveHistoryTab />;
+        return <LeaveHistory />;
       case "hours":
-        return <WorkHoursTab />;
+        return <WorkHours />;
       case "notifications":
-        return <NotificationsTab />;
+        return <Notifications />;
+      case "profile":
+        return <Dashboard />;
       default:
-        return (
-          <>
-            <div className="grid grid-cols-4 gap-6 mb-8">
-              <StatsCard 
-                icon={Calendar}
-                current={18}
-                total={25}
-                label="Remaining Leave Days"
-                value={18}
-                unit="days"
-                percentage={72}
-              />
-              <StatsCard 
-                icon={Clock}
-                current={32}
-                total={40}
-                label="Hours This Week"
-                value={32}
-                unit="hours"
-                percentage={80}
-              />
-              <StatsCard 
-                icon={BarChart3}
-                current={142}
-                total={160}
-                label="Hours This Month"
-                value={142}
-                unit="hours"
-                percentage={89}
-              />
-              <StatsCard 
-                icon={FileText}
-                current={5}
-                total={7}
-                label="Approved Leaves"
-                value={5}
-                unit="leaves"
-                percentage={71}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-8">
-              <UpcomingLeaves />
-              <RecentActivity />
-            </div>
-          </>
-        );
+        return <Dashboard />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <ProfileHeader />
-      <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
-      {renderTabContent()}
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+        <ProfileHeader />
+        <div className="mt-4 md:mt-6">
+          <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+        <div className="mt-4 md:mt-6 pb-20 md:pb-6">
+          {renderTabContent()}
+        </div>
+      </div>
     </div>
   );
 }
