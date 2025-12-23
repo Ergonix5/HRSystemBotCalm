@@ -112,6 +112,7 @@ export async function POST(req: Request) {
       designation: data.designation,
       role: data.role,
 
+      employee_id: data.employee_id,
       first_name: data.first_name,
       last_name: data.last_name,
       email: data.email,

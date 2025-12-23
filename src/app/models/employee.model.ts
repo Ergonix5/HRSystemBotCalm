@@ -1,4 +1,9 @@
 import { Schema, models, model, Types } from "mongoose";
+import { unique } from "next/dist/build/utils";
+import { string } from "zod";
+import "./designations.model"
+import "./organization.model"
+import "./role.model"
 
 const employeeSchema = new Schema(
   {
@@ -21,6 +26,11 @@ const employeeSchema = new Schema(
       ref: "roles",
       required: true,
       index: true,
+    },
+    
+    employee_id: {
+      type:String,
+      required: true,
     },
 
     first_name: {
