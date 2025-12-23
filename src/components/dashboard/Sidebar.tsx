@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Home, Building2, Award, Shield, Users, Megaphone, Calendar, Plane, UserCheck, FileText, Settings, User, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, Building2, Award, Shield, Users, Megaphone, Calendar, Plane, UserCheck, FileText, Settings, User, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { Logo } from "../ui/logo";
@@ -13,6 +13,7 @@ const menu = [
   { name: "Designation", icon: Award, href: "/dashboard/designation" },
   { name: "Role", icon: Shield, href: "/dashboard/role" },
   { name: "Employee", icon: Users, href: "/dashboard/employee" },
+  { name: "Work Hours", icon: Clock, href: "/dashboard/work-hours" },
   { name: "Announcements", icon: Megaphone, href: "/dashboard/announcements" },
   { name: "Attendance", icon: Calendar, href: "/dashboard/attendance" },
   { name: "Leave Management", icon: Plane, href: "/dashboard/leave-management" },
