@@ -13,6 +13,10 @@ export const employeeCreateSchema = z.object({
     .string()
     .min(1, "Role is required"),
 
+  employee_id: z
+    .string()
+    .min(1, "Employee ID is required"),
+
   first_name: z
     .string()
     .min(2, "First name must be at least 2 characters")

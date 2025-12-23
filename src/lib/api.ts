@@ -1,11 +1,11 @@
 import { Designation , Company,Employee } from "../app/types/types"
 
-const BASE_URL = "/api"
+const BASE_URL = "http://localhost:3000"
 
 //fetch organizations
 export async function getOrganizations(): Promise<Company[]> {
   try {
-    const response = await fetch(`${BASE_URL}/Organization`, {
+    const response = await fetch(`${BASE_URL}/api/Organization`, {
       cache: "no-store",
     })
 
@@ -35,7 +35,7 @@ export async function getOrganizations(): Promise<Company[]> {
 
 export async function getDesignations(): Promise<Designation[]> {
   try {
-    const response = await fetch(`${BASE_URL}/Designation`, {
+    const response = await fetch(`${BASE_URL}/api/Designation`, {
       cache: "no-store",
     })
 
@@ -50,8 +50,8 @@ export async function getDesignations(): Promise<Designation[]> {
       result.data?.map((des: any) => ({
         designation_id: des.designation_id || des._id,
         title: des.title,
-        company_name:
-          des.company?.name || des.company_name || "N/A",
+        // company_name:
+        //   des.company?.name || des.company_name || "N/A",
         description: des.description,
         status: des.status === false ? "Inactive" : "Active",
       })) || []
@@ -65,7 +65,7 @@ export async function getDesignations(): Promise<Designation[]> {
 //fetch employees 
 export async function getEmployees(): Promise<Employee[]> {
   try {
-    const response = await fetch(`${BASE_URL}/employee/all`, {
+    const response = await fetch(` ${BASE_URL}/api/employee/all`, {
       cache: "no-store",
     })
 
