@@ -16,7 +16,7 @@ const menu = [
   { name: "Work Hours", icon: Clock, href: "/dashboard/work-hours" },
   { name: "Announcements", icon: Megaphone, href: "/dashboard/announcements" },
   { name: "Attendance", icon: Calendar, href: "/dashboard/attendance" },
-  { name: "Leave Management", icon: Plane, href: "/dashboard/leave-management" },
+  { name: "Leave Management", icon: Plane, href: "/dashboard/LeaveManagement" },
   { name: "Interview", icon: UserCheck, href: "/dashboard/interview" },
 ];
 
