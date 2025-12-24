@@ -10,6 +10,7 @@ import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
 import {EmployeeForm} from "../../../components/forms/addEmployee"
+import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
 import { getEmployees } from "@/src/lib/api"
 
 export default function EmployeesPage() {
@@ -18,6 +19,8 @@ export default function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
+  const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null)
 
   // useEffect(() => {
   //   const fetchEmployees = async () => {
@@ -58,6 +61,14 @@ export default function EmployeesPage() {
     }
   }
 
+  const handleEditEmployee = (employeeId: string) => {
+    const employee = employees.find(emp => emp.employee_id === employeeId)
+    if (employee) {
+      setEmployeeToEdit(employee)
+      setIsEditFormOpen(true)
+    }
+  }
+
   return (
     <div className="p-6">
       {/* Topic */}
@@ -84,7 +95,7 @@ export default function EmployeesPage() {
           </div>
         ) : (
           <DataTable
-            columns={columns(handleViewEmployee)}
+            columns={columns(handleViewEmployee, handleEditEmployee)}
             data={employees}
             filterColumn="name"
             showStatusFilter={true}
@@ -107,10 +118,24 @@ export default function EmployeesPage() {
                           console.log('employee data:', data)
                           setIsFormOpen(false)
                         }}
-                        onCancel={() => setIsFormOpen(false)}
                       />
                     </DialogContent>
                   </Dialog>
+
+      <Dialog open={isEditFormOpen} onOpenChange={setIsEditFormOpen}>
+        <DialogContent className="max-w-2xl">
+          {employeeToEdit && (
+            <EditEmployeeForm
+              employee={employeeToEdit}
+              onSubmit={(data) => {
+                console.log('Updated employee data:', data)
+                setIsEditFormOpen(false)
+                setEmployeeToEdit(null)
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
 
 

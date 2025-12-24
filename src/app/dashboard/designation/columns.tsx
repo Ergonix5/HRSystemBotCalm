@@ -1,4 +1,4 @@
-// app/columns.tsx
+
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "../../../components/ui/button"
@@ -6,8 +6,9 @@ import { Checkbox } from "../../../components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
 import { Designation } from "../../types/types" 
 import { TableActions } from "../../../components/table/table_actions" 
+import { on } from "events"
 
-export const columns = (onView: (id: string) => void): ColumnDef<Designation>[] => [
+export const columns = (onView: (id: string) => void, onEdit: (id: string) => void): ColumnDef<Designation>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -94,7 +95,7 @@ export const columns = (onView: (id: string) => void): ColumnDef<Designation>[] 
       id={row.original.designation_id}
       type="designation"
       onView={onView}
-      onEdit={(id) => console.log("Edit designation", id)}
+      onEdit={onEdit}
       onDelete={(id) => console.log("Delete designation", id)}
     />
   ),

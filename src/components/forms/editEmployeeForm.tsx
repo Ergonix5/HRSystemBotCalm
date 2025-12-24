@@ -2,6 +2,8 @@
 
 import { Employee } from "../../app/types/types"
 import { FormField, DynamicForm } from "./reusableform"
+import   { DynamicForm , FormField } from "./reusableform"
+
 
 
 
@@ -54,6 +56,9 @@ export function EditEmployeeForm({
       type: "input",
       defaultValue: employee.phone,
     },
+      { id: "address", name: "address", label: "Address", type: "textarea", defaultValue: employee?.address },
+    { id: "dob", name: "date_of_birth", label: "Date of Birth", type: "input", inputType: "date", defaultValue: employee?.date_of_birth },
+    { id: "join-date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
     {
       id: "status",
       name: "status",

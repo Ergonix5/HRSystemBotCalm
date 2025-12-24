@@ -31,6 +31,7 @@ const employeeSchema = new Schema(
       required: true,
     },
 
+  
     first_name: {
       type: String,
       required: true,

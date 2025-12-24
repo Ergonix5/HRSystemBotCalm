@@ -10,6 +10,7 @@ import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
 import { CompanyForm } from "../../../components/forms/addcompany"
+import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
 import { getOrganizations } from "@/src/lib/api"
 
@@ -20,6 +21,9 @@ export default function Company() {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
+const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)
+
 
   useEffect(() => {
     async function loadData() {
@@ -44,7 +48,13 @@ export default function Company() {
       setIsModalOpen(true)
     }
   }
-
+ const handleEditCompany = (companyId: string) => {
+  const company = organizations.find(org => org.company_id === companyId)
+  if (company) {
+    setCompanyToEdit(company)
+    setIsEditFormOpen(true)
+  }
+}
   if (loading) {
     return (
 
@@ -91,7 +101,7 @@ export default function Company() {
 
     {/* data table */}
       <DataTable
-        columns={columns(handleViewCompany)}
+        columns={columns(handleViewCompany, handleEditCompany)}
         data={organizations}
         filterColumn="company_name"
         showStatusFilter={true}  /></div>
@@ -110,12 +120,26 @@ export default function Company() {
               console.log('Company data:', data)
               setIsFormOpen(false)
             }}
-            onCancel={() => setIsFormOpen(false)}
           />
         </DialogContent>
       </Dialog>
 
 
+
+      <Dialog open={isEditFormOpen} onOpenChange={setIsEditFormOpen}>
+        <DialogContent className="max-w-2xl">
+          {companyToEdit && (
+            <EditCompanyForm
+              company={companyToEdit}
+              onSubmit={(data) => {
+                console.log('Updated company data:', data)
+                setIsEditFormOpen(false)
+                setCompanyToEdit(null)
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
     </div>
 
