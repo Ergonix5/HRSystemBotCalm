@@ -6,6 +6,7 @@ import { columns as designationColumns } from "../designation/columns"
 import { type Designation } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
+import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import { DesignationForm } from "../../../components/forms/addDesignation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
@@ -18,6 +19,8 @@ export default function DesignationPage() {
   const [selectedDesignation, setSelectedDesignation] = useState<Designation | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
+  const [designationToEdit, setDesignationToEdit] = useState<Designation | null>(null)
 
   // useEffect(() => {
   //   const fetchDesignations = async () => {
@@ -58,7 +61,13 @@ export default function DesignationPage() {
       setIsModalOpen(true)
     }
   }
-
+ const handleEditDesignation = (designationId: string) => {
+  const designation = designations.find(des => des.designation_id === designationId)
+  if (designation) {
+    setDesignationToEdit(designation)
+    setIsEditFormOpen(true)
+  }
+}
   return (
     <div className="p-6">
 
@@ -83,7 +92,7 @@ export default function DesignationPage() {
             <div className="text-gray-500">Loading designations...</div>
           </div>
         ) : (
-          <DataTable columns={designationColumns(handleViewDesignation)} data={designations} filterColumn="title" showStatusFilter={true} />
+          <DataTable columns={designationColumns(handleViewDesignation, handleEditDesignation)} data={designations} filterColumn="title" showStatusFilter={true} />
         )}
       </div>
 
@@ -101,8 +110,21 @@ export default function DesignationPage() {
               console.log('designation data:', data)
               setIsFormOpen(false)
             }}
-            onCancel={() => setIsFormOpen(false)}
           />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isEditFormOpen} onOpenChange={setIsEditFormOpen}>
+        <DialogContent className="max-w-2xl">
+          {designationToEdit && (
+            <EditDesignationForm
+              designation={designationToEdit}
+              onSubmit={(data) => {
+                console.log('Updated designation data:', data)
+                setIsEditFormOpen(false)
+                setDesignationToEdit(null)
+              }}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
