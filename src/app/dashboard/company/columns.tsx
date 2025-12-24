@@ -7,7 +7,7 @@ import { Eye, Edit, Trash2, ArrowUpDown } from "lucide-react"
 import { Company } from "../../types/types"
 import { TableActions } from "../../../components/table/table_actions" 
 
-export const columns = (onView: (id: string) => void): ColumnDef<Company>[] => [
+export const columns = (onView: (id: string) => void, onEdit: (id: string) => void): ColumnDef<Company>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -83,7 +83,7 @@ export const columns = (onView: (id: string) => void): ColumnDef<Company>[] => [
       id={row.original.company_id}
       type="company"
       onView={onView}
-      onEdit={(id) => console.log("Edit company", id)}
+      onEdit={onEdit}
       onDelete={(id) => console.log("Delete company", id)}
     />
   ),
