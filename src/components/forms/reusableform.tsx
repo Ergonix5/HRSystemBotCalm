@@ -5,7 +5,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSeparator,
   FieldSet,
 } from "../../components/ui/field"
@@ -19,6 +18,7 @@ import {
 } from "../../components/ui/select"
 import { Textarea } from "../../components/ui/textarea"
 import { Button } from "../../components/ui/button"
+import { DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog"
 
 export type FormField = {
   id: string
@@ -56,6 +56,13 @@ export  function DynamicForm({
 }: DynamicFormProps) {
   return (
     <div className="w-full max-w-4xl mx-auto">
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+        {description && (
+          <DialogDescription>{description}</DialogDescription>
+        )}
+      </DialogHeader>
+      
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -72,15 +79,6 @@ export  function DynamicForm({
       >
         <FieldGroup>
           <FieldSet>
-            <FieldLegend className="text-xl font-semibold">
-              {title}
-            </FieldLegend>
-
-            {description && (
-              <FieldDescription className="mb-4">
-                {description}
-              </FieldDescription>
-            )}
 
             <div
               className={`grid gap-4 ${
