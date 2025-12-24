@@ -4,6 +4,7 @@ const organizationSchema = new Schema({
   organization_id: { type: String },
   name: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
+  status: { type: String, enum: ["active", "inactive"], default: "active" },
 }, { timestamps: true }); // ✅ Also fixed typo and added timestamps
 
 export const Organization = models.Organization || model("Organization", organizationSchema);
