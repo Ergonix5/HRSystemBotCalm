@@ -13,7 +13,7 @@ export const employeeCreateSchema = z.object({
     .string()
     .min(1, "Role is required"),
 
-  emp_id:z
+  employee_id: z
     .string()
     .min(1, "Employee ID is required"),
 

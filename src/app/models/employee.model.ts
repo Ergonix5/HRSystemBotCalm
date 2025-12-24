@@ -25,6 +25,11 @@ const employeeSchema = new Schema(
       required: true,
       index: true,
     },
+    
+    employee_id: {
+      type:String,
+      required: true,
+    },
 
     emp_id:{
       type: String,
