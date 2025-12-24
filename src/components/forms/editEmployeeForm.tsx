@@ -1,6 +1,7 @@
 "use client"
 
 import { Employee } from "../../app/types/types"
+import { FormField, DynamicForm } from "./reusableform"
 import   { DynamicForm , FormField } from "./reusableform"
 
 

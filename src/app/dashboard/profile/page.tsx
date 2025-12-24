@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { Calendar, FileText, Clock, BarChart3 } from "lucide-react";
-import ProfileHeader from "../../../components/employee-portal/profile/profile/ProfileHeader";
+import ProfileHeader from "../../../components/employee-portal/EmployeePortalHeader";
 import NavigationTabs from "../../../components/employee-portal/NavigationTabs";
 import Dashboard from "../../../components/employee-portal/profile/dashboard/Dashboard";
 import RequestLeave from "../../../components/employee-portal/profile/request/RequestLeave";
 import LeaveHistory from "../../../components/employee-portal/profile/history/LeaveHistory";
 import WorkHours from "../../../components/employee-portal/profile/hours/WorkHours";
 import Notifications from "../../../components/employee-portal/profile/notifications/Notifications";
+import ProfileComponent from "../../../components/employee-portal/profile/profile/profile";
 import { NotificationProvider } from "../../../contexts/NotificationContext";
 
 export default function Profile() {
@@ -27,7 +28,7 @@ export default function Profile() {
       case "notifications":
         return <Notifications />;
       case "profile":
-        return <Dashboard />;
+        return <ProfileComponent />;
       default:
         return <Dashboard />;
     }
