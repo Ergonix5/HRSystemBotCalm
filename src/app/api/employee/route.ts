@@ -12,7 +12,6 @@ import { paginate } from "../../service/pagination.service";
 import { generateSecurePassword } from "../../utils/passwordGenerator";
 import { sendEmail } from "../../service/email.service";
 import { welcomeTemplate } from "../../constant/email.template";
-
 /**
  * GET /api/Employee - Fetch paginated employees with search
  * Query params: organizationId, page, limit, q
@@ -51,7 +50,7 @@ export async function GET(req: Request) {
     // Populate and select fields for the data
     const populatedData = await Employee.find({ _id: { $in: result.data.map((emp: any) => emp._id) } })
       .select("-hash_password")
-      .populate("organization", "name")
+      .populate("organization")
       .populate("designation", "title designation_id")
       .populate("role", "role_name role_id permissions")
       .sort({ createdAt: -1 });

@@ -11,7 +11,6 @@ import { paginate } from "../../../service/pagination.service";
 import { generateSecurePassword } from "../../../utils/passwordGenerator";
 import { sendEmail } from "../../../service/email.service";
 import { welcomeTemplate } from "../../../constant/email.template";
-
 /**
  * GET /api/Employee - Fetch paginated employees with search
  * Query params: organizationId, page, limit, q

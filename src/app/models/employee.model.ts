@@ -1,10 +1,13 @@
 import { Schema, models, model, Types } from "mongoose";
+import "./organization.model";
+import "./designations.model";
+import "./role.model";
 
 const employeeSchema = new Schema(
   {
     organization: {
       type: Types.ObjectId,
-      ref: "organizations",
+      ref: "Organization",
       required: true,
       index: true,
     },
@@ -21,6 +24,13 @@ const employeeSchema = new Schema(
       ref: "roles",
       required: true,
       index: true,
+    },
+
+    emp_id:{
+      type: String,
+      required: true,
+      unique: true,
+
     },
 
     first_name: {
