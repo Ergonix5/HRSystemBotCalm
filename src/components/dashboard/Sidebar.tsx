@@ -13,7 +13,7 @@ const menu = [
   { name: "Designation", icon: Award, href: "/dashboard/designation" },
   { name: "Role", icon: Shield, href: "/dashboard/role" },
   { name: "Employee", icon: Users, href: "/dashboard/employee" },
-  { name: "Work Hours", icon: Clock, href: "/dashboard/work-hours" },
+  
   { name: "Announcements", icon: Megaphone, href: "/dashboard/announcements" },
   { name: "Attendance", icon: Calendar, href: "/dashboard/attendance" },
   { name: "Leave Management", icon: Plane, href: "/dashboard/leave-management" },
@@ -96,7 +96,7 @@ export default function Sidebar() {
                       size="sm"
                       className="w-full justify-center h-10"
                     >
-                      <item.icon size={16} />
+                      <item.icon size={16                                                                                                             } />
                     </Button>
                   </Link>
                 </TooltipTrigger>

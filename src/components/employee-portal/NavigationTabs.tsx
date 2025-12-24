@@ -12,6 +12,7 @@ import {
   X,
   ChevronUp,
 } from "lucide-react";
+import { useNotifications } from "../../contexts/NotificationContext";
 
 interface NavigationTabsProps {
   activeTab?: string;
@@ -41,7 +42,7 @@ const tabs = [
   },
   {
     key: "notifications",
-    label: "Alerts",
+    label: "Notifications",
     icon: Bell,
   },
   {
@@ -57,6 +58,7 @@ export default function NavigationTabs({
 }: NavigationTabsProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { hasUnreadNotifications } = useNotifications();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,7 +92,12 @@ export default function NavigationTabs({
                 : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
             }`}
           >
-            <Icon className="h-4 w-4" />
+            <div className="relative">
+              <Icon className="h-4 w-4" />
+              {key === "notifications" && hasUnreadNotifications && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </div>
             <span>{label}</span>
           </button>
         ))}
@@ -109,7 +116,12 @@ export default function NavigationTabs({
                   : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
               }`}
             >
-              <Icon className="h-4 w-4" />
+              <div className="relative">
+                <Icon className="h-4 w-4" />
+                {key === "notifications" && hasUnreadNotifications && (
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+              </div>
               <span>{label}</span>
             </button>
           ))}
@@ -128,7 +140,12 @@ export default function NavigationTabs({
                 : "text-gray-400"
             }`}
           >
-            <Icon className="h-5 w-5 mb-1" />
+            <div className="relative">
+              <Icon className="h-5 w-5 mb-1" />
+              {key === "notifications" && hasUnreadNotifications && (
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </div>
             <span className="text-[10px] font-semibold">{label}</span>
           </button>
         ))}
@@ -165,7 +182,12 @@ export default function NavigationTabs({
                       : "bg-gray-50 text-gray-700 active:bg-gray-100"
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <div className="relative">
+                    <Icon className="h-5 w-5" />
+                    {key === "notifications" && hasUnreadNotifications && (
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+                    )}
+                  </div>
                   <span className="font-medium">{label}</span>
                 </button>
               ))}
