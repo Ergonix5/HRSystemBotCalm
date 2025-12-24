@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "../../../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Bell } from "lucide-react";
 
 export default function ProfileHeader() {

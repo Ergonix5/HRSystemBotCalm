@@ -1,8 +1,7 @@
 "use client"
 
 import { Company } from "../../app/types/types"
-import { FormField } from "./reusableform"
-import  DynamicForm from "./reusableform"
+import { FormField, DynamicForm } from "./reusableform"
 
 interface EditCompanyFormProps {
   company: Company
