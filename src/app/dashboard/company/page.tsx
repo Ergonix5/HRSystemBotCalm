@@ -1,29 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { DataTable } from "../../../components/table/Data-table"
-import { columns } from "../company/columns"
-import { type Company } from "../../types/types"
 import { DashboardCard } from "../../../components/dashboard/dashboard-card"
-import { Building2, CheckCircle, XCircle, Plus, View } from "lucide-react"
-import { Spinner } from "@/src/components/ui/spinner"
-import { Button } from "../../../components/ui/button"
-import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
-import { CompanyForm } from "../../../components/forms/addcompany"
-import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
+import { Building2, CheckCircle, XCircle } from "lucide-react"
+import { CompanyTable } from "./companytable"
+import { type Company } from "../../types/types"
 import { getOrganizations } from "@/src/lib/api"
+import { Spinner } from "@/src/components/ui/spinner"
 
-
-export default function Company() {
+export default function CompanyPage() {
   const [organizations, setOrganizations] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
-const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)
-
 
   useEffect(() => {
     async function loadData() {
@@ -32,56 +19,35 @@ const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)
       setOrganizations(data)
       setLoading(false)
     }
-
     loadData()
   }, [])
-
 
   const totalCompanies = organizations.length
   const activeCompanies = organizations.filter(o => o.status === "Active").length
   const inactiveCompanies = organizations.filter(o => o.status === "Inactive").length
 
-  const handleViewCompany = (companyId: string) => {
-    const company = organizations.find(org => org.company_id === companyId)
-    if (company) {
-      setSelectedCompany(company)
-      setIsModalOpen(true)
-    }
-  }
- const handleEditCompany = (companyId: string) => {
-  const company = organizations.find(org => org.company_id === companyId)
-  if (company) {
-    setCompanyToEdit(company)
-    setIsEditFormOpen(true)
-  }
-}
   if (loading) {
     return (
-
-      //loading spinner
-      <div className="p-6 flex justify-center items-center h-64 text-lg">
-       <Spinner/>
+      <div className="p-6 flex justify-center items-center h-64">
+        <Spinner />
       </div>
     )
   }
 
   return (
     <div className="p-6">
-    
-
+      {/* Dashboard cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <DashboardCard
           title="Total Companies"
           value={totalCompanies.toString()}
           icon={Building2}
         />
-
         <DashboardCard
           title="Active"
           value={activeCompanies.toString()}
           icon={CheckCircle}
         />
-
         <DashboardCard
           title="Inactive"
           value={inactiveCompanies.toString()}
@@ -89,61 +55,8 @@ const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)
         />
       </div>
 
-<div className="border p-5 rounded-md">
-        {/* Topic */}
-      <div className="flex justify-between mb-6">
-        <div>
-          <h1 className="font-bold text-2xl mb-2">Organizations Management</h1>
-          <p className="text-gray-700">Manage organizations information and settings</p>
-        </div>
-        <Button className="mt-4" variant="outline"  onClick={() => setIsFormOpen(true)}><Plus />Add New Company</Button>
-      </div>
-
-    {/* data table */}
-      <DataTable
-        columns={columns(handleViewCompany, handleEditCompany)}
-        data={organizations}
-        filterColumn="company_name"
-        showStatusFilter={true}  /></div>
-
-      <CompanyDetailsModal
-        company={selectedCompany}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-2xl">
-        
-          <CompanyForm
-            onSubmit={(data) => {
-              console.log('Company data:', data)
-              setIsFormOpen(false)
-            }}
-          />
-        </DialogContent>
-      </Dialog>
-
-
-
-      <Dialog open={isEditFormOpen} onOpenChange={setIsEditFormOpen}>
-        <DialogContent className="max-w-2xl">
-          {companyToEdit && (
-            <EditCompanyForm
-              company={companyToEdit}
-              onSubmit={(data) => {
-                console.log('Updated company data:', data)
-                setIsEditFormOpen(false)
-                setCompanyToEdit(null)
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
+      {/* Company table */}
+      <CompanyTable organizations={organizations} />
     </div>
-
-   
-
   )
 }
