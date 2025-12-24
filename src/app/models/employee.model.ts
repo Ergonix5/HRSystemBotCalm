@@ -31,13 +31,6 @@ const employeeSchema = new Schema(
       required: true,
     },
 
-    emp_id:{
-      type: String,
-      required: true,
-      unique: true,
-
-    },
-
     first_name: {
       type: String,
       required: true,
