@@ -8,14 +8,14 @@ const isProd = process.env.NODE_ENV === "production";
 
 export async function POST() {
   try {
-    const refresh = cookies().get(REFRESH_COOKIE)?.value;
+    const refresh = (await cookies()).get(REFRESH_COOKIE)?.value;
     if (!refresh) return NextResponse.json({ message: "No refresh token" }, { status: 401 });
 
     const payload = verifyRefreshToken(refresh);
 
     const newAccess = signAccessToken({ sub: payload.sub, role: payload.role, orgId: payload.orgId });
 
-    cookies().set(ACCESS_COOKIE, newAccess, {
+    (await cookies()).set(ACCESS_COOKIE, newAccess, {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
