@@ -16,9 +16,9 @@ import { Input } from "../../components/ui/input"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuItem } from "../../components/ui/dropdown-menu"
 import { Button } from "../../components/ui/button"
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from "../../components/ui/table"
-import { ChevronDown, Filter, Plus, Search ,SlidersHorizontal } from "lucide-react"
+import { ChevronDown, Filter, Plus, Search, SlidersHorizontal } from "lucide-react"
 import { DataTablePagination } from "./DataTablePagination"
-import { organization } from '../../app/models/organization.model';
+
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -52,19 +52,19 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
   })
 
   return (
-    
+
     <div className="w-full  space-y-4 ">
 
-      
+
 
       <div className="flex items-center  gap-4">
+
         <Input
           placeholder=" Search..."
           value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
           onChange={(e) => table.getColumn(filterColumn)?.setFilterValue(e.target.value)}
           className="bg-gray-50"
         />
-
         {showStatusFilter && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -74,31 +74,42 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("status")?.setFilterValue("")
-                setSelectedStatus("All Status")
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  table.getColumn("status")?.setFilterValue("")
+                  setSelectedStatus("All Status")
+                }}
+                className="cursor-pointer"
+              >
                 All Status
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                console.log("Setting active filter")
-                const statusColumn = table.getColumn("status")
-                console.log("Status column:", statusColumn)
-                statusColumn?.setFilterValue("active")
-                setSelectedStatus("Active")
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log("Setting active filter")
+                  const statusColumn = table.getColumn("status")
+                  console.log("Status column:", statusColumn)
+                  statusColumn?.setFilterValue("Active")
+                  setSelectedStatus("Active")
+                }}
+                className="cursor-pointer"
+              >
                 Active
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("status")?.setFilterValue("inactive")
-                setSelectedStatus("Inactive")
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  table.getColumn("status")?.setFilterValue("Inactive")
+                  setSelectedStatus("Inactive")
+                }}
+                className="cursor-pointer"
+              >
                 Inactive
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        
+
+
+
         {showCompanyFilter && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -148,7 +159,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
           </DropdownMenu>
         )}
 
-       
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -170,7 +181,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
       </div>
 
       <div className="rounded-md border">
-        <div className="max-h-[500px] overflow-y-auto scrollbar-none">
+        <div className="max-h-125 overflow-y-auto scrollbar-none">
           <Table>
             <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
               {table.getHeaderGroups().map(headerGroup => (
@@ -208,6 +219,6 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
 
       <DataTablePagination table={table} />
     </div>
-    
+
   )
 }

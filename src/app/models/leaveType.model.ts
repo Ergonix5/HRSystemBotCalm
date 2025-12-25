@@ -1,5 +1,5 @@
 import mongoose, { models, model, Schema, Types, mongo } from "mongoose";
-import { Organization } from "./organization.model";
+import "./organization.model";
 
 
 
