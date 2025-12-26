@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Home, Building2, Award, Shield, Users, Megaphone, Calendar, Plane, UserCheck, FileText, Settings, User, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { Home, Building2, Award, Shield, Users, Megaphone, Calendar, Plane, UserCheck, FileText, Settings, User, ChevronLeft, ChevronRight, Clock, LogOut } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { Logo } from "../ui/logo";
 import Link from "next/link";
+import { useAuth } from "../../app/store/authStore";
+import { useRouter } from "next/navigation";
 
 const menu = [
   { name: "Dashboard", icon: Home, href: "/dashboard" },
@@ -28,6 +30,13 @@ const bottomMenu = [
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   // Update CSS custom property for main content margin
   React.useEffect(() => {
@@ -96,7 +105,7 @@ export default function Sidebar() {
                       size="sm"
                       className="w-full justify-center h-10"
                     >
-                      <item.icon size={16                                                                                                             } />
+                      <item.icon size={16} />
                     </Button>
                   </Link>
                 </TooltipTrigger>
@@ -117,6 +126,34 @@ export default function Sidebar() {
               </Link>
             )
           ))}
+          
+          {isCollapsed ? (
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="w-full justify-center h-10"
+                >
+                  <LogOut size={16} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Logout</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLogout}
+              className="w-full justify-start gap-3 h-10 px-3"
+            >
+              <LogOut size={16} />
+              <span className="text-sm">Logout</span>
+            </Button>
+          )}
         </nav>
       </aside>
       <Button
