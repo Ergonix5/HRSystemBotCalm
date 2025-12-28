@@ -6,6 +6,7 @@ import { columns as designationColumns } from "./columns"
 import { type Designation } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
+import { createDesignation } from "../../../lib/api"
 import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import { DesignationForm } from "../../../components/forms/addDesignation"
@@ -79,9 +80,15 @@ export function DesignationTable({ designations }: Props) {
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
           <DesignationForm
-            onSubmit={(data) => {
-              console.log("Designation data:", data)
-              setIsAddOpen(false)
+            onSubmit={async (data) => {
+              try {
+                await createDesignation(data)
+                setIsAddOpen(false)
+                window.location.reload()
+              } catch (error) {
+                console.error("Failed to create designation:", error)
+                alert("Failed to create designation. Please try again.")
+              }
             }}
           />
         </DialogContent>

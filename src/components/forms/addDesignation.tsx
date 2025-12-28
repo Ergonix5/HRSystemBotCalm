@@ -29,30 +29,11 @@ export function DesignationForm({
       defaultValue: designation?.title,
     },
     {
-      id: "company-name",
-      name: "company_name",
-      label: "Company Name",
-      type: "input",
-      required: true,
-      defaultValue: designation?.company_name,
-    },
-    {
       id: "description",
       name: "description",
       label: "Description",
       type: "textarea",
       defaultValue: designation?.description,
-    },
-    {
-      id: "status",
-      name: "status",
-      label: "Status",
-      type: "select",
-      defaultValue: designation?.status,
-      options: [
-        { value: "Active", label: "Active" },
-        { value: "Inactive", label: "Inactive" },
-      ],
     },
   ]
 

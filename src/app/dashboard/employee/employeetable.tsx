@@ -9,6 +9,7 @@ import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
 import { Dialog, DialogContent } from "../../../components/ui/dialog"
 import { EmployeeForm } from "../../../components/forms/addEmployee"
+import { createEmployee } from "../../../lib/api"
 import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
 
 type Props = {
@@ -80,9 +81,16 @@ export function EmployeeTable({ employees }: Props) {
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
           <EmployeeForm
-            onSubmit={(data) => {
-              console.log("Employee data:", data)
-              setIsAddOpen(false)
+            onSubmit={async (data) => {
+              try {
+                await createEmployee(data)
+                setIsAddOpen(false)
+                // Refresh the page to show new employee
+                window.location.reload()
+              } catch (error) {
+                console.error("Failed to create employee:", error)
+                alert("Failed to create employee. Please try again.")
+              }
             }}
           />
         </DialogContent>

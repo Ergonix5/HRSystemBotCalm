@@ -99,3 +99,72 @@ export async function getEmployees(): Promise<Employee[]> {
     return []
   }
 }
+
+// Create new employee
+export async function createEmployee(employeeData: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/employee`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(employeeData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || "Failed to create employee")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("API Error (createEmployee):", error)
+    throw error
+  }
+}
+
+// Create new designation
+export async function createDesignation(designationData: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Designation`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(designationData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || "Failed to create designation")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("API Error (createDesignation):", error)
+    throw error
+  }
+}
+
+// Create new organization/company
+export async function createOrganization(organizationData: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Organization`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(organizationData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || "Failed to create organization")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("API Error (createOrganization):", error)
+    throw error
+  }
+}

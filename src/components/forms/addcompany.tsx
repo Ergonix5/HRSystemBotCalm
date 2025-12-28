@@ -13,28 +13,28 @@ interface CompanyFormProps {
 export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
   const fields: FormField[] = [
     {
-      id: "company-id",
-      name: "company_id",
-      label: "Company ID",
+      id: "organization-id",
+      name: "organization_id",
+      label: "Organization ID",
       placeholder: "ORG_001",
       type: "input",
       required: true,
       defaultValue: company?.company_id,
     },
     {
-      id: "company-name",
-      name: "company_name",
-      label: "Company Name",
-      placeholder: "Your company name",
+      id: "organization-name",
+      name: "name",
+      label: "Organization Name",
+      placeholder: "Your organization name",
       type: "input",
       required: true,
       defaultValue: company?.company_name,
     },
     {
-      id: "company-description",
-      name: "company_description",
+      id: "organization-description",
+      name: "description",
       label: "Description",
-      placeholder: "Company description",
+      placeholder: "Organization description",
       type: "textarea",
       defaultValue: company?.company_description,
     },
@@ -43,18 +43,18 @@ export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
       name: "status",
       label: "Status",
       type: "select",
-      defaultValue: company?.status,
+      defaultValue: company?.status?.toLowerCase(),
       options: [
-        { value: "Active", label: "Active" },
-        { value: "Inactive", label: "Inactive" },
+        { value: "active", label: "Active" },
+        { value: "inactive", label: "Inactive" },
       ],
     },
   ]
 
   return (
     <DynamicForm
-      title={company ? "Edit Company" : "Add New Company"}
-      description="Enter company details below."
+      title={company ? "Edit Organization" : "Add New Organization"}
+      description="Enter organization details below."
       fields={fields}
       onSubmit={onSubmit}
     />

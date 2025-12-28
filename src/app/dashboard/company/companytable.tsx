@@ -8,6 +8,7 @@ import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
 import { CompanyForm } from "../../../components/forms/addcompany"
+import { createOrganization } from "../../../lib/api"
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
 import { Dialog, DialogContent } from "../../../components/ui/dialog"
 import { Plus } from "lucide-react"
@@ -94,9 +95,15 @@ export function CompanyTable({ organizations }: Props) {
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
           <CompanyForm
-            onSubmit={(data) => {
-              console.log("Company data:", data)
-              setIsAddOpen(false)
+            onSubmit={async (data) => {
+              try {
+                await createOrganization(data)
+                setIsAddOpen(false)
+                window.location.reload()
+              } catch (error) {
+                console.error("Failed to create company:", error)
+                alert("Failed to create company. Please try again.")
+              }
             }}
           />
         </DialogContent>
