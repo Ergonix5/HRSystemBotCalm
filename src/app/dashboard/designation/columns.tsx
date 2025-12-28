@@ -6,7 +6,7 @@ import { Checkbox } from "../../../components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
 import { Designation } from "../../types/types" 
 import { TableActions } from "../../../components/table/table_actions" 
-import { on } from "events"
+
 
 export const columns = (onView: (id: string) => void, onEdit: (id: string) => void): ColumnDef<Designation>[] => [
   {
@@ -53,17 +53,17 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
       </Button>
     ),
   },
-  // {
-  //   accessorKey: "company_name",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       Company <ArrowUpDown />
-  //     </Button>
-  //   ),
-  // },
+  {
+    accessorKey: "company_name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Company <ArrowUpDown />
+      </Button>
+    ),
+  },
   {
     accessorKey: "description",
     header: "Description",
