@@ -1,8 +1,8 @@
 "use client"
 
 import { Employee } from "../../app/types/types"
-import   { DynamicForm , FormField } from "./reusableform"
-
+import { DynamicForm } from "./reusableform"
+import { type FormField } from '@/src/app/types/types';
 
 
 
@@ -55,7 +55,7 @@ export function EditEmployeeForm({
       type: "input",
       defaultValue: employee.phone,
     },
-      { id: "address", name: "address", label: "Address", type: "textarea", defaultValue: employee?.address },
+    { id: "address", name: "address", label: "Address", type: "textarea", defaultValue: employee?.address },
     { id: "dob", name: "date_of_birth", label: "Date of Birth", type: "input", inputType: "date", defaultValue: employee?.date_of_birth },
     { id: "join-date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
     {
@@ -72,8 +72,8 @@ export function EditEmployeeForm({
   ]
 
   return (
-    
-  <DynamicForm
+
+    <DynamicForm
       title="Edit Employee"
       description="Update employee details"
       fields={fields}
@@ -83,6 +83,6 @@ export function EditEmployeeForm({
       hiddenFields={{ employee_id: employee.employee_id }}
       submitLabel="Update Employee"
       onSubmit={onSubmit}
-/>  
+    />
   )
 }

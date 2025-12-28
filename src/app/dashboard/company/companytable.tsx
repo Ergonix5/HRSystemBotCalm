@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { DataTable } from "../../../components/table/Data-table"
 import { columns } from "./columns"
 import { type Company } from "../../types/types"
@@ -16,18 +16,23 @@ import { Plus } from "lucide-react"
 type Props = {
   organizations: Company[]
   onRefresh?: () => void
-}
+}// Optional callback to refresh parent data
+
 
 export function CompanyTable({ organizations }: Props) {
+    //loading state for operations like API request
   const [loading, setLoading] = useState(false)
 
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
-  const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)//viewing a company
+  const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)//editing a company
 
+
+  //visibility add view edit states
   const [isViewOpen, setIsViewOpen] = useState(false)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
 
+    // Open the view dialog for the selected company
   const handleViewCompany = (companyId: string) => {
     const company = organizations.find(o => o.company_id === companyId)
     if (company) {
@@ -36,6 +41,7 @@ export function CompanyTable({ organizations }: Props) {
     }
   }
 
+  // Open the vedit  dialog for the selected company
   const handleEditCompany = (companyId: string) => {
     const company = organizations.find(o => o.company_id === companyId)
     if (company) {
@@ -44,6 +50,7 @@ export function CompanyTable({ organizations }: Props) {
     }
   }
 
+  //loading spinner if the component perform
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center h-64">
@@ -76,14 +83,14 @@ export function CompanyTable({ organizations }: Props) {
         showStatusFilter
       />
 
-      {/* View modal */}
+      {/* view company details */}
       <CompanyDetailsModal
         company={selectedCompany}
         isOpen={isViewOpen}
         onClose={() => setIsViewOpen(false)}
       />
 
-      {/* Add modal */}
+      {/* Add new company  */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
           <CompanyForm
@@ -95,7 +102,7 @@ export function CompanyTable({ organizations }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* Edit modal */}
+      {/* Edit company details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
           {companyToEdit && (

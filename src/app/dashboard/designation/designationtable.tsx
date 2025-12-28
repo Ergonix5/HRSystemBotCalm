@@ -16,13 +16,17 @@ type Props = {
 }
 
 export function DesignationTable({ designations }: Props) {
-  const [selectedDesignation, setSelectedDesignation] = useState<Designation | null>(null)
-  const [designationToEdit, setDesignationToEdit] = useState<Designation | null>(null)
+  const [selectedDesignation, setSelectedDesignation] = useState<Designation | null>(null) //track the currently selected designation for viewing
+  const [designationToEdit, setDesignationToEdit] = useState<Designation | null>(null) //track the designation being edited
 
+
+  //control viewdialog visibility
   const [isViewOpen, setIsViewOpen] = useState(false)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
 
+
+  //open the view  with the selected designation
   const handleViewDesignation = (designationId: string) => {
     const designation = designations.find(d => d.designation_id === designationId)
     if (designation) {
@@ -31,6 +35,7 @@ export function DesignationTable({ designations }: Props) {
     }
   }
 
+  //edit modal with the selected designation
   const handleEditDesignation = (designationId: string) => {
     const designation = designations.find(d => d.designation_id === designationId)
     if (designation) {
@@ -63,14 +68,14 @@ export function DesignationTable({ designations }: Props) {
         showStatusFilter
       />
 
-      {/* View modal */}
+      {/* viewing a designation*/}
       <DesignationDetailsModal
         designation={selectedDesignation}
         isOpen={isViewOpen}
         onClose={() => setIsViewOpen(false)}
       />
 
-      {/* Add modal */}
+      {/* adding a new designation */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
           <DesignationForm
@@ -82,7 +87,7 @@ export function DesignationTable({ designations }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* Edit modal */}
+      {/* editing an existing designation */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
           {designationToEdit && (

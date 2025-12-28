@@ -7,9 +7,11 @@ import { DesignationTable } from "./designationtable"
 import { Spinner } from "@/src/components/ui/spinner"
 
 export default function DesignationPage() {
-  const [designations, setDesignations] = useState<Designation[]>([])
-  const [loading, setLoading] = useState(true)
+  const [designations, setDesignations] = useState<Designation[]>([]) //store the list of designations fetched from the API
+  const [loading, setLoading] = useState(true) //track loading status while fetching data
 
+
+  //load designations asynchronously
   useEffect(() => {
     async function loadData() {
       setLoading(true)

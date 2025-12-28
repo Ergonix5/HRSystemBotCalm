@@ -16,13 +16,17 @@ type Props = {
 }
 
 export function EmployeeTable({ employees }: Props) {
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
-  const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null)
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null) //viewing a selected employee
+  const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null)// editing a selected employee
 
+
+   //controlling add edit delete visibility
   const [isViewOpen, setIsViewOpen] = useState(false)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
 
+
+  //open the view dialog for a specific employee
   const handleViewEmployee = (employeeId: string) => {
     const employee = employees.find(e => e.employee_id === employeeId)
     if (employee) {
@@ -31,6 +35,7 @@ export function EmployeeTable({ employees }: Props) {
     }
   }
 
+  //open the edit dialog for a specific employee
   const handleEditEmployee = (employeeId: string) => {
     const employee = employees.find(e => e.employee_id === employeeId)
     if (employee) {
@@ -64,14 +69,14 @@ export function EmployeeTable({ employees }: Props) {
         showCompanyFilter
       />
 
-      {/* View modal */}
+      {/* View employee details  */}
       <EmployeeDetailsModal
         employee={selectedEmployee}
         isOpen={isViewOpen}
         onClose={() => setIsViewOpen(false)}
       />
 
-      {/* Add modal */}
+      {/* add new employee  */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
           <EmployeeForm
@@ -83,7 +88,7 @@ export function EmployeeTable({ employees }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* Edit modal */}
+      {/* Edit employee details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
           {employeeToEdit && (

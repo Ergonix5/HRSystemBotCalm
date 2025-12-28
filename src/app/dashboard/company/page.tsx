@@ -9,9 +9,11 @@ import { getOrganizations } from "@/src/lib/api"
 import { Spinner } from "@/src/components/ui/spinner"
 
 export default function CompanyPage() {
-  const [organizations, setOrganizations] = useState<Company[]>([])
-  const [loading, setLoading] = useState(true)
+  const [organizations, setOrganizations] = useState<Company[]>([]) //store the list of companies fetched from the API
+  const [loading, setLoading] = useState(true) //track loading status while fetching data
 
+
+  //load companies asynchronously
   useEffect(() => {
     async function loadData() {
       setLoading(true)
@@ -22,10 +24,13 @@ export default function CompanyPage() {
     loadData()
   }, [])
 
+   // Compute dashboard statistics
   const totalCompanies = organizations.length
   const activeCompanies = organizations.filter(o => o.status === "Active").length
   const inactiveCompanies = organizations.filter(o => o.status === "Inactive").length
 
+
+  // loading spinner while data is being fetched
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center h-64">
