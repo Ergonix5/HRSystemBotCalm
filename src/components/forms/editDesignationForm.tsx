@@ -1,8 +1,8 @@
 "use client"
 
 import { Designation } from "../../app/types/types"
-import   { DynamicForm } from "./reusableform"
-import { type FormField } from '@/src/app/types/types';
+import { DynamicForm, FormField } from "./reusableform"
+
 interface EditDesignationFormProps {
   designation: Designation
   onSubmit: (data: any) => void
