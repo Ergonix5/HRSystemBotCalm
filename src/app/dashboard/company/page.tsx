@@ -1,26 +1,19 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { DataTable } from "../../../components/table/Data-table"
-import { columns } from "../company/columns"
-import { type Company } from "../../types/types"
 import { DashboardCard } from "../../../components/dashboard/dashboard-card"
-import { Building2, CheckCircle, XCircle, Plus, View } from "lucide-react"
-import { Spinner } from "@/src/components/ui/spinner"
-import { Button } from "../../../components/ui/button"
-import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
-import { CompanyForm } from "../../../components/forms/addcompany"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
+import { Building2, CheckCircle, XCircle } from "lucide-react"
+import { CompanyTable } from "./companytable"
+import { type Company } from "../../types/types"
 import { getOrganizations } from "@/src/lib/api"
+import { Spinner } from "@/src/components/ui/spinner"
+
+export default function CompanyPage() {
+  const [organizations, setOrganizations] = useState<Company[]>([]) //store the list of companies fetched from the API
+  const [loading, setLoading] = useState(true) //track loading status while fetching data
 
 
-export default function Company() {
-  const [organizations, setOrganizations] = useState<Company[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isFormOpen, setIsFormOpen] = useState(false)
-
+  //load companies asynchronously
   useEffect(() => {
     async function loadData() {
       setLoading(true)
@@ -28,50 +21,38 @@ export default function Company() {
       setOrganizations(data)
       setLoading(false)
     }
-
     loadData()
   }, [])
 
-
+   // Compute dashboard statistics
   const totalCompanies = organizations.length
   const activeCompanies = organizations.filter(o => o.status === "Active").length
   const inactiveCompanies = organizations.filter(o => o.status === "Inactive").length
 
-  const handleViewCompany = (companyId: string) => {
-    const company = organizations.find(org => org.company_id === companyId)
-    if (company) {
-      setSelectedCompany(company)
-      setIsModalOpen(true)
-    }
-  }
 
+  // loading spinner while data is being fetched
   if (loading) {
     return (
-
-      //loading spinner
-      <div className="p-6 flex justify-center items-center h-64 text-lg">
-       <Spinner/>
+      <div className="p-6 flex justify-center items-center h-64">
+        <Spinner />
       </div>
     )
   }
 
   return (
     <div className="p-6">
-    
-
+      {/* Dashboard cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <DashboardCard
           title="Total Companies"
           value={totalCompanies.toString()}
           icon={Building2}
         />
-
         <DashboardCard
           title="Active"
           value={activeCompanies.toString()}
           icon={CheckCircle}
         />
-
         <DashboardCard
           title="Inactive"
           value={inactiveCompanies.toString()}
@@ -79,47 +60,8 @@ export default function Company() {
         />
       </div>
 
-<div className="border p-5 rounded-md">
-        {/* Topic */}
-      <div className="flex justify-between mb-6">
-        <div>
-          <h1 className="font-bold text-2xl mb-2">Organizations Management</h1>
-          <p className="text-gray-700">Manage organizations information and settings</p>
-        </div>
-        <Button className="mt-4" variant="outline"  onClick={() => setIsFormOpen(true)}><Plus />Add New Company</Button>
-      </div>
-
-    {/* data table */}
-      <DataTable
-        columns={columns(handleViewCompany)}
-        data={organizations}
-        filterColumn="company_name"
-        showStatusFilter={true}  /></div>
-
-      <CompanyDetailsModal
-        company={selectedCompany}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-2xl">
-        
-          <CompanyForm
-            onSubmit={(data) => {
-              console.log('Company data:', data)
-              setIsFormOpen(false)
-            }}
-            onCancel={() => setIsFormOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-
-
+      {/* Company table */}
+      <CompanyTable organizations={organizations} />
     </div>
-
-   
-
   )
 }

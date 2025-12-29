@@ -5,7 +5,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSeparator,
   FieldSet,
 } from "../../components/ui/field"
@@ -19,19 +18,12 @@ import {
 } from "../../components/ui/select"
 import { Textarea } from "../../components/ui/textarea"
 import { Button } from "../../components/ui/button"
+import { DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog"
+import { type FormField } from "@/src/app/types/types"
 
-export type FormField = {
-  id: string
-  name: string
-  label: string
-  placeholder?: string
-  type: "input" | "textarea" | "select"
-  inputType?: string
-  required?: boolean
-  defaultValue?: any
-  options?: { value: string; label: string }[]
-}
 
+
+// Props for the DynamicForm component
 interface DynamicFormProps {
   title: string
   description?: string
@@ -56,43 +48,43 @@ export  function DynamicForm({
 }: DynamicFormProps) {
   return (
     <div className="w-full max-w-4xl mx-auto">
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+        {description && (
+          <DialogDescription>{description}</DialogDescription>
+        )}
+      </DialogHeader>
+
+
+      {/* Form submission handling */}
       <form
         onSubmit={(e) => {
           e.preventDefault()
           const formData = new FormData(e.currentTarget)
 
           if (hiddenFields) {
-    Object.entries(hiddenFields).forEach(([key, value]) => {
-      formData.append(key, value as string)
-    })
-  }
+            Object.entries(hiddenFields).forEach(([key, value]) => {
+              formData.append(key, value as string)
+            })
+          }
           const data = Object.fromEntries(formData)
           onSubmit(data)
         }}
       >
         <FieldGroup>
           <FieldSet>
-            <FieldLegend className="text-xl font-semibold">
-              {title}
-            </FieldLegend>
 
-            {description && (
-              <FieldDescription className="mb-4">
-                {description}
-              </FieldDescription>
-            )}
-
+            {/* grid for form fields */}
             <div
-              className={`grid gap-4 ${
-                gridCols === 2 ? "md:grid-cols-2" : "grid-cols-1"
-              }`}
+              className={`grid gap-4 ${gridCols === 2 ? "md:grid-cols-2" : "grid-cols-1"
+                }`}
             >
               {fields.map((field) => (
                 <Field key={field.id}>
                   <FieldLabel htmlFor={field.id}>
                     {field.label}
                   </FieldLabel>
-
+                  {/* Input field */}
                   {field.type === "input" && (
                     <Input
                       id={field.id}
@@ -105,6 +97,7 @@ export  function DynamicForm({
                     />
                   )}
 
+                  {/* Textarea field */}
                   {field.type === "textarea" && (
                     <Textarea
                       id={field.id}
@@ -115,6 +108,8 @@ export  function DynamicForm({
                     />
                   )}
 
+
+                  {/* Select field */}
                   {field.type === "select" && (
                     <Select
                       defaultValue={field.defaultValue}
@@ -140,8 +135,10 @@ export  function DynamicForm({
             </div>
           </FieldSet>
 
+          {/* Separator line */}
           <FieldSeparator className="my-6" />
 
+          {/* Submit button */}
           <div className="flex justify-end">
             <Button
               type="submit"

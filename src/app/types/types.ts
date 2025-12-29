@@ -55,3 +55,16 @@ export type Permission ={
   description: string;
   category: 'Users' | 'Content' | 'Reports' | 'Settings';
 }
+
+//Resusableform types
+export type FormField = {
+  id: string
+  name: string
+  label: string
+  placeholder?: string
+  type: "input" | "textarea" | "select" |"permissions"
+  inputType?: string
+  required?: boolean
+  defaultValue?: any
+  options?: { value: string; label: string }[]
+}

@@ -93,7 +93,7 @@ export default function NewRoleForm({
 
         <div className="grid gap-2">
           <Label>Permissions</Label>
-          <div className="border rounded-md p-4 space-y-4 max-h-[300px] overflow-y-auto">
+          <div className="border rounded-md p-4 space-y-4 max-h-75 overflow-y-auto">
             {Object.entries(groupedPermissions).map(([category, permissions]) => (
               <div key={category}>
                 <div className="flex items-center gap-2 mb-2">

@@ -100,15 +100,15 @@ export function DetailsModal({
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 flex justify-end sticky bottom-0 z-10">
+        {/* <div className="bg-gray-50 px-6 py-4 flex justify-end sticky bottom-0 z-10">
           <Button
-            variant="custom"
             onClick={onClose}
-            className="px-6"
+            className="px-6 bg-[#B91434] hover:bg-[#B91434]"
+          
           >
             Close
           </Button>
-        </div>
+        </div> */}
 
       </DialogContent>
     </Dialog>
