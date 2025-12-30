@@ -4,7 +4,7 @@ import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/src/components/ui/avatar";
-import { User, Camera, MapPin, Shield, Lock, Edit2, Save } from "lucide-react";
+import { User, Camera, MapPin, Shield, Lock, Edit2, Save, X } from "lucide-react";
 import type { Employee, SystemData } from "./types";
 
 interface ProfileHeaderProps {
@@ -13,6 +13,7 @@ interface ProfileHeaderProps {
   isEditing: boolean;
   profileImage: string | null;
   onToggleEdit: () => void;
+  onCancel?: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -24,7 +25,8 @@ export function ProfileHeader({
   profileImage, 
   onToggleEdit, 
   onInputChange, 
-  onImageUpload 
+  onImageUpload,
+  onCancel 
 }: ProfileHeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -113,9 +115,16 @@ export function ProfileHeader({
           </div>
         </div>
 
-        <Button onClick={onToggleEdit} variant={isEditing ? "default" : "outline"}>
-          {isEditing ? <><Save size={16} /> Save</> : <><Edit2 size={16} /> Edit Profile</>}
-        </Button>
+        <div className="flex gap-2">
+          {isEditing && (
+            <Button onClick={onCancel} variant="outline">
+              <X size={16} /> Cancel
+            </Button>
+          )}
+          <Button onClick={onToggleEdit} variant={isEditing ? "default" : "outline"}>
+            {isEditing ? <><Save size={16} /> Save</> : <><Edit2 size={16} /> Edit Profile</>}
+          </Button>
+        </div>
       </div>
     </Card>
   );
