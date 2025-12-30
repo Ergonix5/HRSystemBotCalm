@@ -209,9 +209,16 @@ export default function App() {
               </div>
             </div>
 
-            <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "primary" : "outline"}>
-              {isEditing ? <><Save size={16} /> Save</> : <><Edit2 size={16} /> Edit Profile</>}
-            </Button>
+            <div className="flex gap-2">
+              {isEditing && (
+                <Button onClick={() => setIsEditing(false)} variant="outline">
+                  <X size={16} /> Cancel
+                </Button>
+              )}
+              <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "primary" : "outline"}>
+                {isEditing ? <><Save size={16} /> Save</> : <><Edit2 size={16} /> Edit Profile</>}
+              </Button>
+            </div>
           </div>
         </Card>
 
