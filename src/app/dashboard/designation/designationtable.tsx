@@ -28,8 +28,8 @@ export function DesignationTable({ designations }: Props) {
 
 
   //open the view  with the selected designation
-  const handleViewDesignation = (designationId: string) => {
-    const designation = designations.find(d => d.designation_id === designationId)
+  const handleViewDesignation = (designation_id: string) => {
+    const designation = designations.find(d => d.designation_id === designation_id)
     if (designation) {
       setSelectedDesignation(designation)
       setIsViewOpen(true)
@@ -37,8 +37,8 @@ export function DesignationTable({ designations }: Props) {
   }
 
   //edit modal with the selected designation
-  const handleEditDesignation = (designationId: string) => {
-    const designation = designations.find(d => d.designation_id === designationId)
+  const handleEditDesignation = (designation_id: string) => {
+    const designation = designations.find(d => d.designation_id === designation_id)
     if (designation) {
       setDesignationToEdit(designation)
       setIsEditOpen(true)
