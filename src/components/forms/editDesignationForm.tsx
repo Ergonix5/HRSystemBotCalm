@@ -63,7 +63,7 @@ export function EditDesignationForm({
       fields={fields}
       mode="edit"
       readOnlyFields={["designation_id"]}
-      hiddenFields={{ _id: designation.designation_id }}
+      hiddenFields={{ _id: designation._id }}
       submitLabel="Update Designation"
       onSubmit={onSubmit}
     />

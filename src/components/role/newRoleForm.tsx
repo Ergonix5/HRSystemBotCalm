@@ -24,6 +24,7 @@ interface NewRoleFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   togglePermission: (id: string) => void;
+  isSubmitting?: boolean;
 }
 
 export default function NewRoleForm({
@@ -34,6 +35,7 @@ export default function NewRoleForm({
   onSubmit,
   onCancel,
   togglePermission,
+  isSubmitting = false,
 }: NewRoleFormProps) {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -128,10 +130,12 @@ export default function NewRoleForm({
       </div>
 
       <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button type="submit" className="bg-[#B91434]">Create Role</Button>
+        <Button type="submit" className="bg-[#B91434]" disabled={isSubmitting}>
+          {isSubmitting ? 'Creating...' : 'Create Role'}
+        </Button>
       </DialogFooter>
     </form>
   );

@@ -8,7 +8,7 @@ import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
 import { CompanyForm } from "../../../components/forms/addcompany"
-import { createOrganization } from "../../../lib/api"
+import { createOrganization, updateOrganization } from "../../../lib/api"
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
 import { Dialog, DialogContent } from "../../../components/ui/dialog"
 import { Plus } from "lucide-react"
@@ -115,10 +115,16 @@ export function CompanyTable({ organizations }: Props) {
           {companyToEdit && (
             <EditCompanyForm
               company={companyToEdit}
-              onSubmit={(data) => {
-                console.log("Updated company data:", data)
-                setIsEditOpen(false)
-                setCompanyToEdit(null)
+              onSubmit={async (data) => {
+                try {
+                  await updateOrganization(companyToEdit._id, data)
+                  setIsEditOpen(false)
+                  setCompanyToEdit(null)
+                  window.location.reload()
+                } catch (error) {
+                  console.error("Failed to update organization:", error)
+                  alert("Failed to update organization. Please try again.")
+                }
               }}
             />
           )}

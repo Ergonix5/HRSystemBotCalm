@@ -84,8 +84,8 @@ const employeeSchema = new Schema(
 
     employment_status: {
       type: String,
-      enum: ["active", "inactive", "terminated", "resigned", "on_leave"],
-      default: "active",
+      enum: ["Active", "Inactive", "Terminated", "Resigned", "On Leave"],
+      default: "Active",
       index: true,
     },
 

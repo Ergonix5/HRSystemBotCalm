@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/src/lib/db";
-import { organization } from "../../../models/organization.model";
+import { Organization } from "../../../models/organization.model";
 
 // Type for dynamic route params (Next.js 15+ requires Promise)
 // Type for dynamic route params (Next.js 15+ requires Promise)
@@ -16,7 +16,7 @@ export async function GET(_req: Request, { params }: Params) {
     // Extract ID from dynamic route params
     const { id } = await params;
     // Find designation by MongoDB ObjectId
-    const Organizations = await organization.findById(id);
+    const Organizations = await Organization.findById(id);
     // Return 404 if not found
     if (!Organizations) return NextResponse.json({ message: "Not found" }, { status: 404 });
     return NextResponse.json(Organizations);
@@ -37,7 +37,7 @@ export async function PUT(req: Request, { params }: Params) {
     // Parse request body
     const data = await req.json();
     // Update and return new document
-    const Organizations = await organization.findByIdAndUpdate(id, data, { new: true });
+    const Organizations = await Organization.findByIdAndUpdate(id, data, { new: true });
     // Return 404 if not found
     if (!Organizations) return NextResponse.json({ message: "Not found" }, { status: 404 });
     return NextResponse.json({
@@ -60,7 +60,7 @@ export async function DELETE(_req: Request, { params }: Params) {
     // Extract ID from dynamic route params
     const { id } = await params;
     // Delete designation from database
-    await organization.findByIdAndDelete(id);
+    await Organization.findByIdAndDelete(id);
     return NextResponse.json({ message: "Organization Deleted successfully" });
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });

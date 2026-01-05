@@ -2,6 +2,7 @@ import { id } from "zod/v4/locales"
 
 //Company Table
 export type Company = {
+  _id: string
   company_id: string
   company_name: string
   company_description: string
@@ -11,6 +12,7 @@ export type Company = {
 
 //Designation Table
 export type Designation = {
+  _id: string
   designation_id: string   
   title: string            
   company_name: string   
@@ -21,6 +23,7 @@ export type Designation = {
 
 //Employee Table
 export type Employee = {
+  _id: string
   employee_id: string
   company_id: string
   role_id: string
