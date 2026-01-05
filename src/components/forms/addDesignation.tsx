@@ -40,7 +40,7 @@ export function DesignationForm({
       name: "status",
       label: "Status",
       type: "select",
-      defaultValue: designation?.status || "Active",
+      // defaultValue: designation?.status || "Active",
       options: [
         { value: "Active", label: "Active" },
         { value: "Inactive", label: "Inactive" },

@@ -28,14 +28,14 @@ export function EditDesignationForm({
       required: true,
       defaultValue: designation.title,
     },
-    {
-      id: "company-name",
-      name: "company_name",
-      label: "Company Name",
-      type: "input",
-      required: true,
-      defaultValue: designation.company_name,
-    },
+    // {
+    //   id: "company-name",
+    //   name: "company_name",
+    //   label: "Company Name",
+    //   type: "input",
+    //   required: true,
+    //   defaultValue: designation.company_name,
+    // },
     {
       id: "description",
       name: "description",

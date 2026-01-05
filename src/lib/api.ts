@@ -56,7 +56,7 @@ export async function getDesignations(): Promise<Designation[]> {
         // company_name:
         //   des.company?.name || des.company_name || "N/A",
         description: des.description,
-        status: des.status === false ? "Inactive" : "Active",
+        status: des.status,
       })) || []
     )
   } catch (error) {

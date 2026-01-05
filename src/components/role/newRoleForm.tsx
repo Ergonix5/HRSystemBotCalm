@@ -5,7 +5,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Switch } from "../ui/switch";
-import { Users ,  Settings ,FileSliders,} from "lucide-react";
+import { Users ,  Settings ,FileSliders, ChartNoAxesCombined,Lock} from "lucide-react";
 import {
   DialogHeader,
   DialogFooter,
@@ -46,15 +46,15 @@ export default function NewRoleForm({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "Users":
-        return <span><Users/></span>;
+        return <span><Users className="w-4 h-4 text-[#B91434]"/></span>;
       case "Content":
-        return <span>📄</span>;
+        return <span><FileSliders className="w-4 h-4 text-[#B91434]"/></span>;
       case "Reports":
-        return <span>📊</span>;
+        return <span><ChartNoAxesCombined className="w-4 h-4 text-[#B91434]"/></span>;
       case "Settings":
-        return <span>⚙️</span>;
+        return <span><Settings className="w-4 h-4 text-[#B91434]"/></span>;
       default:
-        return <span>🔒</span>;
+        return <span> <Lock className="w-4 h-4 text-[#B91434]"/></span>;
     }
   };
 
@@ -100,7 +100,7 @@ export default function NewRoleForm({
               <div key={category}>
                 <div className="flex items-center gap-2 mb-2">
                   {getCategoryIcon(category)}
-                  <span className="font-medium text-sm">{category}</span>
+                  <span className="font-medium text-sm text-[#B91434]">{category}</span>
                 </div>
                 <div className="space-y-2 ml-6">
                   {permissions.map((permission) => (
