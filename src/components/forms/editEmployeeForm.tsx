@@ -80,7 +80,7 @@ export function EditEmployeeForm({
       mode="edit"
       gridCols={2}
       readOnlyFields={["employee_id"]}
-      hiddenFields={{ employee_id: employee.employee_id }}
+      hiddenFields={{ _id: employee._id }}
       submitLabel="Update Employee"
       onSubmit={onSubmit}
     />

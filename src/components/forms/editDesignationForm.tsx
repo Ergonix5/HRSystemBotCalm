@@ -28,14 +28,14 @@ export function EditDesignationForm({
       required: true,
       defaultValue: designation.title,
     },
-    {
-      id: "company-name",
-      name: "company_name",
-      label: "Company Name",
-      type: "input",
-      required: true,
-      defaultValue: designation.company_name,
-    },
+    // {
+    //   id: "company-name",
+    //   name: "company_name",
+    //   label: "Company Name",
+    //   type: "input",
+    //   required: true,
+    //   defaultValue: designation.company_name,
+    // },
     {
       id: "description",
       name: "description",
@@ -63,7 +63,7 @@ export function EditDesignationForm({
       fields={fields}
       mode="edit"
       readOnlyFields={["designation_id"]}
-      hiddenFields={{ _id: designation.designation_id }}
+      hiddenFields={{ _id: designation._id }}
       submitLabel="Update Designation"
       onSubmit={onSubmit}
     />

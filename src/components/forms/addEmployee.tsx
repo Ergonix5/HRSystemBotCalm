@@ -11,9 +11,9 @@ export function EmployeeForm({
   onSubmit: (data: any) => void
 }) {
   const fields: FormField[] = [
-    { id: "organization", name: "organization", label: "Organization ID", type: "input", required: true, defaultValue: employee?.organization || "674b8b8b123456789abcdef0" },
-    { id: "designation", name: "designation", label: "Designation ID", type: "input", required: true, defaultValue: employee?.designation || "674b8b8b123456789abcdef1" },
-    { id: "role", name: "role", label: "Role ID", type: "input", required: true, defaultValue: employee?.role || "674b8b8b123456789abcdef2" },
+    { id: "company-id", name: "company_id", label: "Company ID", type: "input", required: true, defaultValue: employee?.company_id || "674b8b8b123456789abcdef0" },
+    { id: "designation-id", name: "designation_id", label: "Designation ID", type: "input", required: true, defaultValue: employee?.designation_id || "674b8b8b123456789abcdef1" },
+    { id: "role-id", name: "role_id", label: "Role ID", type: "input", required: true, defaultValue: employee?.role_id || "674b8b8b123456789abcdef2" },
     { id: "employee-id", name: "employee_id", label: "Employee ID", type: "input", required: true, defaultValue: employee?.employee_id },
     { id: "first-name", name: "first_name", label: "First Name", type: "input", required: true, defaultValue: employee?.first_name },
     { id: "last-name", name: "last_name", label: "Last Name", type: "input", required: true, defaultValue: employee?.last_name },
@@ -22,7 +22,7 @@ export function EmployeeForm({
     { id: "address", name: "address", label: "Address", type: "textarea", defaultValue: employee?.address },
     { id: "dob", name: "date_of_birth", label: "Date of Birth", type: "input", inputType: "date", defaultValue: employee?.date_of_birth },
     { id: "join-date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
-    { id: "status", name: "employment_status", label: "Status", type: "select", defaultValue: employee?.employment_status, options: [{ value: "active", label: "Active" }, { value: "inactive", label: "Inactive" }] },
+    { id: "status", name: "status", label: "Status", type: "select", defaultValue: employee?.status, options: [{ value: "Active", label: "Active" }, { value: "Inactive", label: "Inactive" }] },
   ]
 
   return (

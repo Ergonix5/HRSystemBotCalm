@@ -35,6 +35,17 @@ export function DesignationForm({
       type: "textarea",
       defaultValue: designation?.description,
     },
+     {
+      id: "status",
+      name: "status",
+      label: "Status",
+      type: "select",
+      // defaultValue: designation?.status || "Active",
+      options: [
+        { value: "Active", label: "Active" },
+        { value: "Inactive", label: "Inactive" },
+      ],
+    },
   ]
 
   return (

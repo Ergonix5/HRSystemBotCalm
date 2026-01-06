@@ -56,7 +56,7 @@ export function EditCompanyForm({
       fields={fields}
       mode="edit"
       readOnlyFields={["company_id"]}
-      hiddenFields={{ _id: company.company_id }}
+      hiddenFields={{ _id: company._id }}
       submitLabel="Update Company"
       onSubmit={onSubmit}
     />

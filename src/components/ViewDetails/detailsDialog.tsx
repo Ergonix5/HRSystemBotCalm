@@ -11,6 +11,7 @@ import {
 import { Button } from "../ui/button"
 
 
+
 interface Detail {
   label: string
   value: string | number
@@ -60,6 +61,7 @@ export function DetailsModal({
 
         {/* Header */}
        <DialogHeader className="px-6 py-5 border-b sticky top-0 bg-white z-10 flex flex-col items-center">
+    
   {headerImage && (
     <div className="w-16 h-16 rounded-full overflow-hidden mb-3 border-2 border-gray-200">
       <img src={headerImage} alt={title} className="w-full h-full object-cover" />
@@ -100,15 +102,15 @@ export function DetailsModal({
         </div>
 
         {/* Footer */}
-        {/* <div className="bg-gray-50 px-6 py-4 flex justify-end sticky bottom-0 z-10">
+        <div className="bg-gray-50 px-6 py-4 flex justify-end sticky bottom-0 z-10">
           <Button
             onClick={onClose}
-            className="px-6 bg-[#B91434] hover:bg-[#B91434]"
+            className="px-6 bg-[#B91434] hover:bg-[#B91434] "
           
           >
             Close
           </Button>
-        </div> */}
+        </div>
 
       </DialogContent>
     </Dialog>

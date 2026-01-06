@@ -1,5 +1,6 @@
 "use client"
 import * as React from "react"
+import { useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,7 +19,7 @@ import { Button } from "../../components/ui/button"
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from "../../components/ui/table"
 import { ChevronDown, Filter, Plus, Search, SlidersHorizontal } from "lucide-react"
 import { DataTablePagination } from "./DataTablePagination"
-
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -35,6 +36,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
   const [rowSelection, setRowSelection] = React.useState({})
   const [selectedStatus, setSelectedStatus] = React.useState("All Status")
   const [selectedCompany, setSelectedCompany] = React.useState("All Companies")
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const table = useReactTable({
     data,
@@ -58,6 +60,8 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
 
 
       <div className="flex items-center  gap-4">
+
+         
 
         <Input
           placeholder=" Search..."
@@ -110,54 +114,6 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
 
 
 
-        {showCompanyFilter && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <SlidersHorizontal className="h-4 w-4 mr-2" />
-                {selectedCompany} <ChevronDown className="h-4 w-4 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("company_name")?.setFilterValue("")
-                setSelectedCompany("All Companies")
-              }}>
-                All Companies
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("company_name")?.setFilterValue("Ergonix")
-                setSelectedCompany("Ergonix")
-              }}>
-                Ergonix
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("company_name")?.setFilterValue("Techify")
-                setSelectedCompany("Techify")
-              }}>
-                Techify
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("company_name")?.setFilterValue("BuildPro")
-                setSelectedCompany("BuildPro")
-              }}>
-                BuildPro
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("company_name")?.setFilterValue("GreenLeaf")
-                setSelectedCompany("GreenLeaf")
-              }}>
-                GreenLeaf
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                table.getColumn("company_name")?.setFilterValue("DataFlow")
-                setSelectedCompany("DataFlow")
-              }}>
-                DataFlow
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
 
 
         <DropdownMenu>
@@ -167,15 +123,39 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {table.getAllColumns().filter(c => c.getCanHide()).map(column => (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                {column.id}
-              </DropdownMenuCheckboxItem>
-            ))}
+            {table.getAllColumns().filter(c => c.getCanHide()).map(column => {
+              const getColumnDisplayName = (id: string) => {
+                const displayNames: Record<string, string> = {
+                  'company_id': 'Company ID',
+                  'company_name': 'Company Name', 
+                  'company_description': 'Description',
+                  'designation_id': 'Designation ID',
+                  'title': 'Title',
+                  'description': 'Description',
+                  'employee_id': 'Employee ID',
+                  'first_name': 'First Name',
+                  'last_name': 'Last Name',
+                  'name': 'Name',
+                  'email': 'Email',
+                  'phone': 'Phone',
+                  'address': 'Address',
+                  'date_of_birth': 'Date of Birth',
+                  'join_date': 'Join Date',
+                  'status': 'Status'
+                }
+                return displayNames[id] || id
+              }
+              
+              return (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {getColumnDisplayName(column.id)}
+                </DropdownMenuCheckboxItem>
+              )
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

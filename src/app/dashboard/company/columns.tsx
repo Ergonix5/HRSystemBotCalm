@@ -62,10 +62,11 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
       const status = row.getValue("status") as string
       return (
         <span
-          className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${status === "Active"
+          className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
+            status === "Active"
               ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
-            }`}
+          }`}
         >
           {status}
         </span>

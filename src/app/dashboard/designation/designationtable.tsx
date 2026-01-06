@@ -6,7 +6,7 @@ import { columns as designationColumns } from "./columns"
 import { type Designation } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
-import { createDesignation } from "../../../lib/api"
+import { createDesignation, updateDesignation } from "../../../lib/api"
 import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import { DesignationForm } from "../../../components/forms/addDesignation"
@@ -28,8 +28,8 @@ export function DesignationTable({ designations }: Props) {
 
 
   //open the view  with the selected designation
-  const handleViewDesignation = (designationId: string) => {
-    const designation = designations.find(d => d.designation_id === designationId)
+  const handleViewDesignation = (designation_id: string) => {
+    const designation = designations.find(d => d.designation_id === designation_id)
     if (designation) {
       setSelectedDesignation(designation)
       setIsViewOpen(true)
@@ -37,8 +37,8 @@ export function DesignationTable({ designations }: Props) {
   }
 
   //edit modal with the selected designation
-  const handleEditDesignation = (designationId: string) => {
-    const designation = designations.find(d => d.designation_id === designationId)
+  const handleEditDesignation = (designation_id: string) => {
+    const designation = designations.find(d => d.designation_id === designation_id)
     if (designation) {
       setDesignationToEdit(designation)
       setIsEditOpen(true)
@@ -100,10 +100,16 @@ export function DesignationTable({ designations }: Props) {
           {designationToEdit && (
             <EditDesignationForm
               designation={designationToEdit}
-              onSubmit={(data) => {
-                console.log("Updated designation data:", data)
-                setIsEditOpen(false)
-                setDesignationToEdit(null)
+              onSubmit={async (data) => {
+                try {
+                  await updateDesignation(designationToEdit._id, data)
+                  setIsEditOpen(false)
+                  setDesignationToEdit(null)
+                  window.location.reload()
+                } catch (error) {
+                  console.error("Failed to update designation:", error)
+                  alert("Failed to update designation. Please try again.")
+                }
               }}
             />
           )}

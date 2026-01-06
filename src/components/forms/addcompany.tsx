@@ -41,10 +41,10 @@ export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
       name: "status",
       label: "Status",
       type: "select",
-      defaultValue: company?.status?.toLowerCase(),
+      defaultValue: company?.status || "Active",
       options: [
-        { value: "active", label: "Active" },
-        { value: "inactive", label: "Inactive" },
+        { value: "Active", label: "Active" },
+        { value: "Inactive", label: "Inactive" },
       ],
     },
   ]

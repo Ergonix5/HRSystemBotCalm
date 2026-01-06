@@ -14,14 +14,16 @@ export async function getOrganizations(): Promise<Company[]> {
     }
 
     const result = await response.json()
+    console.log("API Response:", result)
 
     // Transform backend → frontend type
     return (
       result.data?.map((org: any) => ({
+        _id: org._id,
         company_id: org.organization_id || org._id,
         company_name: org.name,
         company_description: org.description,
-        status: "Active",
+        status: org.status ,
       })) || []
     )
   } catch (error) {
@@ -48,12 +50,13 @@ export async function getDesignations(): Promise<Designation[]> {
     // Transform backend → frontend type
     return (
       result.data?.map((des: any) => ({
+        _id: des._id,
         designation_id: des.designation_id || des._id,
         title: des.title,
         // company_name:
         //   des.company?.name || des.company_name || "N/A",
         description: des.description,
-        status: des.status === false ? "Inactive" : "Active",
+        status: des.status,
       })) || []
     )
   } catch (error) {
@@ -165,6 +168,74 @@ export async function createOrganization(organizationData: any) {
     return await response.json()
   } catch (error) {
     console.error("API Error (createOrganization):", error)
+    throw error
+  }
+}
+
+//create new role
+export async function createRole(roleData: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Role`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(roleData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || "Failed to create role")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("API Error (createRole):", error)
+    throw error
+  }
+}
+// Update designation
+export async function updateDesignation(id: string, designationData: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Designation/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(designationData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || "Failed to update designation")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("API Error (updateDesignation):", error)
+    throw error
+  }
+}
+
+// Update organization
+export async function updateOrganization(id: string, organizationData: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Organization/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(organizationData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || "Failed to update organization")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("API Error (updateOrganization):", error)
     throw error
   }
 }

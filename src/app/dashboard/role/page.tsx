@@ -12,6 +12,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '.
 import { type Role, type Permission } from '@/src/app/types/types';
 import { initialRoles, availablePermissions } from "./role";
 import { Dialog, DialogContent } from '../../../components/ui/dialog';
+import { createRole } from '@/src/lib/api';
 
 export default function Page() {
 
@@ -26,6 +27,62 @@ export default function Page() {
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Generate role ID
+  const generateRoleId = () => {
+    const prefix = 'ROL';
+    const timestamp = Date.now().toString().slice(-6);
+    return `${prefix}-${timestamp}`;
+  };
+
+  // Handle form submission
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!formData.roleName.trim() || !formData.description.trim()) {
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const roleData = {
+      organization: '507f1f77bcf86cd799439011',
+      role_id: generateRoleId(),
+      role_name: formData.roleName.trim(),
+      description: formData.description.trim(),
+      permissions: selectedPermissions
+    };
+
+    const response = await createRole(roleData);
+
+    if (response.success) {
+      const newRole: Role = {
+        role_id: roleData.role_id,
+        roleName: roleData.role_name,
+        description: roleData.description,
+        status: 'Active',
+        userCount: 0,
+        permissions: selectedPermissions,
+        color: 'blue',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      setRoles(prev => [newRole, ...prev]);
+
+      setFormData({ roleName: '', description: '' });
+      setSelectedPermissions([]);
+      setIsAddDialogOpen(false);
+    }
+  } catch (error) {
+    console.error('Create role failed:', error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   // Group permissions by category 
   const groupedPermissions = useMemo(() => {
@@ -100,7 +157,8 @@ export default function Page() {
               formData={formData}
               setFormData={setFormData}
               togglePermission={id => setSelectedPermissions(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])}
-              onSubmit={e => e.preventDefault()}
+              onSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
               onCancel={() => setIsAddDialogOpen(false)}
             />
           </DialogContent>
