@@ -11,7 +11,7 @@ import { CompanyForm } from "../../../components/forms/addcompany"
 import { createOrganization, updateOrganization } from "../../../lib/api"
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
 import { Dialog, DialogContent } from "../../../components/ui/dialog"
-import { Plus } from "lucide-react"
+import { Plus ,Search} from "lucide-react"
 
 
 type Props = {
@@ -61,20 +61,38 @@ export function CompanyTable({ organizations }: Props) {
   }
 
   return (
-    <div className="border p-5 rounded-md">
+    <div className="border  p-5 rounded-md">
       {/* Header */}
-      <div className="flex justify-between mb-6">
-        <div>
-          <h1 className="font-bold text-2xl mb-2">Organizations Management</h1>
-          <p className="text-gray-700">
-            Manage organizations information and settings
-          </p>
-        </div>
+      <div className="space-y-6 mb-10">
+  <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-1">
+      <h1 className="text-3xl font-bold text-gray-900">Organizations Management</h1>
+      <p className="text-gray-500 text-md italic">
+        Manage organizations information and settings
+      </p>
+    </div>
 
-        <Button variant="outline" onClick={() => setIsAddOpen(true)}>
-          <Plus /> Add New Company
-        </Button>
+    <div className="flex items-center gap-3">
+      <div className="relative group">
+        {/* <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#B91434]" />
+        <input 
+          type="text" 
+          placeholder="Search companies..." 
+          className="pl-10 pr-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B91434]/20 focus:border-[#B91434] transition-all"
+        /> */}
       </div>
+      
+      <Button 
+        variant="outline"
+        onClick={() => setIsAddOpen(true)}
+        className="border-[#B91434] text-[#B91434] hover:bg-[#B91434] hover:text-white transition-colors"
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Company
+      </Button>
+    </div>
+  </div>
+  <hr className="border-gray-100" />
+</div>
 
       {/* Table */}
       <DataTable
