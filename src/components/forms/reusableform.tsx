@@ -36,7 +36,7 @@ interface DynamicFormProps {
   hiddenFields?: Record<string, any>
 }
 
-export function DynamicForm({
+export  function DynamicForm({
   title,
   description,
   fields,

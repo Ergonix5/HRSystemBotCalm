@@ -1,27 +1,63 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
+import React, { useState, useMemo } from 'react';
+import { useNotifications } from '../../../../contexts/NotificationContext';
+import { Card, CardContent, CardHeader } from '../../../ui/card';
+import { 
+  PageHeader,
+  NotificationTabs,
+  NotificationList,
+  NotificationFooter
+} from './components';
 
 export default function Notifications() {
+  const [filter, setFilter] = useState('all');
+  const { notifications, setNotifications } = useNotifications();
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const filteredNotifications = useMemo(() => {
+    if (filter === 'unread') return notifications.filter(n => n.unread);
+    if (filter === 'read') return notifications.filter(n => !n.unread);
+    return notifications;
+  }, [filter, notifications]);
+
+  const markAsRead = (id: number) => {
+    setNotifications(prev => prev.map(n => 
+      n.id === id ? { ...n, unread: false } : n
+    ));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
+
+  const deleteNotification = (id: number) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Notifications</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
-            <p className="font-semibold">Leave Request Approved</p>
-            <p className="text-sm text-gray-600">Your vacation request has been approved</p>
-          </div>
-          <div className="p-3 bg-yellow-50 border-l-4 border-yellow-500 rounded">
-            <p className="font-semibold">Timesheet Reminder</p>
-            <p className="text-sm text-gray-600">Please submit your timesheet for this week</p>
-          </div>
-          <div className="p-3 bg-green-50 border-l-4 border-green-500 rounded">
-            <p className="font-semibold">Welcome Message</p>
-            <p className="text-sm text-gray-600">Welcome to the employee portal!</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="w-full max-w-6xl mx-auto p-4 lg:p-8">
+      <PageHeader />
+      
+      <Card>
+        <CardHeader>
+          <NotificationTabs 
+            filter={filter}
+            onFilterChange={setFilter}
+            unreadCount={unreadCount}
+          />
+        </CardHeader>
+
+        <CardContent>
+          <NotificationList 
+            notifications={filteredNotifications}
+            filter={filter}
+            onMarkAsRead={markAsRead}
+            onDelete={deleteNotification}
+          />
+        </CardContent>
+        
+        <NotificationFooter count={filteredNotifications.length} />
+      </Card>
+    </div>
   );
 }
