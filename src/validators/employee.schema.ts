@@ -1,17 +1,17 @@
 import { z } from "zod";
 
 export const employeeCreateSchema = z.object({
-  organization: z
+  company_id: z
     .string()
-    .min(1, "Organization is required"),
+    .min(1, "Company ID is required"),
 
-  designation: z
+  designation_id: z
     .string()
-    .min(1, "Designation is required"),
+    .min(1, "Designation ID is required"),
 
-  role: z
+  role_id: z
     .string()
-    .min(1, "Role is required"),
+    .min(1, "Role ID is required"),
 
   employee_id: z
     .string()
@@ -20,12 +20,12 @@ export const employeeCreateSchema = z.object({
   first_name: z
     .string()
     .min(2, "First name must be at least 2 characters")
-    .max(50),
+    .max(50, "First name must be less than 50 characters"),
 
   last_name: z
     .string()
     .min(2, "Last name must be at least 2 characters")
-    .max(50),
+    .max(50, "Last name must be less than 50 characters"),
 
   email: z
     .string()
@@ -33,29 +33,29 @@ export const employeeCreateSchema = z.object({
 
   phone: z
     .string()
-    .regex(/^\+?[0-9]{7,15}$/, "Invalid phone number")
+    .min(1, "Phone number is required")
+    .regex(/^[\+]?[0-9\s\-\(\)]{7,15}$/, "Invalid phone number format"),
+
+  address: z
+    .string()
+    .max(200, "Address must be less than 200 characters")
     .optional(),
 
   date_of_birth: z
     .string()
     .optional()
     .refine((v) => !v || !isNaN(Date.parse(v)), {
-      message: "Invalid date_of_birth",
+      message: "Invalid date format",
     }),
 
   join_date: z
     .string()
     .optional()
     .refine((v) => !v || !isNaN(Date.parse(v)), {
-      message: "Invalid join_date",
+      message: "Invalid date format",
     }),
 
-  employment_status: z
-    .enum(["active", "inactive", "terminated", "resigned", "on_leave"])
-    .optional(),
-
-  address: z
-    .string()
-    .max(200)
-    .optional(),
+  status: z
+    .enum(["Active", "Inactive"])
+    .default("Active"),
 });
