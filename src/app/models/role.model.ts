@@ -32,6 +32,7 @@ const roleSchema = new Schema(
       type: [String],
       default: [], // ["employee.read", "attendance.mark"]
     },
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
   },
   { timestamps: true }
 );

@@ -19,6 +19,7 @@ const designationShema = new Schema(
       type: String,
       trim: true,
     },
+    status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
   },
   { timestamps: true }
 );

@@ -1,4 +1,7 @@
 import { Schema, models, model, Types } from "mongoose";
+import "./organization.model";
+import "./designations.model";
+import "./role.model";
 
 import "./organization.model";
 import "./designations.model";
@@ -27,7 +30,13 @@ const employeeSchema = new Schema(
       required: true,
       index: true,
     },
+    
+    employee_id: {
+      type:String,
+      required: true,
+    },
 
+  
     first_name: {
       type: String,
       required: true,
@@ -80,8 +89,8 @@ const employeeSchema = new Schema(
 
     employment_status: {
       type: String,
-      enum: ["active", "inactive", "terminated", "resigned", "on_leave"],
-      default: "active",
+      enum: ["Active", "Inactive", "Terminated", "Resigned", "On Leave"],
+      default: "Active",
       index: true,
     },
 
