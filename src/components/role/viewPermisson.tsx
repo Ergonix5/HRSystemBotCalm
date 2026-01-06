@@ -34,11 +34,11 @@ const togglePermission = (id: string) => {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'Users': return <span>👥</span>;
-      case 'Content': return <span>📄</span>;
-      case 'Reports': return <span>📊</span>;
-      case 'Settings': return <span>⚙️</span>;
-      default: return <span>🔒</span>;
+      case 'Users': return <span></span>;
+      case 'Content': return <span></span>;
+      case 'Reports': return <span></span>;
+      case 'Settings': return <span></span>;
+      default: return <span></span>;
     }
   };
 
