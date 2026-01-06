@@ -6,6 +6,6 @@ const organizationSchema = new Schema({
   description: { type: String, required: true, trim: true },
 }, { timestamps: true }); // ✅ Also fixed typo and added timestamps
 
-export const Organization = models.Organization || model("Organization", organizationSchema);
+export const Organization = models.Organization || model("organization", organizationSchema);
 // ✅ Changed "Organizations" to "Organization" to match the ref
 // ✅ Fixed typo: organizationShema → organizationSchema
