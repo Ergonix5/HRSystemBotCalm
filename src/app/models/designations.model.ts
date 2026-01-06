@@ -25,4 +25,4 @@ const designationShema = new Schema(
 );
 
 export const Designation =
-  models.Designation || model("designations", designationShema);
+  models.Designation || model("designation", designationShema);
