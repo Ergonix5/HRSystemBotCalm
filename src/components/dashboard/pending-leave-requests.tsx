@@ -56,21 +56,21 @@ const leaveRequests: LeaveRequest[] = [
 
 const getLeaveTypeColor = (type: string) => {
   switch (type) {
-    case "Annual Leave": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-    case "Sick Leave": return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-    case "Personal Leave": return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
-    default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+    case "Annual Leave": return "bg-blue-50 text-blue-700 border border-blue-200"
+    case "Sick Leave": return "bg-red-50 text-red-700 border border-red-200"
+    case "Personal Leave": return "bg-purple-50 text-purple-700 border border-purple-200"
+    default: return "bg-gray-50 text-gray-700 border border-gray-200"
   }
 }
 
 const getAvatarColor = (name: string) => {
   const colors = [
-    "bg-blue-500",
-    "bg-green-500", 
-    "bg-purple-500",
-    "bg-pink-500",
-    "bg-indigo-500",
-    "bg-red-500"
+    "bg-blue-600",
+    "bg-green-600", 
+    "bg-purple-600",
+    "bg-pink-600",
+    "bg-indigo-600",
+    "bg-orange-600"
   ]
   return colors[name.length % colors.length]
 }
@@ -88,23 +88,23 @@ export function PendingLeaveRequests() {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm border-gray-200">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Pending Leave Requests</CardTitle>
-            <p className="text-sm text-muted-foreground">Requires your approval</p>
+            <CardTitle className="text-lg font-semibold text-gray-900">Pending Leave Requests</CardTitle>
+            <p className="text-sm text-gray-500 mt-1">Requires your approval</p>
           </div>
-          <Badge variant="destructive" className="bg-red-500 text-white">
+          <Badge className="bg-red-100 text-red-800 border border-red-200 font-medium">
             {requests.length} Pending
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 max-h-96 overflow-y-auto">
+      <CardContent className="space-y-4 max-h-96 overflow-y-auto">
         {requests.map((request) => (
           <div 
             key={request.id} 
-            className={`p-3 border rounded-lg space-y-2 transition-all duration-300 ${
+            className={`p-4 bg-white border border-gray-200 rounded-lg space-y-3 transition-all duration-300 hover:shadow-sm ${
               removingIds.includes(request.id) 
                 ? 'opacity-0 scale-95 translate-x-full' 
                 : 'opacity-100 scale-100 translate-x-0'
@@ -112,36 +112,36 @@ export function PendingLeaveRequests() {
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
-                <Avatar className={`h-10 w-10 ${getAvatarColor(request.employeeName)}`}>
+                <Avatar className={`h-11 w-11 ${getAvatarColor(request.employeeName)}`}>
                   <AvatarFallback className="text-white font-semibold text-sm">
                     {request.avatar}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-semibold text-sm">{request.employeeName}</h4>
-                  <p className="text-xs text-muted-foreground">{request.empId}</p>
+                  <h4 className="font-semibold text-gray-900">{request.employeeName}</h4>
+                  <p className="text-sm text-gray-500">{request.empId}</p>
                 </div>
               </div>
-              <Badge className={getLeaveTypeColor(request.leaveType)}>
+              <Badge className={`${getLeaveTypeColor(request.leaveType)} font-medium px-3 py-1`}>
                 {request.leaveType}
               </Badge>
             </div>
             
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="flex items-center text-muted-foreground">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  {request.startDate}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center text-gray-600">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span className="text-sm">{request.startDate}</span>
                 </span>
-                <span className="font-medium">{request.duration}</span>
+                <span className="font-semibold text-gray-900">{request.duration}</span>
               </div>
               
-              <p className="text-xs text-muted-foreground flex items-center">
-                <Clock className="w-3 h-3 mr-1" />
+              <p className="text-sm text-gray-500 flex items-center">
+                <Clock className="w-4 h-4 mr-2" />
                 Applied {request.appliedDate}
               </p>
               
-              <p className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-2 rounded">
+              <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-md border">
                 {request.reason}
               </p>
             </div>
@@ -149,18 +149,21 @@ export function PendingLeaveRequests() {
 
 
 
-            <div className="flex space-x-2 pt-2">
+            <div className="flex space-x-3 pt-2">
+              <Button 
+                size="sm" 
+                className="bg-green-600 hover:bg-green-700 text-white font-medium px-4"
+                onClick={() => handleApprove(request.id)}
+              >
+                <Check className="w-4 h-4 mr-2" />
+                Approve
+              </Button>
               <Button 
                 size="sm" 
                 variant="outline" 
-                className="border-green-600 hover:bg-green-600 hover:text-white"
-                onClick={() => handleApprove(request.id)}
+                className="border-red-300 text-red-700 hover:bg-red-50 font-medium px-4"
               >
-                <Check className="w-4 h-4 mr-1" />
-                Approve
-              </Button>
-              <Button size="sm" variant="outline" className="border-red-600 hover:bg-red-600 hover:text-white">
-                <X className="w-4 h-4 mr-1" />
+                <X className="w-4 h-4 mr-2" />
                 Reject
               </Button>
             </div>

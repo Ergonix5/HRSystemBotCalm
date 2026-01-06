@@ -7,7 +7,7 @@ import { ArrowUpDown } from "lucide-react"
 import { Employee } from "../../types/types"
 import { TableActions } from "../../../components/table/table_actions"
 
-export const columns = (onView: (id: string) => void): ColumnDef<Employee>[] => [
+export const columns = (onView: (id: string) => void, onEdit: (id: string) => void): ColumnDef<Employee>[] => [
 
   /* 
      Row Selection Column
@@ -84,12 +84,20 @@ export const columns = (onView: (id: string) => void): ColumnDef<Employee>[] => 
   },
 
   /* 
-     Company
-      */
+  Address
+    */
   {
-    accessorKey: "company_id",
-    header: "Company",
+    accessorKey: "address",
+    header: "Address",
   },
+
+
+  /* Company
+    */
+  // {
+  //   accessorKey: "company_id",
+  //   header: "Company",
+  // },
 
   /* 
      Designation
@@ -133,11 +141,10 @@ export const columns = (onView: (id: string) => void): ColumnDef<Employee>[] => 
       const status = row.getValue("status") as string
       return (
         <span
-          className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
-            status === "active"
+          className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${status === "Active"
               ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
-          }`}
+            }`}
         >
           {status}
         </span>
@@ -157,7 +164,7 @@ export const columns = (onView: (id: string) => void): ColumnDef<Employee>[] => 
         id={row.original.employee_id}
         type="employee"
         onView={onView}
-        onEdit={(id) => console.log("Edit employee", id)}
+        onEdit={onEdit}
         onDelete={(id) => console.log("Delete employee", id)}
       />
     ),

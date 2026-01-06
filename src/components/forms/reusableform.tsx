@@ -1,0 +1,168 @@
+"use client"
+
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+  FieldSet,
+} from "../../components/ui/field"
+import { Input } from "../../components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select"
+import { Textarea } from "../../components/ui/textarea"
+import { Button } from "../../components/ui/button"
+import { DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog"
+import { type FormField } from "@/src/app/types/types"
+
+// Props for the DynamicForm component
+interface DynamicFormProps {
+  title: string
+  description?: string
+  fields: FormField[]
+  onSubmit: (data: any) => void
+  submitLabel?: string
+  gridCols?: number
+  mode?: "create" | "edit"
+  readOnlyFields?: string[]
+  hiddenFields?: Record<string, any>
+  errors?: Record<string, string>
+}
+
+export  function DynamicForm({
+  title,
+  description,
+  fields,
+  onSubmit,
+  submitLabel = "Save",
+  gridCols = 1,
+  hiddenFields,
+  readOnlyFields,
+  errors = {}
+}: DynamicFormProps) {
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+        {description && (
+          <DialogDescription>{description}</DialogDescription>
+        )}
+      </DialogHeader>
+
+      {/* Form submission handling */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          const formData = new FormData(e.currentTarget)
+
+          if (hiddenFields) {
+            Object.entries(hiddenFields).forEach(([key, value]) => {
+              formData.append(key, value as string)
+            })
+          }
+          const data = Object.fromEntries(formData)
+          onSubmit(data)
+        }}
+      >
+        <FieldGroup>
+          <FieldSet>
+
+            {/* grid for form fields */}
+            <div
+              className={`grid gap-4 ${gridCols === 2 ? "md:grid-cols-2" : "grid-cols-1"
+                }`}
+            >
+              {fields.map((field) => (
+                <Field key={field.id}>
+                  <FieldLabel htmlFor={field.id}>
+                    {field.label}
+                  </FieldLabel>
+                  {/* Input field */}
+                  {field.type === "input" && (
+                    <>
+                      <Input
+                        id={field.id}
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        type={field.inputType || "text"}
+                        defaultValue={field.defaultValue}
+                        required={field.required}
+                        readOnly={readOnlyFields?.includes(field.name)}
+                        className={errors[field.name] ? "border-red-500" : ""}
+                      />
+                      {errors[field.name] && (
+                        <p className="text-sm text-red-500 mt-1">{errors[field.name]}</p>
+                      )}
+                    </>
+                  )}
+
+                  {/* Textarea field */}
+                  {field.type === "textarea" && (
+                    <>
+                      <Textarea
+                        id={field.id}
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        defaultValue={field.defaultValue}
+                        className={`resize-none ${errors[field.name] ? "border-red-500" : ""}`}
+                      />
+                      {errors[field.name] && (
+                        <p className="text-sm text-red-500 mt-1">{errors[field.name]}</p>
+                      )}
+                    </>
+                  )}
+
+                  {/* Select field */}
+                  {field.type === "select" && (
+                    <>
+                      <Select
+                        defaultValue={field.defaultValue}
+                        name={field.name}
+                      >
+                        <SelectTrigger id={field.id} className={errors[field.name] ? "border-red-500" : ""}>
+                          <SelectValue placeholder="Select option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {field.options?.map((option) => (
+                            <SelectItem
+                              key={option.value}
+                              value={option.value}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors[field.name] && (
+                        <p className="text-sm text-red-500 mt-1">{errors[field.name]}</p>
+                      )}
+                    </>
+                  )}
+                </Field>
+              ))}
+            </div>
+          </FieldSet>
+
+          {/* Separator line */}
+          <FieldSeparator className="my-6" />
+
+          {/* Submit button */}
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              className="bg-[#B91434] text-white hover:bg-red-900 px-6"
+            >
+              {submitLabel}
+            </Button>
+          </div>
+        </FieldGroup>
+      </form>
+    </div>
+  )
+}

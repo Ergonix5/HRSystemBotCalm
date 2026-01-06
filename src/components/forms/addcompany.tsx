@@ -1,138 +1,72 @@
 "use client"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-} from "../../components/ui/field"
-import { Input } from "../../components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select"
-import { Textarea } from "../../components/ui/textarea"
-import { Button } from "../../components/ui/button"
-import { Company } from "../../app/types/types" 
+
+import { Company } from "../../app/types/types"
+import { DynamicForm } from "./reusableform"
+import { type FormField } from '@/src/app/types/types';
+import { useFormValidation } from '../../hooks/useFormValidation'
+import { companyCreateSchema } from '../../validators/organization.schema'
 
 interface CompanyFormProps {
   company?: Company
   onSubmit: (data: any) => void
-  onCancel: () => void
 }
 
-export function CompanyForm({ company, onSubmit, onCancel }: CompanyFormProps) {
-  const fields = [
+export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
+  const { errors, validate } = useFormValidation(companyCreateSchema)
+
+  const fields: FormField[] = [
     {
-      id: "company-id",
-      name: "company_id",
-      label: "Company ID",
+      id: "organization-id",
+      name: "organization_id",
+      label: "Organization ID",
       placeholder: "ORG_001",
       type: "input",
       required: true,
-      defaultValue: company?.company_id || "",
+      defaultValue: company?.company_id,
     },
     {
-      id: "company-name",
-      name: "company_name",
-      label: "Company Name",
-      placeholder: "your company name",
+      id: "organization-name",
+      name: "name",
+      label: "Organization Name",
+      placeholder: "Your organization name",
       type: "input",
       required: true,
-      defaultValue: company?.company_name || "",
+      defaultValue: company?.company_name,
     },
     {
-      id: "company-description",
-      name: "company_description",
+      id: "organization-description",
+      name: "description",
       label: "Description",
-      placeholder: "your company description",
+      placeholder: "Organization description",
       type: "textarea",
-      defaultValue: company?.company_description || "",
+      defaultValue: company?.company_description,
     },
     {
-      id: "company-status",
+      id: "status",
       name: "status",
       label: "Status",
       type: "select",
+      defaultValue: company?.status || "Active",
       options: [
         { value: "Active", label: "Active" },
         { value: "Inactive", label: "Inactive" },
       ],
-      defaultValue: company?.status || "",
     },
   ]
 
+  const handleSubmit = (data: any) => {
+    if (validate(data)) {
+      onSubmit(data)
+    }
+  }
+
   return (
-    <div className="w-full max-w-md">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          const formData = new FormData(e.currentTarget)
-          const data = Object.fromEntries(formData)
-          onSubmit(data)
-        }}
-      >
-        <FieldGroup>
-          <FieldSet>
-            <FieldLegend>{company ? "Edit Company" : "Add New Company"}</FieldLegend>
-            <FieldDescription>Enter the company details below.</FieldDescription>
-            <FieldGroup>
-              {fields.map((field) => (
-                <Field key={field.id}>
-                  <FieldLabel htmlFor={field.id}>{field.label}</FieldLabel>
-                  {field.type === "input" && (
-                    <Input
-                      id={field.id}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      defaultValue={field.defaultValue}
-                      required={field.required || false}
-                    />
-                  )}
-                  {field.type === "textarea" && (
-                    <Textarea
-                      id={field.id}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      defaultValue={field.defaultValue}
-                      className="resize-none"
-                    />
-                  )}
-                  {field.type === "select" && (
-                    <Select defaultValue={field.defaultValue} name={field.name}>
-                      <SelectTrigger id={field.id}>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {field.options?.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </Field>
-              ))}
-            </FieldGroup>
-          </FieldSet>
-
-          <FieldSeparator />
-
-          <Field orientation="horizontal" className="mt-4 justify-end space-x-2">
-            <Button
-              className="bg-[#B91434] text-white hover:bg-red-900 px-4 py-2 rounded-md"
-            >
-              Save
-            </Button>
-          </Field>
-        </FieldGroup>
-      </form>
-    </div>
+    <DynamicForm
+      title={company ? "Edit Organization" : "Add New Organization"}
+      description="Enter organization details below."
+      fields={fields}
+      onSubmit={handleSubmit}
+      errors={errors}
+    />
   )
 }

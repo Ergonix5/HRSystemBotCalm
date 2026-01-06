@@ -2,6 +2,7 @@ import { id } from "zod/v4/locales"
 
 //Company Table
 export type Company = {
+  _id: string
   company_id: string
   company_name: string
   company_description: string
@@ -11,6 +12,7 @@ export type Company = {
 
 //Designation Table
 export type Designation = {
+  _id: string
   designation_id: string   
   title: string            
   company_name: string   
@@ -21,6 +23,7 @@ export type Designation = {
 
 //Employee Table
 export type Employee = {
+  _id: string
   employee_id: string
   company_id: string
   role_id: string
@@ -34,4 +37,37 @@ export type Employee = {
   join_date: string
   profile_pic?: string
   status: "Active" | "Inactive"
+}
+
+
+export type Role= {
+  role_id: string; 
+  roleName: string;
+  description: string;
+  status: 'Active' | 'Inactive';
+  userCount: number;
+  permissions: string[];
+  color: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type Permission ={
+  id: string;
+  name: string;
+  description: string;
+  category: 'Users' | 'Content' | 'Reports' | 'Settings';
+}
+
+//Resusableform types
+export type FormField = {
+  id: string
+  name: string
+  label: string
+  placeholder?: string
+  type: "input" | "textarea" | "select" |"permissions"
+  inputType?: string
+  required?: boolean
+  defaultValue?: any
+  options?: { value: string; label: string }[]
 }

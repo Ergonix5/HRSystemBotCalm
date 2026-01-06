@@ -1,5 +1,5 @@
 import mongoose, { models, model, Schema, Types, mongo } from "mongoose";
-import { Organization } from "./organization.model";
+import "./organization.model";
 
 
 
@@ -14,7 +14,7 @@ const leaveTypeSchemna = new Schema(
         
         organization: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Organization",
+            ref: "organization",
             required: true,
         },
 
@@ -41,4 +41,4 @@ const leaveTypeSchemna = new Schema(
 
 leaveTypeSchemna.index({ organization: 1, leave_type_id: 1 }, { unique: true });
 
-export const LeaveType = models.LeaveType || model("leaveTypes", leaveTypeSchemna);
+export const LeaveType = models.LeaveType || model("leaveType", leaveTypeSchemna);

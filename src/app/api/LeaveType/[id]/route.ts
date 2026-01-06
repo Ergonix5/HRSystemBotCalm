@@ -3,7 +3,6 @@ import { connectDB } from "@/src/lib/db";
 import { validateBody } from "@/src/lib/validate";
 import { leaveTypeCreateSchema } from "@/src/validators/leaveType.schema";
 import { NextResponse } from "next/server";
-import { success } from "zod";
 
 
 

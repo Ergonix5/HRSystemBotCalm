@@ -1,11 +1,12 @@
 import { Schema, models, model, Types } from "mongoose";
+import "./organization.model"
 
 const roleSchema = new Schema(
   {
     //link role to organization
     organization: {
       type: Types.ObjectId,
-      ref: "organizations",
+      ref: "organization",
       required: true,
     },
 
@@ -31,6 +32,7 @@ const roleSchema = new Schema(
       type: [String],
       default: [], // ["employee.read", "attendance.mark"]
     },
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
   },
   { timestamps: true }
 );
@@ -38,4 +40,4 @@ const roleSchema = new Schema(
 // role_id must be unique PER organization (not globally)
 roleSchema.index({ organization: 1, role_id: 1 }, { unique: true });
 
-export const Role = models.Role || model("roles", roleSchema);
+export const Role = models.Role || model("role", roleSchema);
