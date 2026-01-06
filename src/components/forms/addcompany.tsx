@@ -1,7 +1,10 @@
 "use client"
 
 import { Company } from "../../app/types/types"
-import     { DynamicForm,FormField } from "./reusableform"
+import { DynamicForm } from "./reusableform"
+import { type FormField } from '@/src/app/types/types';
+import { useFormValidation } from '../../hooks/useFormValidation'
+import { companyCreateSchema } from '../../validators/organization.schema'
 
 interface CompanyFormProps {
   company?: Company
@@ -9,6 +12,8 @@ interface CompanyFormProps {
 }
 
 export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
+  const { errors, validate } = useFormValidation(companyCreateSchema)
+
   const fields: FormField[] = [
     {
       id: "organization-id",
@@ -49,12 +54,19 @@ export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
     },
   ]
 
+  const handleSubmit = (data: any) => {
+    if (validate(data)) {
+      onSubmit(data)
+    }
+  }
+
   return (
     <DynamicForm
       title={company ? "Edit Organization" : "Add New Organization"}
       description="Enter organization details below."
       fields={fields}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
+      errors={errors}
     />
   )
 }

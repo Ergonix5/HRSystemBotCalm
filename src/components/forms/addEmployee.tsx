@@ -3,6 +3,9 @@
 import { Employee } from "../../app/types/types"
 import { DynamicForm} from "./reusableform"
 import { type FormField } from '@/src/app/types/types';
+import { useFormValidation } from '../../hooks/useFormValidation'
+import { employeeCreateSchema } from '../../validators/employee.schema'
+
 export function EmployeeForm({
   employee,
   onSubmit,
@@ -10,6 +13,8 @@ export function EmployeeForm({
   employee?: Employee
   onSubmit: (data: any) => void
 }) {
+  const { errors, validate } = useFormValidation(employeeCreateSchema)
+
   const fields: FormField[] = [
     { id: "company-id", name: "company_id", label: "Company ID", type: "input", required: true, defaultValue: employee?.company_id || "674b8b8b123456789abcdef0" },
     { id: "designation-id", name: "designation_id", label: "Designation ID", type: "input", required: true, defaultValue: employee?.designation_id || "674b8b8b123456789abcdef1" },
@@ -25,13 +30,20 @@ export function EmployeeForm({
     { id: "status", name: "status", label: "Status", type: "select", defaultValue: employee?.status, options: [{ value: "Active", label: "Active" }, { value: "Inactive", label: "Inactive" }] },
   ]
 
+  const handleSubmit = (data: any) => {
+    if (validate(data)) {
+      onSubmit(data)
+    }
+  }
+
   return (
     <DynamicForm
       title={employee ? "Edit Employee" : "Add New Employee"}
       description="Enter employee details below."
       fields={fields}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       gridCols={2}
+      errors={errors}
     />
   )
 }
