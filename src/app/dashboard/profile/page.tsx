@@ -13,7 +13,7 @@ import ProfileComponent from "../../../components/employee-portal/profile/profil
 import { NotificationProvider } from "../../../contexts/NotificationContext";
 
 export default function Profile() {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("profile");
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -30,7 +30,7 @@ export default function Profile() {
       case "profile":
         return <ProfileComponent />;
       default:
-        return <Dashboard />;
+        return <ProfileComponent />;
     }
   };
 

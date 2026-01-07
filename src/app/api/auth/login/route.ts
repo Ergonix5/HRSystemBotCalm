@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { email, password } = bodySchema.parse(body);
 
-    {/*password = h@SQSc85himQ */}
+    // password = h@SQSc85himQ
 
     const user = await Employee.findOne({ email }).select("+hash_password").lean();
 
