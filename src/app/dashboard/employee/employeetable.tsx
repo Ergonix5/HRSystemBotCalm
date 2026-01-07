@@ -7,7 +7,7 @@ import { type Employee } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 import { EmployeeForm } from "../../../components/forms/addEmployee"
 import { createEmployee } from "../../../lib/api"
 import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
@@ -97,6 +97,10 @@ export function EmployeeTable({ employees }: Props) {
       {/* add new employee  */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Employee</DialogTitle>
+            <DialogDescription>Enter employee details below.</DialogDescription>
+          </DialogHeader>
           <EmployeeForm
             onSubmit={async (data) => {
               try {
@@ -116,6 +120,10 @@ export function EmployeeTable({ employees }: Props) {
       {/* Edit employee details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Employee</DialogTitle>
+            <DialogDescription>Update employee details below.</DialogDescription>
+          </DialogHeader>
           {employeeToEdit && (
             <EditEmployeeForm
               employee={employeeToEdit}
