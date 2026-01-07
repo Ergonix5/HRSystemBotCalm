@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/src/lib/db";
 import { Organization } from "../../models/organization.model";
 import { validateBody } from "../../../lib/validate";
-import { oraganiationCreateSchema } from "../../../validators/organization.schema";
+import { organizationCreateSchema } from "../../../validators/organization.schema";
 import { paginate } from "../../service/pagination.service";
 
 /**
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     await connectDB();
 
     // Validate request body against schema
-    const result = await validateBody(req, oraganiationCreateSchema);
+    const result = await validateBody(req, organizationCreateSchema);
     if (!result.ok) return result.res;
 
     // Create new designation in database
