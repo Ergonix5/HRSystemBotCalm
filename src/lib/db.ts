@@ -20,7 +20,7 @@ if (!cached)
 
 export async function connectDB()
 {
-    if (cached.com)
+    if (cached.conn)
     {
         return cached.conn;
     }
@@ -32,6 +32,6 @@ export async function connectDB()
         }).then(mongoose => mongoose);
     }
 
-    cached.com = await cached.promise;
+    cached.conn = await cached.promise;
     return cached.conn;
 }
