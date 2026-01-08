@@ -18,7 +18,6 @@ import {
 } from "../../components/ui/select"
 import { Textarea } from "../../components/ui/textarea"
 import { Button } from "../../components/ui/button"
-import { DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog"
 import { type FormField } from "@/src/app/types/types"
 
 // Props for the DynamicForm component
@@ -48,13 +47,6 @@ export  function DynamicForm({
 }: DynamicFormProps) {
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <DialogHeader>
-        <DialogTitle>{title}</DialogTitle>
-        {description && (
-          <DialogDescription>{description}</DialogDescription>
-        )}
-      </DialogHeader>
-
       {/* Form submission handling */}
       <form
         onSubmit={(e) => {
@@ -124,6 +116,7 @@ export  function DynamicForm({
                       <Select
                         defaultValue={field.defaultValue}
                         name={field.name}
+                        onValueChange={field.onChange}
                       >
                         <SelectTrigger id={field.id} className={errors[field.name] ? "border-red-500" : ""}>
                           <SelectValue placeholder="Select option" />

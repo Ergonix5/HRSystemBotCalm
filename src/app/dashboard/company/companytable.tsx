@@ -10,7 +10,7 @@ import { CompanyDetailsModal } from "../../../components/ViewDetails/company-det
 import { CompanyForm } from "../../../components/forms/addcompany"
 import { createOrganization, updateOrganization } from "../../../lib/api"
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 import { Plus ,Search} from "lucide-react"
 
 
@@ -112,6 +112,10 @@ export function CompanyTable({ organizations }: Props) {
       {/* Add new company  */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Company</DialogTitle>
+            <DialogDescription>Enter company details below.</DialogDescription>
+          </DialogHeader>
           <CompanyForm
             onSubmit={async (data) => {
               try {
@@ -130,6 +134,10 @@ export function CompanyTable({ organizations }: Props) {
       {/* Edit company details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Company</DialogTitle>
+            <DialogDescription>Update company details below.</DialogDescription>
+          </DialogHeader>
           {companyToEdit && (
             <EditCompanyForm
               company={companyToEdit}
