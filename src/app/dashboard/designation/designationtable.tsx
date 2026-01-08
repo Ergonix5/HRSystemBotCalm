@@ -10,7 +10,7 @@ import { createDesignation, updateDesignation } from "../../../lib/api"
 import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import { DesignationForm } from "../../../components/forms/addDesignation"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 
 type Props = {
   designations: Designation[]
@@ -88,6 +88,10 @@ export function DesignationTable({ designations }: Props) {
       {/* adding a new designation */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Designation</DialogTitle>
+            <DialogDescription>Enter designation details below.</DialogDescription>
+          </DialogHeader>
           <DesignationForm
             onSubmit={async (data) => {
               try {
@@ -106,6 +110,10 @@ export function DesignationTable({ designations }: Props) {
       {/* editing an existing designation */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Designation</DialogTitle>
+            <DialogDescription>Update designation details below.</DialogDescription>
+          </DialogHeader>
           {designationToEdit && (
             <EditDesignationForm
               designation={designationToEdit}
