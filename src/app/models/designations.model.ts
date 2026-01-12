@@ -1,6 +1,6 @@
 import { Schema, models, model } from "mongoose";
 
-const designationShema = new Schema(
+const designationSchema = new Schema(
   {
     designation_id: {
       type: String,
@@ -25,4 +25,4 @@ const designationShema = new Schema(
 );
 
 export const Designation =
-  models.Designation || model("designations", designationShema);
+  models.designations || model("designations", designationSchema);

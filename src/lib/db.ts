@@ -27,9 +27,17 @@ export async function connectDB()
 
     if (!cached.promise)
     {
+        console.log('Attempting to connect to MongoDB:', MONGODB_URI ? 'URI provided' : 'URI missing');
+        
         cached.promise = mongoose.connect(MONGODB_URI, {
             bufferCommands: false,
-        }).then(mongoose => mongoose);
+        }).then(mongoose => {
+            console.log('MongoDB connected successfully');
+            return mongoose;
+        }).catch(err => {
+            console.error('MongoDB connection error:', err);
+            throw err;
+        });
     }
 
     cached.conn = await cached.promise;

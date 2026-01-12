@@ -69,6 +69,7 @@ const employeeSchema = new Schema(
     phone: {
       type: String,
       trim: true,
+      required: false,
       // optional: basic phone validation
       match: [/^\+?[0-9]{7,15}$/, "Invalid phone number"],
     },
@@ -94,6 +95,43 @@ const employeeSchema = new Schema(
       trim: true,
       maxlength: 200,
     },
+
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: ""
+    },
+
+    skills: {
+      type: [String],
+      default: []
+    },
+
+    education: {
+      type: [{
+        degree: String,
+        school: String,
+        year: String
+      }],
+      default: []
+    },
+
+    experience: {
+      type: [{
+        role: String,
+        company: String,
+        period: String,
+        desc: String
+      }],
+      default: []
+    },
+
+    profile_image: {
+      type: String,
+      trim: true,
+      default: ""
+    },
   },
   { timestamps: true }
 );
@@ -105,4 +143,4 @@ employeeSchema.index({ organization: 1, email: 1 }, { unique: true });
 employeeSchema.index({ organization: 1, role: 1 });
 employeeSchema.index({ organization: 1, designation: 1 });
 
-export const Employee = models.Employee || model("employees", employeeSchema);
+export const Employee = models.employees || model("employees", employeeSchema);

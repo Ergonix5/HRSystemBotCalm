@@ -7,30 +7,37 @@ import { Employee } from "@/src/app/models/employee.model";
 
 export async function GET() {
   try {
+    console.log("Profile GET request started");
     const cookieStore = await cookies();
     const token = cookieStore.get(ACCESS_COOKIE)?.value;
     
     if (!token) {
+      console.log("No token found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    console.log("Token found, verifying...");
     const payload = verifyAccessToken(token);
+    console.log("Token verified, connecting to DB...");
     await connectDB();
 
+    console.log("DB connected, finding employee...");
     const employee = await Employee.findById(payload.sub)
       .populate('organization', 'name')
-      .populate('designation', 'name')
-      .populate('role', 'name')
+      .populate('designation', 'title')
+      .populate('role', 'role_name')
       .select('-hash_password');
 
     if (!employee) {
+      console.log("Employee not found");
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
 
+    console.log("Employee found, returning data");
     return NextResponse.json({ employee }, { status: 200 });
   } catch (error) {
     console.error("Profile fetch error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error", details: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -46,8 +53,8 @@ export async function PUT(request: Request) {
     const payload = verifyAccessToken(token);
     const body = await request.json();
     
-    // Only allow updating certain fields
-    const allowedFields = ['phone', 'address'];
+    // Allow updating profile fields
+    const allowedFields = ['phone', 'address', 'bio', 'skills', 'education', 'experience'];
     const updateData: any = {};
     
     for (const field of allowedFields) {
@@ -72,7 +79,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ employee }, { status: 200 });
+    return NextResponse.json({ employee, message: "Profile updated successfully" }, { status: 200 });
   } catch (error) {
     console.error("Profile update error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

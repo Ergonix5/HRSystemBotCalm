@@ -14,6 +14,7 @@ interface ProfileHeaderProps {
   profileImage: string | null;
   onToggleEdit: () => void;
   onCancel?: () => void;
+  onSave?: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -26,7 +27,8 @@ export function ProfileHeader({
   onToggleEdit, 
   onInputChange, 
   onImageUpload,
-  onCancel 
+  onCancel,
+  onSave
 }: ProfileHeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -121,7 +123,7 @@ export function ProfileHeader({
               <X size={16} /> Cancel
             </Button>
           )}
-          <Button onClick={onToggleEdit} variant={isEditing ? "default" : "outline"}>
+          <Button onClick={isEditing ? onSave : onToggleEdit} variant={isEditing ? "default" : "outline"}>
             {isEditing ? <><Save size={16} /> Save</> : <><Edit2 size={16} /> Edit Profile</>}
           </Button>
         </div>

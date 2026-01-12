@@ -39,4 +39,4 @@ const roleSchema = new Schema(
 // role_id must be unique PER organization (not globally)
 roleSchema.index({ organization: 1, role_id: 1 }, { unique: true });
 
-export const Role = models.Role || model("roles", roleSchema);
+export const Role = models.roles || model("roles", roleSchema);
