@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-const BASE_URL =  'http://localhost:3000';
+// .ENV
+const BASE_URL = 'http://localhost:3000';
 
 async function request<T>(path: string, options: RequestInit = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -30,6 +31,7 @@ type AuthState = {
 export const useAuth = create<AuthState>((set) => ({
   user: null,
   loading: false,
+  
 
   login: async (email, password) => {
     set({ loading: true });
