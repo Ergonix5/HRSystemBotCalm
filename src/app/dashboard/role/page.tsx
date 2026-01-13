@@ -21,7 +21,8 @@ import { Dialog, DialogContent } from "../../../components/ui/dialog";
 
 import { type Role, type Permission } from "@/src/app/types/types";
 import { availablePermissions } from "./role";
-import { createRole, getRoles } from "@/src/lib/api";
+import { createRole ,getRoles } from "../../../services/role.service";
+
 
 export default function Page() {
   //  STATE 
@@ -46,7 +47,7 @@ export default function Page() {
   //  FETCH ROLES 
   useEffect(() => {
     const fetchRoles = async () => {
-      const data = await getRoles();
+      const data = await getRoles("507f1f77bcf86cd799439011");
       console.log("Fetched roles:", data);
       setRoles(data);
     };
@@ -84,7 +85,7 @@ export default function Page() {
 
       const response = await createRole(payload);
 
-      if (response.success) {
+      if (response?.success) {
         const newRole: Role = {
           role_id: payload.role_id,
           roleName: payload.role_name,

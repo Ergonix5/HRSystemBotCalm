@@ -5,7 +5,7 @@ import { DashboardCard } from "../../../components/dashboard/dashboard-card"
 import { Building2, CheckCircle, XCircle } from "lucide-react"
 import { CompanyTable } from "./companytable"
 import { type Company } from "../../types/types"
-import { getOrganizations } from "@/src/lib/api"
+import { getOrganizations } from "../../../services/organization.service"
 import { Spinner } from "@/src/components/ui/spinner"
 
 export default function CompanyPage() {

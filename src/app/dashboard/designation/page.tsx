@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { type Designation } from "../../types/types"
-import { getDesignations } from "@/src/lib/api"
+import { getDesignations } from "../../../services/designation.service"
 import { DesignationTable } from "./designationtable"
 import { Spinner } from "@/src/components/ui/spinner"
 

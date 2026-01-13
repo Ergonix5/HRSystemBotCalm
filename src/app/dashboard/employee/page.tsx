@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { type Employee } from "../../types/types"
-import { getEmployees } from "@/src/lib/api"
+import { getEmployees } from "../../../services/employee.service"
 import { EmployeeTable } from "./employeetable"
 import { Spinner } from "@/src/components/ui/spinner"
 

@@ -9,7 +9,7 @@ import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 import { EmployeeForm } from "../../../components/forms/addEmployee"
-import { createEmployee } from "../../../lib/api"
+import { createEmployee } from "../../../services/employee.service"
 import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
 
 type Props = {
