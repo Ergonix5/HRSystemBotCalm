@@ -3,17 +3,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import { Users, Calendar, Briefcase, UserCheck, Plus, Clock } from "lucide-react";
+import { candidatesData, jobPostsData } from "./interviewData";
 
 interface InterviewDashboardProps {
   onTabChange?: (tab: string) => void;
 }
 
 export default function InterviewDashboard({ onTabChange }: InterviewDashboardProps) {
+  const totalApplicants = candidatesData.length;
+  const interviewsToday = 12;
+  const openJobPosts = jobPostsData.filter(job => job.status === "Open").length;
+  const selectedCandidates = candidatesData.filter(c => c.status === "Shortlisted").length;
+
   const stats = [
-    { title: "Total Applicants", value: "248", icon: Users },
-    { title: "Interviews Today", value: "12", icon: Calendar },
-    { title: "Open Job Posts", value: "8", icon: Briefcase },
-    { title: "Selected Candidates", value: "34", icon: UserCheck },
+    { title: "Total Applicants", value: totalApplicants.toString(), icon: Users },
+    { title: "Interviews Today", value: interviewsToday.toString(), icon: Calendar },
+    { title: "Open Job Posts", value: openJobPosts.toString(), icon: Briefcase },
+    { title: "Selected Candidates", value: selectedCandidates.toString(), icon: UserCheck },
   ];
 
   const recentActivity = [
