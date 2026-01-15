@@ -40,13 +40,17 @@ export default function CandidatesSection() {
   };
 
   const filteredCandidates = candidates.filter((candidate) => {
-    const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          candidate.name.toLowerCase().replace(" ", "") + "@example.com".includes(searchTerm.toLowerCase());
+    const candidateName = candidate.name || `${candidate.first_name || ''} ${candidate.last_name || ''}`.trim();
+    const candidateJob = candidate.job || candidate.current_position || '';
+    const candidateStatus = candidate.status || '';
+    
+    const matchesSearch = candidateName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (candidate.email || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesJob = jobFilter === "all" || 
-                       (jobFilter === "se" && candidate.job === "Software Engineer") ||
-                       (jobFilter === "ui" && candidate.job === "UI Designer") ||
-                       (jobFilter === "qa" && candidate.job === "QA Engineer");
-    const matchesStatus = statusFilter === "all" || candidate.status.toLowerCase() === statusFilter.toLowerCase();
+                       (jobFilter === "se" && candidateJob.includes("Software Engineer")) ||
+                       (jobFilter === "ui" && candidateJob.includes("Designer")) ||
+                       (jobFilter === "qa" && candidateJob.includes("QA"));
+    const matchesStatus = statusFilter === "all" || candidateStatus.toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesJob && matchesStatus;
   });
 
@@ -122,12 +126,17 @@ export default function CandidatesSection() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCandidates.map((candidate) => (
-                  <TableRow key={candidate.id}>
-                    <TableCell className="font-medium">{candidate.name}</TableCell>
-                    <TableCell>{candidate.job}</TableCell>
-                    <TableCell>{candidate.experience}</TableCell>
-                    <TableCell>{candidate.score}</TableCell>
+                {filteredCandidates.map((candidate) => {
+                  const displayName = candidate.name || `${candidate.first_name} ${candidate.last_name}`;
+                  const displayJob = candidate.job || candidate.current_position;
+                  const displayExperience = candidate.experience || `${candidate.experience_years} years`;
+                  
+                  return (
+                  <TableRow key={candidate.id || candidate._id}>
+                    <TableCell className="font-medium">{displayName}</TableCell>
+                    <TableCell>{displayJob}</TableCell>
+                    <TableCell>{displayExperience}</TableCell>
+                    <TableCell>{candidate.score || 'N/A'}</TableCell>
                     <TableCell>{getStatusBadge(candidate.status)}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -143,7 +152,8 @@ export default function CandidatesSection() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
