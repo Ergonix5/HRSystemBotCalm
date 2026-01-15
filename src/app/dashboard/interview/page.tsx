@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import InterviewNavigationTabs from "@/src/components/interview/InterviewNavigationTabs";
+import InterviewDashboard from "@/src/components/interview/InterviewDashboard";
 
 export default function InterviewPage() {
-  const [activeTab, setActiveTab] = useState("interviews");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "dashboard":
-        return <div className="p-6 bg-white rounded-lg shadow">Dashboard Summary</div>;
+        return <InterviewDashboard onTabChange={setActiveTab} />;
       case "candidates":
         return <div className="p-6 bg-white rounded-lg shadow">Candidates - Applicants</div>;
       case "interviews":
@@ -19,7 +20,7 @@ export default function InterviewPage() {
       case "reports":
         return <div className="p-6 bg-white rounded-lg shadow">Reports - Analytics</div>;
       default:
-        return <div className="p-6 bg-white rounded-lg shadow">Interviews - Interview Process</div>;
+        return <InterviewDashboard onTabChange={setActiveTab} />;
     }
   };
 
