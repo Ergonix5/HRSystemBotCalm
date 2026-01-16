@@ -60,10 +60,10 @@ export function EditEmployeeForm({
     { id: "join-date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
     {
       id: "status",
-      name: "status",
+      name: "employment_status",
       label: "Status",
       type: "select",
-      defaultValue: employee.status,
+      defaultValue: employee.employment_status,
       options: [
         { value: "Active", label: "Active" },
         { value: "Inactive", label: "Inactive" },

@@ -31,3 +31,17 @@ export async function createRole(data: any): Promise<CreateRoleResponse> {
     body: JSON.stringify(data),
   })
 }
+
+interface UpdateRoleResponse {
+  success: boolean;
+  data?: any;
+  message?: string;
+}
+
+export async function updateRole(roleId: string, data: any): Promise<UpdateRoleResponse> {
+  return apiFetch<UpdateRoleResponse>(`/api/Role/${roleId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  })
+}
+

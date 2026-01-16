@@ -36,7 +36,7 @@ export type Employee = {
   date_of_birth: string
   join_date: string
   profile_pic?: string
-  employment_status: "active" | "inactive"
+  employment_status: "Active"   | "Inactive"
 }
 
 
