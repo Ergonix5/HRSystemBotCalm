@@ -7,10 +7,9 @@ import { type Company } from "../../types/types"
 import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
-import { CompanyForm } from "../../../components/forms/addcompany"
-import { createOrganization, updateOrganization } from "../../../services/organization.service"
+import {CompanyForm} from "../../../components/forms/addcompany"
+import { createOrganization, updateOrganization, deleteOrganization } from "../../../services/organization.service"
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 import { Plus ,Search} from "lucide-react"
 
 
@@ -48,6 +47,22 @@ export function CompanyTable({ organizations }: Props) {
     if (company) {
       setCompanyToEdit(company)
       setIsEditOpen(true)
+    }
+  }
+
+  //delete a specific company
+  const handleDeleteCompany = async (companyId: string) => {
+    const company = organizations.find(o => o.company_id === companyId)
+    if (!company) return
+
+    if (window.confirm(`Are you sure you want to delete ${company.company_name}?`)) {
+      try {
+        await deleteOrganization(company._id)
+        window.location.reload()
+      } catch (error) {
+        console.error("Failed to delete company:", error)
+        alert("Failed to delete company. Please try again.")
+      }
     }
   }
 
@@ -96,7 +111,7 @@ export function CompanyTable({ organizations }: Props) {
 
       {/* Table */}
       <DataTable
-        columns={columns(handleViewCompany, handleEditCompany)}
+        columns={columns(handleViewCompany, handleEditCompany, handleDeleteCompany)}
         data={organizations}
         filterColumn="company_name"
         showStatusFilter
@@ -110,12 +125,8 @@ export function CompanyTable({ organizations }: Props) {
       />
 
       {/* Add new company  */}
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Add New Company</DialogTitle>
-            <DialogDescription>Enter company details below.</DialogDescription>
-          </DialogHeader>
+      {isAddOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <CompanyForm
             onSubmit={async (data) => {
               try {
@@ -127,35 +138,31 @@ export function CompanyTable({ organizations }: Props) {
                 alert("Failed to create company. Please try again.")
               }
             }}
+            onClose={() => setIsAddOpen(false)}
           />
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Edit company details */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Company</DialogTitle>
-            <DialogDescription>Update company details below.</DialogDescription>
-          </DialogHeader>
-          {companyToEdit && (
-            <EditCompanyForm
-              company={companyToEdit}
-              onSubmit={async (data) => {
-                try {
-                  await updateOrganization(companyToEdit._id, data)
-                  setIsEditOpen(false)
-                  setCompanyToEdit(null)
-                  window.location.reload()
-                } catch (error) {
-                  console.error("Failed to update organization:", error)
-                  alert("Failed to update organization. Please try again.")
-                }
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      {isEditOpen && companyToEdit && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <EditCompanyForm
+            company={companyToEdit}
+            onSubmit={async (data) => {
+              try {
+                await updateOrganization(companyToEdit._id, data)
+                setIsEditOpen(false)
+                setCompanyToEdit(null)
+                window.location.reload()
+              } catch (error) {
+                console.error("Failed to update organization:", error)
+                alert("Failed to update organization. Please try again.")
+              }
+            }}
+            onClose={() => setIsEditOpen(false)}
+          />
+        </div>
+      )}
     </div>
   )
 }

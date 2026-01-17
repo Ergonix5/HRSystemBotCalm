@@ -9,9 +9,10 @@ import { organizationCreateSchema } from '../../validators/organization.schema'
 interface CompanyFormProps {
   company?: Company
   onSubmit: (data: any) => void
+  onClose?: () => void
 }
 
-export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
+export function CompanyForm({ company, onSubmit, onClose }: CompanyFormProps) {
   const { errors, validate } = useFormValidation(organizationCreateSchema)
 
   const fields: FormField[] = [
@@ -66,6 +67,7 @@ export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
       description="Enter organization details below."
       fields={fields}
       onSubmit={handleSubmit}
+      onClose={onClose}
       errors={errors}
     />
   )

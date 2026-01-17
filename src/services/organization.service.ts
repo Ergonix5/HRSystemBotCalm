@@ -28,3 +28,9 @@ export async function updateOrganization(id: string, data: any) {
     body: JSON.stringify(data),
   })
 }
+
+export async function deleteOrganization(id: string) {
+  return apiFetch(`/api/Organization/${id}`, {
+    method: "DELETE",
+  })
+}

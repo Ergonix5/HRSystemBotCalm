@@ -41,6 +41,9 @@ export type Employee = {
 
 
 export type Role= {
+  _id?: string;
+  organization?: string;
+  organizationName?: string;
   role_id: string; 
   roleName: string;
   description: string;
