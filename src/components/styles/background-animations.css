@@ -1,0 +1,9 @@
+@keyframes scan {
+  0% { transform: translateY(-100vh); }
+  100% { transform: translateY(100vh); }
+}
+
+.animate-scan {
+  animation: scan 10s linear infinite;
+  opacity: 0.5;
+}
