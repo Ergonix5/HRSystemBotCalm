@@ -320,7 +320,7 @@ export default function Page() {
             <p>Loading roles...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3  3xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-3  2xl:grid-cols-3 3xl:grid-cols-5 gap-8">
             {filteredRoles.length ? (
               filteredRoles.map((role, index) => (
                 <ReusableRoleCard

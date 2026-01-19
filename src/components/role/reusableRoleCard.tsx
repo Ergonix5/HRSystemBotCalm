@@ -8,9 +8,9 @@ import {
   UserRoundPen,
   Trash2,
   Clock,
+  ChevronRight,
+  MoreVertical,
 } from "lucide-react";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import { type Role, type Permission } from "@/src/app/types/types";
 
 interface ReusableRoleCardProps {
@@ -32,145 +32,159 @@ export default function ReusableRoleCard({
   formatDateTime,
   companyName,
 }: ReusableRoleCardProps) {
-  return (
-    <div className="group relative border-black/50 bg-white border  overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1 w-full flex flex-col">
-      
-      {/* Top Accent */}
-      {/* <div className="h-1.5 w-full bg-[#B91434]" /> */}
+  const isActive = role.status === "Active";
 
-      <div className="p-6 flex flex-col flex-grow">
+  return (
+    <div className=" relative flex flex-col w-full overflow-hidden transition-all duration-500 bg-white border border-slate-200 rounded-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-1.5">
+      
+      {/* Top Accent Strip */}
+      <div className="h-1 w-full bg-gradient-to-r from-[#B91434] via-[#e21b41] to-[#B91434] " />
+
+      <div className="relative p-6 flex flex-col flex-grow">
+        {/* Background pattern */}
+        {/* <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-700">
+          <Shield className="size-32" />
+        </div> */}
+
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex gap-4">
-            <div className="flex items-center justify-center size-12 rounded-xl bg-[#B91434]/5 border border-[#B91434]/10 group-hover:bg-[#B91434] group-hover:text-white transition-colors text-[#B91434]">
-              <Shield className="size-6" />
-            </div>
+            {/* <div className="relative flex items-center justify-center size-14 rounded-2xl bg-slate-50 border border-slate-100 group-hover:bg-[#B91434] group-hover:border-[#B91434] transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#B91434]/30">
+              <Shield className="size-7 text-[#B91434] group-hover:text-white transition-colors duration-300" />
+            </div> */}
 
-            <div>
-              <h3 className="font-bold text-lg text-black group-hover:text-[#B91434] transition-colors">
+            <div className="flex flex-col">
+              <h3 className="text-xl font-extrabold tracking-tight text-[#B91434] transition-colors">
                 {role.roleName}
               </h3>
-              <span className="block text-[10px] font-mono text-slate-400 uppercase">
-                ID: {role.role_id}
-              </span>
-              {companyName && (
-                <span className="block text-[10px] font-bold text-slate-500 uppercase">
-                  {companyName}
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[10px] font-bold font-mono px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded uppercase">
+                  ID: {role.role_id}
                 </span>
-              )}
+                {companyName && (
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    • {companyName}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
-          <span
-            className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
-              role.status === "Active"
-                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                : "bg-red-50 text-red-700 border-red-100"
-            }`}
-          >
+          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border-2 ${
+            isActive 
+              ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+              : "bg-red-50 text-red-600 border-red-100"
+          }`}>
+            <span className={`size-1.5 rounded-full ${isActive ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />
             {role.status}
-          </span>
+          </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-slate-600 leading-relaxed mb-6 flex-grow">
-          {role.description || "No description provided for this security role."}
-        </p>
+        <div className="relative mb-6">
+          <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 min-h-[40px] italic">
+            {role.description || "No description provided for this security role."}
+          </p>
+        </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-0 border border-slate-100 rounded-lg overflow-hidden mb-6">
-          <div className="flex items-center gap-3 p-3 bg-slate-50/50 border-r border-slate-100">
-            <Users className="size-4 text-[#B91434]" />
-            <div>
-              <span className="text-sm font-black text-black">
-                {role.userCount}
-              </span>
-              <span className="block text-[9px] text-slate-400 uppercase font-bold">
-                Users
-              </span>
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="flex flex-col p-3 rounded-xl bg-slate-50/80 border border-slate-100 group-hover:bg-white group-hover:border-slate-200 transition-all">
+            <div className="flex items-center gap-2 mb-1">
+              <Users className="size-3.5 text-[#B91434]" />
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Users</span>
             </div>
+            <span className="text-lg font-black text-slate-900">{role.userCount}</span>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-slate-50/50">
-            <Lock className="size-4 text-[#B91434]" />
-            <div>
-              <span className="text-sm font-black text-black">
-                {role.permissions.length}
-              </span>
-              <span className="block text-[9px] text-slate-400 uppercase font-bold">
-                Permissions
-              </span>
+          <div className="flex flex-col p-3 rounded-xl bg-slate-50/80 border border-slate-100 group-hover:bg-white group-hover:border-slate-200 transition-all">
+            <div className="flex items-center gap-2 mb-1">
+              <Lock className="size-3.5 text-[#B91434]" />
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Access</span>
             </div>
+            <span className="text-lg font-black text-slate-900">{role.permissions.length}</span>
           </div>
         </div>
 
         {/* Permissions */}
         <div className="mb-8">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Core Capabilities
-          </span>
+          <div className="flex items-center justify-between mb-3 px-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+              Capabilities
+            </span>
+          </div>
 
-          <div className="flex flex-wrap gap-1.5 mt-3">
+          <div className="flex flex-wrap gap-2">
             {role.permissions.slice(0, 3).map((permId) => {
               const perm = availablePermissions.find((p) => p.id === permId);
-              return (
-                perm && (
-                  <Badge
-                    key={permId}
-                    variant="outline"
-                    className="text-[11px] border-slate-200 text-slate-700 shadow-sm"
-                  >
-                    {perm.name}
-                  </Badge>
-                )
-              );
+              return perm ? (
+                <div
+                  key={permId}
+                  className="px-2.5 py-1 text-[11px] font-semibold bg-white border border-slate-200 text-slate-600 rounded-lg shadow-sm group-hover:border-slate-300 transition-colors"
+                >
+                  {perm.name}
+                </div>
+              ) : null;
             })}
 
             {role.permissions.length > 3 && (
-              <span className="px-2 py-1 text-[10px] font-bold text-[#B91434] bg-[#B91434]/5 rounded border border-[#B91434]/10">
+              <div className="px-2.5 py-1 text-[10px] font-bold text-[#B91434] bg-[#B91434]/5 border border-[#B91434]/20 rounded-lg flex items-center">
                 +{role.permissions.length - 3} MORE
-              </span>
+              </div>
             )}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="space-y-2 pt-6 border-t border-slate-100">
-          <Button
+        <div className="mt-auto pt-6 border-t border-slate-100 flex flex-col gap-3">
+          <button
             onClick={() => onPermissions(role)}
-            className="w-full h-10 bg-black text-white text-xs font-bold rounded-lg hover:bg-[#B91434]"
+            className="group/btn relative w-full h-11 bg-slate-900 text-white text-xs font-black  flex items-center justify-center gap-2 overflow-hidden transition-all active:scale-[0.98] hover:bg-[#B91434] hover:shadow-lg hover:shadow-[#B91434]/30"
           >
-            <UserRoundPen className="size-4 mr-2" />
-            ASSIGN PERMISSIONS
-          </Button>
+            <div className="absolute inset-0 w-1/2 h-full bg-white/10 skew-x-[-20deg] -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]" />
+            <UserRoundPen className="size-4" />
+            <span className="tracking-widest uppercase"> Permissions</span>
+            <ChevronRight className="size-4 opacity-50 group-hover/btn:translate-x-1 transition-transform" />
+          </button>
 
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 text-[10px] font-bold uppercase"
+          <div className="flex gap-3">
+            <button
               onClick={() => onEdit(role)}
+              className="flex-1 h-8 flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest bg-white border border-slate-200 text-slate-700  hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98]"
             >
-              <Pencil className="size-3 mr-1" /> Edit
-            </Button>
+              <Pencil className="size-3.5" />
+              Edit
+            </button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 text-[10px] font-bold uppercase hover:text-red-600 hover:border-red-200"
+            <button
               onClick={() => onDelete(role)}
+              className="flex-1 h-8 flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest bg-white border border-slate-200 text-slate-400  hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all active:scale-[0.98]"
             >
-              <Trash2 className="size-3 mr-1" /> Delete
-            </Button>
+              <Trash2 className="size-3.5" />
+              Delete
+            </button>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="mt-4 flex items-center gap-1.5 text-[10px] text-slate-400">
-          <Clock className="size-3" />
-          <span>Last modified: {formatDateTime(role.updatedAt)}</span>
+        <div className="mt-5 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
+            <Clock className="size-3" />
+            <span>Updated: {formatDateTime(role.updatedAt)}</span>
+          </div>
+          <button className="text-slate-300 hover:text-slate-600 transition-colors">
+            <MoreVertical className="size-4" />
+          </button>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes shimmer {
+          100% {
+            transform: translateX(300%);
+          }
+        }
+      `}</style>
     </div>
   );
 }
