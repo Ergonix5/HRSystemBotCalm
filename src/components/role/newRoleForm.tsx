@@ -62,7 +62,7 @@ export default function NewRoleForm({
   };
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex flex-col sm:flex-row">
+    <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl  mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex flex-col sm:flex-row">
       {/* Left Accent Border */}
       <div className="w-full sm:w-[6px] h-[6px] sm:h-auto bg-[#B91434] flex-shrink-0" />
       
@@ -90,7 +90,7 @@ export default function NewRoleForm({
     <form onSubmit={onSubmit} className="p-4 sm:p-6 md:p-8 flex-grow">
 
       <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           <div className="grid gap-2">
             <Label htmlFor="roleName">Role Name *</Label>
             <Input
@@ -105,13 +105,13 @@ export default function NewRoleForm({
 
           <div className="grid gap-2">
             <Label htmlFor="status">Status *</Label>
-            <Select value={formData.status || "active"} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+            <Select value={formData.status || "Active"} onValueChange={(value) => setFormData({ ...formData, status: value })}>
               <SelectTrigger id="status">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="Active">Active</SelectItem>
+                <SelectItem value="Inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
           </div>

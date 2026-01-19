@@ -7,5 +7,5 @@ export const roleCreateSchema = z.object({
   company_name: z.string().optional(),
   description: z.string().optional(),
   permissions: z.array(z.string()).optional(),
-  status: z.enum(["active", "inactive"]).optional().default("active"),
+  status: z.enum(["Active", "Inactive"]).optional().default("Active"),
 });

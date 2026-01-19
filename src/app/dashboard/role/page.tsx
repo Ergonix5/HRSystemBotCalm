@@ -28,6 +28,8 @@ export default function Page() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [selectedOrganization, setSelectedOrganization] = useState<string>("all");
+  const [isLoading, setIsLoading] = useState(true);
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -56,14 +58,34 @@ export default function Page() {
   //  FETCH ROLES & COMPANIES
   useEffect(() => {
     const fetchData = async () => {
-      // replace with actual current organization id when available
-      const orgId = "507f1f77bcf86cd799439011";
-      const [rolesData, companiesData] = await Promise.all([
-        getRoles(orgId),
-        getOrganizations(),
-      ]);
-      setRoles(rolesData);
-      setCompanies(companiesData);
+      try {
+        setIsLoading(true);
+        const companiesData = await getOrganizations();
+        setCompanies(companiesData);
+
+        // Fetch roles for all organizations by fetching each organization's roles
+        if (companiesData.length > 0) {
+          const allRoles: Role[] = [];
+          for (const company of companiesData) {
+            try {
+              const companyRoles = await getRoles(company._id);
+              allRoles.push(...companyRoles);
+            } catch (error) {
+              console.error(`Failed to fetch roles for organization ${company._id}:`, error);
+            }
+          }
+          setRoles(allRoles);
+        }
+        
+        // Set first organization as selected by default if any exist
+        if (companiesData.length > 0) {
+          setSelectedOrganization(companiesData[0]._id);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchData();
@@ -122,7 +144,7 @@ export default function Page() {
           status: created.status === "Active" ? "Active" : "Inactive",
           userCount: created.user_count || 0,
           permissions: created.permissions || [],
-          color: created.color || "blue",
+          color: created.color || "gray",
           createdAt: created.createdAt || created.created_at || new Date().toISOString(),
           updatedAt: created.updatedAt || created.updated_at || new Date().toISOString(),
           organization: created.organization?._id || created.organization,
@@ -136,6 +158,7 @@ export default function Page() {
       }
     } catch (error) {
       console.error("Create role failed:", error);
+      alert("Failed to create role. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -199,9 +222,13 @@ export default function Page() {
       const matchesStatus =
         statusFilter === "all" || role.status === statusFilter;
 
-      return matchesSearch && matchesStatus;
+      // Filter by selected organization
+      const matchesOrganization =
+        selectedOrganization === "all" || role.organization === selectedOrganization;
+
+      return matchesSearch && matchesStatus && matchesOrganization;
     });
-  }, [roles, searchTerm, statusFilter]);
+  }, [roles, searchTerm, statusFilter, selectedOrganization]);
 
   //  UI 
   return (
@@ -214,8 +241,8 @@ export default function Page() {
         />
 
         {/* Search + Filter */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="relative flex-1">
+        <div className="flex flex-col md:flex-row items-center gap-3 mb-6">
+          <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               placeholder="Search roles..."
@@ -225,8 +252,22 @@ export default function Page() {
             />
           </div>
 
+          <Select value={selectedOrganization} onValueChange={setSelectedOrganization}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Select Organization" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Organizations</SelectItem>
+              {companies.map((company) => (
+                <SelectItem key={company._id} value={company._id}>
+                  {company.company_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-full md:w-[150px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -247,13 +288,16 @@ export default function Page() {
                 selectedPermissions={selectedPermissions}
                 setSelectedPermissions={setSelectedPermissions}
                 formData={formData}
-                setFormData={(data) =>
+                setFormData={(data) => {
+                  // If company ID is not set and we have a selected organization, use it
+                  const companyId = data.companyId || (selectedOrganization !== "all" ? selectedOrganization : "");
                   setFormData((prev) => ({
                     ...prev,
                     ...data,
+                    companyId,
                     roleId: prev.roleId || generateRoleId(),
-                  }))
-                }
+                  }));
+                }}
                 togglePermission={(id) =>
                   setSelectedPermissions((prev) =>
                     prev.includes(id)
@@ -271,23 +315,28 @@ export default function Page() {
         )}
 
         {/* Role Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
-          {filteredRoles.length ? (
-            filteredRoles.map((role, index) => (
-              <ReusableRoleCard
-                key={`${role.role_id}-${index}`}
-                role={role}
-                availablePermissions={availablePermissions}
-                formatDateTime={formatDateTime}
-                companyName={getCompanyName((role as any).organization || "")}
-                onEdit={(r) => {
-                  setSelectedRole(r);
-                  setFormData({
-                    roleName: r.roleName,
-                    description: r.description,
-                    status: r.status.toLowerCase(),
-                    companyId: (r as any).organization || "",
-                    roleId: r.role_id,
+        {isLoading ? (
+          <div className="col-span-full text-center py-12 text-muted-foreground">
+            <p>Loading roles...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3  3xl:grid-cols-4 gap-5">
+            {filteredRoles.length ? (
+              filteredRoles.map((role, index) => (
+                <ReusableRoleCard
+                  key={`${role.role_id}-${index}`}
+                  role={role}
+                  availablePermissions={availablePermissions}
+                  formatDateTime={formatDateTime}
+                  companyName={getCompanyName((role as any).organization || "")}
+                  onEdit={(r) => {
+                    setSelectedRole(r);
+                    setFormData({
+                      roleName: r.roleName,
+                      description: r.description,
+                      status: r.status.toLowerCase(),
+                      companyId: (r as any).organization || "",
+                      roleId: r.role_id,
                   });
                   setIsEditDialogOpen(true);
                 }}
@@ -302,12 +351,13 @@ export default function Page() {
                 }}
               />
             ))
-          ) : (
-            <div className="col-span-full text-center text-muted-foreground">
-              No roles found.
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="col-span-full text-center text-muted-foreground">
+                No roles found.
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Permissions Dialog */}
         {isPermissionsDialogOpen && (

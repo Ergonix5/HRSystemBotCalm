@@ -49,7 +49,7 @@ export  function DynamicForm({
   errors = {}
 }: DynamicFormProps) {
   return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex flex-col sm:flex-row">
+    <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl   mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex flex-col sm:flex-row">
       {/* Left Accent Border */}
       <div className="w-full sm:w-[6px] h-[6px] sm:h-auto bg-[#B91434] flex-shrink-0" />
       

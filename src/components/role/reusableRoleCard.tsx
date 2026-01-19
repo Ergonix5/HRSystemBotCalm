@@ -7,6 +7,7 @@ import {
   Pencil,
   UserRoundPen,
   Trash2,
+  Clock,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -31,181 +32,144 @@ export default function ReusableRoleCard({
   formatDateTime,
   companyName,
 }: ReusableRoleCardProps) {
-
-
   return (
-    <div
-      className="
-         rounded-md  p-5 transition-all max-w-[350px]
-         border-1 border-t-[#B91434] border-t-3 hover:shadow-md
-      "
-    >
-      {/* Header */}
-       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-4">
-          
-            <Shield className="size-8 text-[#B91434]" />
-       
-          <div>
-            <h3 className="font-bold text-xl text-gray-900  ">{role.roleName}</h3>
-            <p className="text-[10px]  text-gray-600 uppercase ">{role.role_id}</p>
-            {companyName && <p className="text-[10px] text-gray-500 font-medium">{companyName}</p>}
-          </div>
-        </div>
-       <span
-          className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
-            role.status === "Active" || role.status === "active"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          {role.status}
-        </span>
+    <div className="group relative border-black/50 bg-white border  overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1 w-full flex flex-col">
       
-      </div>
-      {/* <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div
-            className="
-              p-3 rounded-lg border
-              bg-[#B91434]/10 border-[#B91434]/30
-              text-[#B91434]
-            "
+      {/* Top Accent */}
+      {/* <div className="h-1.5 w-full bg-[#B91434]" /> */}
+
+      <div className="p-6 flex flex-col flex-grow">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex gap-4">
+            <div className="flex items-center justify-center size-12 rounded-xl bg-[#B91434]/5 border border-[#B91434]/10 group-hover:bg-[#B91434] group-hover:text-white transition-colors text-[#B91434]">
+              <Shield className="size-6" />
+            </div>
+
+            <div>
+              <h3 className="font-bold text-lg text-black group-hover:text-[#B91434] transition-colors">
+                {role.roleName}
+              </h3>
+              <span className="block text-[10px] font-mono text-slate-400 uppercase">
+                ID: {role.role_id}
+              </span>
+              {companyName && (
+                <span className="block text-[10px] font-bold text-slate-500 uppercase">
+                  {companyName}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <span
+            className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+              role.status === "Active"
+                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                : "bg-red-50 text-red-700 border-red-100"
+            }`}
           >
-            <Shield className="size-6" />
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-base">{role.roleName}</h3>
-            <p className="text-xs text-muted-foreground">{role.role_id}</p>
-          </div>
-        </div>
-
-        <span
-          className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
-            role.status === "Active"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          {role.status}
-        </span>
-      </div> */}
-
-      {/* Description */}
-      {/* <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">
-        {role.description}
-      </p> */}
-       <p className="text-sm text-gray-700  mb-6  ">
-        {role.description || "No description provided for this security role."}
-      </p>
-
-      {/* Stats */}
-      {/* <div className="flex items-center gap-6 mb-4 pb-4 border-b">
-        <div className="flex items-center gap-2">
-          <Users className="size-4 text-[#B91434]" />
-          <span className="text-sm">
-            <span className="font-semibold">{role.userCount}</span> users
+            {role.status}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Lock className="size-4 text-[#B91434]" />
-          <span className="text-sm">
-            <span className="font-semibold">
-              {role.permissions.length}
-            </span>{" "}
-            permissions
-          </span>
-        </div>
-      </div> */}
-
-       <div className="grid grid-cols-2 gap-4 mb-6 py-4 border-y border-[#B91434]">
-        <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-gray-50 dark:bg-gray-900">
-            <Users className="size-4 text-[#B91434]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-gray-900 ">{role.userCount}</span>
-            <span className="text-[10px] text-gray-400 uppercase font-medium">Users</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-gray-50 dark:bg-gray-900">
-            <Lock className="size-4 text-[#B91434]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-gray-900 ">{role.permissions.length}</span>
-            <span className="text-[10px] text-gray-400 uppercase font-medium">Permissions</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Key Permissions */}
-      <div className="mb-4 py-4">
-        <p className="text-xs font-medium mb-2 text-muted-foreground">
-          Key Permissions
+        {/* Description */}
+        <p className="text-sm text-slate-600 leading-relaxed mb-6 flex-grow">
+          {role.description || "No description provided for this security role."}
         </p>
 
-        <div className="flex flex-wrap gap-1.5">
-          {role.permissions.slice(0, 3).map((permId) => {
-            const perm = availablePermissions.find(
-              (p) => p.id === permId
-            );
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-0 border border-slate-100 rounded-lg overflow-hidden mb-6">
+          <div className="flex items-center gap-3 p-3 bg-slate-50/50 border-r border-slate-100">
+            <Users className="size-4 text-[#B91434]" />
+            <div>
+              <span className="text-sm font-black text-black">
+                {role.userCount}
+              </span>
+              <span className="block text-[9px] text-slate-400 uppercase font-bold">
+                Users
+              </span>
+            </div>
+          </div>
 
-            return (
-              perm && (
-                <Badge
-                  key={permId}
-                  variant="outline"
-                  className="
-                    text-xs border-[#B91434]/30 text-black
-                  "
-                >
-                  {perm.name}
-                </Badge>
-              )
-            );
-          })}
-
-          {role.permissions.length > 3 && (
-            <span className="text-xs text-[#B91434] font-semibold self-center ml-1">
-              +{role.permissions.length - 3} others
-            </span>
-          )}
+          <div className="flex items-center gap-3 p-3 bg-slate-50/50">
+            <Lock className="size-4 text-[#B91434]" />
+            <div>
+              <span className="text-sm font-black text-black">
+                {role.permissions.length}
+              </span>
+              <span className="block text-[9px] text-slate-400 uppercase font-bold">
+                Permissions
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
 
-     {/* Actions */}
-      <div className="flex items-center gap-2">
-        <Button 
-          size="sm" 
-          className="flex-1 font-semibold shadow-sm shadow-[#B91434]/20 bg-[#B91434] hover:bg-[#B91434]/90 transition-all" 
-          onClick={() => onPermissions(role)}
-        >
-          <UserRoundPen className="size-4 mr-2" /> Permissions
-        </Button>
+        {/* Permissions */}
+        <div className="mb-8">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Core Capabilities
+          </span>
+
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {role.permissions.slice(0, 3).map((permId) => {
+              const perm = availablePermissions.find((p) => p.id === permId);
+              return (
+                perm && (
+                  <Badge
+                    key={permId}
+                    variant="outline"
+                    className="text-[11px] border-slate-200 text-slate-700 shadow-sm"
+                  >
+                    {perm.name}
+                  </Badge>
+                )
+              );
+            })}
+
+            {role.permissions.length > 3 && (
+              <span className="px-2 py-1 text-[10px] font-bold text-[#B91434] bg-[#B91434]/5 rounded border border-[#B91434]/10">
+                +{role.permissions.length - 3} MORE
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="space-y-2 pt-6 border-t border-slate-100">
           <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onEdit(role)}
-        >
-          <Pencil className="size-4" />
-        </Button>
+            onClick={() => onPermissions(role)}
+            className="w-full h-10 bg-black text-white text-xs font-bold rounded-lg hover:bg-[#B91434]"
+          >
+            <UserRoundPen className="size-4 mr-2" />
+            ASSIGN PERMISSIONS
+          </Button>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onDelete(role)}
-        >
-          <Trash2 className="size-4" />
-        </Button>
-      
-      </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 text-[10px] font-bold uppercase"
+              onClick={() => onEdit(role)}
+            >
+              <Pencil className="size-3 mr-1" /> Edit
+            </Button>
 
-      {/* Updated */}
-      <div className="text-[10px] text-gray-400 mt-5 pt-4 border-t border-gray-50  flex justify-between items-center">
-        <span>Updated: {formatDateTime(role.updatedAt)}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 text-[10px] font-bold uppercase hover:text-red-600 hover:border-red-200"
+              onClick={() => onDelete(role)}
+            >
+              <Trash2 className="size-3 mr-1" /> Delete
+            </Button>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-4 flex items-center gap-1.5 text-[10px] text-slate-400">
+          <Clock className="size-3" />
+          <span>Last modified: {formatDateTime(role.updatedAt)}</span>
+        </div>
       </div>
     </div>
   );
