@@ -7,7 +7,7 @@ import { type Employee } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 import { EmployeeForm } from "../../../components/forms/addEmployee"
 import { createEmployee } from "../../../lib/api"
 import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
@@ -48,19 +48,36 @@ export function EmployeeTable({ employees }: Props) {
   return (
     <div className="border p-5 rounded-md">
       {/* Header */}
-      <div className="flex justify-between mb-6">
-        <div>
-          <h1 className="font-bold text-2xl mb-2">Employees Management</h1>
-          <p className="text-gray-700">
-            Manage employee information and records
-          </p>
-        </div>
+       <div className="space-y-6 mb-10">
+  <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-1">
+      <h1 className="text-3xl font-bold text-gray-900">Employee Management</h1>
+      <p className="text-gray-500 text-md italic">
+        Manage employees information and settings
+      </p>
+    </div>
 
-        <Button variant="outline" onClick={() => setIsAddOpen(true)}>
-          <Plus /> Add New Employee
-        </Button>
+    <div className="flex items-center gap-3">
+      <div className="relative group">
+        {/* <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#B91434]" />
+        <input 
+          type="text" 
+          placeholder="Search companies..." 
+          className="pl-10 pr-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B91434]/20 focus:border-[#B91434] transition-all"
+        /> */}
       </div>
-
+      
+      <Button 
+        variant="outline"
+        onClick={() => setIsAddOpen(true)}
+        className="border-[#B91434] text-[#B91434] hover:bg-[#B91434] hover:text-white transition-colors"
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Employee
+      </Button>
+    </div>
+  </div>
+  <hr className="border-gray-100" />
+</div>
       {/* Table */}
       <DataTable
         columns={columns(handleViewEmployee, handleEditEmployee)}
@@ -80,6 +97,10 @@ export function EmployeeTable({ employees }: Props) {
       {/* add new employee  */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Employee</DialogTitle>
+            <DialogDescription>Enter employee details below.</DialogDescription>
+          </DialogHeader>
           <EmployeeForm
             onSubmit={async (data) => {
               try {
@@ -99,6 +120,10 @@ export function EmployeeTable({ employees }: Props) {
       {/* Edit employee details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Employee</DialogTitle>
+            <DialogDescription>Update employee details below.</DialogDescription>
+          </DialogHeader>
           {employeeToEdit && (
             <EditEmployeeForm
               employee={employeeToEdit}

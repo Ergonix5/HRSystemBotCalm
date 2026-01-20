@@ -19,10 +19,10 @@ const designationSchema = new Schema(
       type: String,
       trim: true,
     },
-    status: { type: String, enum: ["active", "inactive"], default: "active" },
+    status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
   },
   { timestamps: true }
 );
 
 export const Designation =
-  models.designations || model("designations", designationSchema);
+  models.Designation || model("designation", designationShema);

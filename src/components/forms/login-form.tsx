@@ -20,7 +20,7 @@ export default function LoginForm() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     try {
       await login(email, password);
       router.push('/dashboard');
@@ -36,7 +36,7 @@ export default function LoginForm() {
       {/* Login Card */}
       <div className="relative w-full max-w-sm z-10">
         <div className="bg-white p-8 md:p-10 border-[3px] border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
-          
+
           {/* Header */}
           <div className="flex flex-col mb-8 text-center items-center">
             <div className="w-10 h-10 bg-black flex items-center justify-center mb-4">
@@ -71,7 +71,7 @@ export default function LoginForm() {
                 />
               </div>
             </div>
-            
+
             {/* Password Input */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">

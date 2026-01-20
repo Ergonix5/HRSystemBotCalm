@@ -10,7 +10,7 @@ import { createDesignation, updateDesignation } from "../../../lib/api"
 import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import { DesignationForm } from "../../../components/forms/addDesignation"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 
 type Props = {
   designations: Designation[]
@@ -48,19 +48,28 @@ export function DesignationTable({ designations }: Props) {
   return (
     <div className="border p-5 rounded-md">
       {/* Header */}
-      <div className="flex justify-between mb-6">
-        <div>
-          <h1 className="font-bold text-2xl mb-2">Designations Management</h1>
-          <p className="text-gray-700">
-            Manage job positions and role information
-          </p>
-        </div>
+        <div className="space-y-6 mb-10">
+  <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-1">
+      <h1 className="text-3xl font-bold text-gray-900">Designations Management</h1>
+      <p className="text-gray-500 text-md italic">
+        Manage job positions and role information
+      </p>
+    </div>
 
-        <Button variant="outline" onClick={() => setIsAddOpen(true)}>
-          <Plus /> Add New Designation
-        </Button>
-      </div>
-
+  
+      
+      <Button 
+        variant="outline"
+        onClick={() => setIsAddOpen(true)}
+        className="border-[#B91434] text-[#B91434] hover:bg-[#B91434] hover:text-white transition-colors"
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Designation
+      </Button>
+    
+  </div>
+  <hr className="border-gray-100" />
+</div>
       {/* Table */}
       <DataTable
         columns={designationColumns(handleViewDesignation, handleEditDesignation)}
@@ -79,6 +88,10 @@ export function DesignationTable({ designations }: Props) {
       {/* adding a new designation */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Designation</DialogTitle>
+            <DialogDescription>Enter designation details below.</DialogDescription>
+          </DialogHeader>
           <DesignationForm
             onSubmit={async (data) => {
               try {
@@ -97,6 +110,10 @@ export function DesignationTable({ designations }: Props) {
       {/* editing an existing designation */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Designation</DialogTitle>
+            <DialogDescription>Update designation details below.</DialogDescription>
+          </DialogHeader>
           {designationToEdit && (
             <EditDesignationForm
               designation={designationToEdit}

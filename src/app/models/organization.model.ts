@@ -7,6 +7,6 @@ const organizationSchema = new Schema({
   status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
 }, { timestamps: true }); // ✅ Also fixed typo and added timestamps
 
-export const Organization = models.organizations || model("organizations", organizationSchema);
+export const Organization = models.Organization || model("organization", organizationSchema);
 // ✅ Changed "Organizations" to "Organization" to match the ref
 // ✅ Fixed typo: organizationShema → organizationSchema

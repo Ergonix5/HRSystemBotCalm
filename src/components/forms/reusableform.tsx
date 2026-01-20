@@ -18,10 +18,7 @@ import {
 } from "../../components/ui/select"
 import { Textarea } from "../../components/ui/textarea"
 import { Button } from "../../components/ui/button"
-import { DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog"
 import { type FormField } from "@/src/app/types/types"
-
-
 
 // Props for the DynamicForm component
 interface DynamicFormProps {
@@ -34,6 +31,7 @@ interface DynamicFormProps {
   mode?: "create" | "edit"
   readOnlyFields?: string[]
   hiddenFields?: Record<string, any>
+  errors?: Record<string, string>
 }
 
 export  function DynamicForm({
@@ -44,18 +42,11 @@ export  function DynamicForm({
   submitLabel = "Save",
   gridCols = 1,
   hiddenFields,
-  readOnlyFields
+  readOnlyFields,
+  errors = {}
 }: DynamicFormProps) {
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <DialogHeader>
-        <DialogTitle>{title}</DialogTitle>
-        {description && (
-          <DialogDescription>{description}</DialogDescription>
-        )}
-      </DialogHeader>
-
-
       {/* Form submission handling */}
       <form
         onSubmit={(e) => {
@@ -86,49 +77,65 @@ export  function DynamicForm({
                   </FieldLabel>
                   {/* Input field */}
                   {field.type === "input" && (
-                    <Input
-                      id={field.id}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      type={field.inputType || "text"}
-                      defaultValue={field.defaultValue}
-                      required={field.required}
-                      readOnly={readOnlyFields?.includes(field.name)}
-                    />
+                    <>
+                      <Input
+                        id={field.id}
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        type={field.inputType || "text"}
+                        defaultValue={field.defaultValue}
+                        required={field.required}
+                        readOnly={readOnlyFields?.includes(field.name)}
+                        className={errors[field.name] ? "border-red-500" : ""}
+                      />
+                      {errors[field.name] && (
+                        <p className="text-sm text-red-500 mt-1">{errors[field.name]}</p>
+                      )}
+                    </>
                   )}
 
                   {/* Textarea field */}
                   {field.type === "textarea" && (
-                    <Textarea
-                      id={field.id}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      defaultValue={field.defaultValue}
-                      className="resize-none"
-                    />
+                    <>
+                      <Textarea
+                        id={field.id}
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        defaultValue={field.defaultValue}
+                        className={`resize-none ${errors[field.name] ? "border-red-500" : ""}`}
+                      />
+                      {errors[field.name] && (
+                        <p className="text-sm text-red-500 mt-1">{errors[field.name]}</p>
+                      )}
+                    </>
                   )}
-
 
                   {/* Select field */}
                   {field.type === "select" && (
-                    <Select
-                      defaultValue={field.defaultValue}
-                      name={field.name}
-                    >
-                      <SelectTrigger id={field.id}>
-                        <SelectValue placeholder="Select option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {field.options?.map((option) => (
-                          <SelectItem
-                            key={option.value}
-                            value={option.value}
-                          >
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <>
+                      <Select
+                        defaultValue={field.defaultValue}
+                        name={field.name}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger id={field.id} className={errors[field.name] ? "border-red-500" : ""}>
+                          <SelectValue placeholder="Select option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {field.options?.map((option) => (
+                            <SelectItem
+                              key={option.value}
+                              value={option.value}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors[field.name] && (
+                        <p className="text-sm text-red-500 mt-1">{errors[field.name]}</p>
+                      )}
+                    </>
                   )}
                 </Field>
               ))}

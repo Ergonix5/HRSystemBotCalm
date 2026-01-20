@@ -25,9 +25,9 @@ export type Designation = {
 export type Employee = {
   _id: string
   employee_id: string
-  company_id: string
-  role_id: string
-  designation_id: string
+  organization: string
+  role: string
+  designation: string
   first_name: string
   last_name: string
   email: string
@@ -36,7 +36,7 @@ export type Employee = {
   date_of_birth: string
   join_date: string
   profile_pic?: string
-  status: "Active" | "Inactive"
+  employment_status: "active" | "inactive"
 }
 
 
@@ -70,4 +70,5 @@ export type FormField = {
   required?: boolean
   defaultValue?: any
   options?: { value: string; label: string }[]
+  onChange?: (value: string) => void
 }
