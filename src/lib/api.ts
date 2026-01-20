@@ -1,6 +1,6 @@
 import { Designation , Company,Employee, Role } from "../app/types/types"
 
-const BASE_URL = "http://localhost:3000"
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 //fetch organizations
 export async function getOrganizations(): Promise<Company[]> {
