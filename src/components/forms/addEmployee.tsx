@@ -1,7 +1,7 @@
 "use client"
 
 import { Employee } from "../../app/types/types"
-import { DynamicForm} from "./reusableform"
+import { DynamicForm } from "./reusableform"
 import { type FormField } from '@/src/app/types/types';
 import { useFormValidation } from '../../hooks/useFormValidation'
 import { employeeCreateSchema } from '../../validators/employee.schema'
@@ -41,7 +41,7 @@ export function EmployeeForm({
   const fetchDropdownData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch companies
       const companiesRes = await fetch('/api/Organization?limit=100')
       const companiesData = await companiesRes.json()
@@ -98,35 +98,35 @@ export function EmployeeForm({
   }
 
   const fields: FormField[] = [
-    { 
-      id: "organization", 
-      name: "organization", 
-      label: "Company Name", 
-      type: "select", 
-      required: true, 
+    {
+      id: "organization",
+      name: "organization",
+      label: "Company Name",
+      type: "select",
+      required: true,
       defaultValue: employee?.organization || "",
       options: companies,
       onChange: handleCompanyChange
     },
-    { 
-      id: "designation", 
-      name: "designation", 
-      label: "Designation Name", 
-      type: "select", 
-      required: true, 
+    {
+      id: "designation",
+      name: "designation",
+      label: "Designation Name",
+      type: "select",
+      required: true,
       defaultValue: employee?.designation || "",
       options: designations
     },
-    { 
-      id: "role", 
-      name: "role", 
-      label: "Role Name", 
-      type: "select", 
-      required: true, 
+    {
+      id: "role",
+      name: "role",
+      label: "Role Name",
+      type: "select",
+      required: true,
       defaultValue: employee?.role || "",
       options: roles
     },
-   
+
     { id: "employee-id", name: "employee_id", label: "Employee ID", type: "input", required: true, defaultValue: employee?.employee_id },
     { id: "first-name", name: "first_name", label: "First Name", type: "input", required: true, defaultValue: employee?.first_name },
     { id: "last-name", name: "last_name", label: "Last Name", type: "input", required: true, defaultValue: employee?.last_name },
