@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "../../components/ui/select"
 import { Textarea } from "../../components/ui/textarea"
-import { Button } from "../../components/ui/button"
+import {FormButton} from "../../components/ui/formbutton"
 import { type FormField } from "@/src/app/types/types"
 
 // Props for the DynamicForm component
@@ -179,20 +179,20 @@ export  function DynamicForm({
 
           {/* Submit button */}
           <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4">
-            <Button
+            <FormButton
               type="button"
               variant="outline"
               onClick={() => onClose?.()}
-              className="border-black text-black hover:bg-neutral-50 text-sm sm:text-base w-full sm:w-auto"
+              className="border-black text-black hover:bg-neutral-50 text-sm sm:text-base sm:w-auto"
             >
               Cancel
-            </Button>
-            <Button
+            </FormButton>
+            <FormButton
               type="submit"
               className="bg-[#B91434] text-white hover:bg-black text-sm sm:text-base w-full sm:w-auto"
             >
               {submitLabel}
-            </Button>
+            </FormButton>
           </div>
         </FieldGroup>
       </form>
