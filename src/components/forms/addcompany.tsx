@@ -5,6 +5,7 @@ import { DynamicForm } from "./reusableform"
 import { type FormField } from '@/src/app/types/types';
 import { useFormValidation } from '../../hooks/useFormValidation'
 import { organizationCreateSchema } from '../../validators/organization.schema'
+import { useState } from "react";
 
 interface CompanyFormProps {
   company?: Company
@@ -14,7 +15,7 @@ interface CompanyFormProps {
 
 export function CompanyForm({ company, onSubmit, onClose }: CompanyFormProps) {
   const { errors, validate } = useFormValidation(organizationCreateSchema)
-
+    const [loading, setLoading] = useState(true)
   const fields: FormField[] = [
     {
       id: "organization-id",
@@ -60,6 +61,7 @@ export function CompanyForm({ company, onSubmit, onClose }: CompanyFormProps) {
       onSubmit(data)
     }
   }
+
 
   return (
     <DynamicForm

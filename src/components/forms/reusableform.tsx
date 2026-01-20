@@ -99,7 +99,7 @@ export  function DynamicForm({
 
             {/* grid for form fields */}
             <div
-              className={`grid gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-4 sm:gap-y-5 md:gap-y-6 ${gridCols === 2 ? "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2" : "grid-cols-1"
+              className={`grid gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-4 sm:gap-y-5 md:gap-y-6 ${gridCols === 3 ? "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2"
                 }`}
             >
               {fields.map((field) => (
