@@ -10,6 +10,7 @@ import {
   type Employee,
   type SystemData
 } from './components';
+import { useUser } from '@/src/contexts/UserContext';
 
 interface EmployeeData {
   _id: string;
@@ -28,10 +29,12 @@ interface EmployeeData {
 }
 
 export default function App() {
+  const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [employee, setEmployee] = useState<Employee>({
     email: "",
     phone: "",
@@ -67,7 +70,7 @@ export default function App() {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('/api/employee/profile');
+      const response = await fetch('/api/test-profile');
       const data = await response.json();
       
       if (response.ok) {
@@ -89,14 +92,52 @@ export default function App() {
   }
 
   const systemData: SystemData = {
-    name: employeeData ? `${employeeData.first_name} ${employeeData.last_name}` : "User",
-    employeeId: employeeData?.employee_id || "N/A",
-    company: employeeData?.organization?.name || "No Company"
+    name: user?.name || (employeeData ? `${employeeData.first_name} ${employeeData.last_name}` : "User"),
+    employeeId: user?.employeeId || employeeData?.employee_id || "N/A",
+    company: user?.company || employeeData?.organization?.name || "No Company"
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setEmployee(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/test-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: employee.phone,
+          address: employee.location,
+          bio: employee.bio,
+          skills: employee.skills,
+          education: employee.education,
+          experience: employee.experience
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setEmployeeData(data.employee);
+        setIsEditing(false);
+        setSaveMessage('Profile updated successfully!');
+        setTimeout(() => setSaveMessage(null), 3000);
+        // Refetch to ensure UI shows latest data
+        await fetchProfile();
+      } else {
+        console.error('Failed to update profile:', data.error);
+        setSaveMessage('Failed to update profile');
+        setTimeout(() => setSaveMessage(null), 3000);
+      }
+    } catch (err) {
+      console.error('Network error while updating profile:', err);
+      setSaveMessage('Network error while updating profile');
+      setTimeout(() => setSaveMessage(null), 3000);
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,13 +167,37 @@ export default function App() {
     <div className="min-h-screen bg-[#FAFAFA] py-12 px-4 text-black selection:bg-[#B91434] selection:text-white">
       <div className="max-w-4xl mx-auto space-y-6">
         
+        {saveMessage && (
+          <div className={`p-4 rounded-lg text-center font-medium ${
+            saveMessage.includes('successfully') 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}>
+            {saveMessage}
+          </div>
+        )}
+        
         <ProfileHeader 
           employee={employee}
           systemData={systemData}
           isEditing={isEditing}
           profileImage={profileImage}
           onToggleEdit={() => setIsEditing(!isEditing)}
-          onCancel={() => setIsEditing(false)}
+          onCancel={() => {
+            setIsEditing(false);
+            // Reset employee data to original values
+            if (employeeData) {
+              setEmployee(prev => ({
+                ...prev,
+                email: employeeData.email,
+                phone: employeeData.phone || "",
+                department: employeeData.designation?.name || "No Department",
+                position: employeeData.role?.name || "No Position",
+                location: employeeData.address || "No Location"
+              }));
+            }
+          }}
+          onSave={handleSave}
           onInputChange={handleInputChange}
           onImageUpload={handleImageUpload}
         />
