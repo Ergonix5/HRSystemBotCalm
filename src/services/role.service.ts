@@ -10,7 +10,7 @@ export async function getRoles(organizationId: string): Promise<Role[]> {
       role_id: role.role_id || role._id,
       roleName: role.role_name,
       description: role.description,
-      status: role.status === "active" ? "Active" : "Inactive",
+      status: role.status === "Active" ? "Active" : "Inactive",
       userCount: role.user_count || 0,
       permissions: role.permissions || [],
       color: role.color || "gray",
