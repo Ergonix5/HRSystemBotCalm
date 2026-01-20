@@ -15,9 +15,11 @@ interface DropdownOption {
 export function EmployeeForm({
   employee,
   onSubmit,
+  onClose,
 }: {
   employee?: Employee
   onSubmit: (data: any) => void
+  onClose?: () => void
 }) {
   const { errors, validate } = useFormValidation(employeeCreateSchema)
   const [companies, setCompanies] = useState<DropdownOption[]>([])
@@ -154,6 +156,7 @@ export function EmployeeForm({
       description="Enter employee details below."
       fields={fields}
       onSubmit={handleSubmit}
+      onClose={onClose}
       gridCols={2}
       errors={errors}
     />

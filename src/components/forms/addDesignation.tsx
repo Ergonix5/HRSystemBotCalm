@@ -9,9 +9,11 @@ import { designationCreateSchema } from '../../validators/designation.schema'
 export function DesignationForm({
   designation,
   onSubmit,
+  onClose,
 }: {
   designation?: Designation
   onSubmit: (data: any) => void
+  onClose?: () => void
 }) {
   const { errors, validate } = useFormValidation(designationCreateSchema)
 
@@ -67,6 +69,7 @@ export function DesignationForm({
       description="Enter designation details below."
       fields={fields}
       onSubmit={handleSubmit}
+      onClose={onClose}
       errors={errors}
     />
   )

@@ -46,6 +46,7 @@ export default function CompanyPage() {
         <DashboardCard
           title="Total Companies"
           value={totalCompanies.toString()}
+          subtitle="All organizations"
           icon={Building2}
         />
         <DashboardCard

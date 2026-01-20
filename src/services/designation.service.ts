@@ -28,3 +28,9 @@ export async function updateDesignation(id: string, data: any) {
     body: JSON.stringify(data),
   })
 }
+
+export async function deleteDesignation(id: string) {
+  return apiFetch(`/api/Designation/${id}`, {
+    method: "DELETE",
+  })
+}

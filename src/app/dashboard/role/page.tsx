@@ -17,13 +17,11 @@ import {
   SelectContent,
   SelectItem,
 } from "../../../components/ui/select";
-import { Dialog, DialogContent } from "../../../components/ui/dialog";
 
 import { type Role, type Permission, type Company } from "@/src/app/types/types";
 import { availablePermissions } from "./role";
-import { createRole ,getRoles } from "../../../services/role.service";
+import { createRole, getRoles, updateRole, deleteRole } from "../../../services/role.service";
 import { getOrganizations } from "../../../services/organization.service";
-
 
 export default function Page() {
   //  STATE 
@@ -36,10 +34,16 @@ export default function Page() {
   const [isPermissionsDialogOpen, setIsPermissionsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    roleName: string;
+    description: string;
+    status: string;
+    companyId: string;
+    roleId: string;
+  }>({
     roleName: "",
     description: "",
-    status: "active",
+    status: "Active",
     companyId: "",
     roleId: "",
   });
@@ -52,12 +56,12 @@ export default function Page() {
   //  FETCH ROLES & COMPANIES
   useEffect(() => {
     const fetchData = async () => {
+      // replace with actual current organization id when available
+      const orgId = "507f1f77bcf86cd799439011";
       const [rolesData, companiesData] = await Promise.all([
-        getRoles("507f1f77bcf86cd799439011"),
+        getRoles(orgId),
         getOrganizations(),
       ]);
-      console.log("Fetched roles:", rolesData);
-      console.log("Fetched companies:", companiesData);
       setRoles(rolesData);
       setCompanies(companiesData);
     };
@@ -73,7 +77,7 @@ export default function Page() {
         return match ? parseInt(match[1]) : 0;
       })
       .filter(n => n > 0);
-    
+
     const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
     return `ROLE${String(nextNumber).padStart(3, '0')}`;
   };
@@ -95,32 +99,38 @@ export default function Page() {
     setIsSubmitting(true);
 
     try {
+      const company = companies.find((c) => c._id === formData.companyId);
       const payload = {
         organization: formData.companyId,
+        company_name: company?.company_name || "",
         role_id: formData.roleId,
         role_name: formData.roleName.trim(),
         description: formData.description.trim(),
         permissions: selectedPermissions,
-        status: formData.status
+        status: formData.status,
       };
 
       const response = await createRole(payload);
 
-      if (response?.success) {
+      if (response?.success && response.data) {
+        const created = response.data;
         const newRole: Role = {
-          role_id: payload.role_id,
-          roleName: payload.role_name,
-          description: payload.description,
-          status: payload.status === "active" ? "Active" : "Inactive",
-          userCount: 0,
-          permissions: selectedPermissions,
-          color: "blue",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          _id: created._id,
+          role_id: created.role_id || created._id,
+          roleName: created.role_name,
+          description: created.description || "",
+          status: created.status === "Active" ? "Active" : "Inactive",
+          userCount: created.user_count || 0,
+          permissions: created.permissions || [],
+          color: created.color || "blue",
+          createdAt: created.createdAt || created.created_at || new Date().toISOString(),
+          updatedAt: created.updatedAt || created.updated_at || new Date().toISOString(),
+          organization: created.organization?._id || created.organization,
+          organizationName: created.organization?.name || created.company_name || "",
         };
 
         setRoles((prev) => [newRole, ...prev]);
-        setFormData({ roleName: "", description: "", status: "active", companyId: "", roleId: "" });
+        setFormData({ roleName: "", description: "", status: "Active", companyId: "", roleId: "" });
         setSelectedPermissions([]);
         setIsAddDialogOpen(false);
       }
@@ -128,6 +138,44 @@ export default function Page() {
       console.error("Create role failed:", error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // EDIT ROLE - save changes
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedRole?._id) return;
+    try {
+      const company = companies.find((c) => c._id === formData.companyId);
+      const payload = {
+        organization: formData.companyId,
+        company_name: company?.company_name || "",
+        role_id: formData.roleId,
+        role_name: formData.roleName.trim(),
+        description: formData.description.trim(),
+        permissions: selectedPermissions,
+        status: formData.status,
+      };
+
+      const res = await updateRole(selectedRole._id, payload);
+      if (res?.success && res.data) {
+        const updated = res.data;
+        setRoles((prev) => prev.map((r) => (r._id === updated._id ? {
+          ...r,
+          role_id: updated.role_id || updated._id,
+          roleName: updated.role_name,
+          description: updated.description || "",
+          status: updated.status === "Active" ? "Active" : "Inactive",
+          permissions: updated.permissions || [],
+          organization: updated.organization?._id || updated.organization,
+          organizationName: updated.organization?.name || updated.company_name || "",
+          updatedAt: updated.updatedAt || updated.updated_at || new Date().toISOString(),
+        } : r)));
+        setIsEditDialogOpen(false);
+      }
+    } catch (err) {
+      console.error("Update role failed:", err);
+      alert("Failed to update role. Please try again.");
     }
   };
 
@@ -190,34 +238,37 @@ export default function Page() {
         </div>
 
         {/* Add Role Dialog */}
-        <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-          setIsAddDialogOpen(open);
-          if (open) {
-            setFormData({ ...formData, roleId: generateRoleId() });
-          }
-        }}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <NewRoleForm
-              availablePermissions={availablePermissions}
-              groupedPermissions={groupedPermissions}
-              selectedPermissions={selectedPermissions}
-              setSelectedPermissions={setSelectedPermissions}
-              formData={formData}
-              setFormData={setFormData}
-              togglePermission={(id) =>
-                setSelectedPermissions((prev) =>
-                  prev.includes(id)
-                    ? prev.filter((p) => p !== id)
-                    : [...prev, id]
-                )
-              }
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              onCancel={() => setIsAddDialogOpen(false)}
-              companies={companies}
-            />
-          </DialogContent>
-        </Dialog>
+        {isAddDialogOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <NewRoleForm
+                availablePermissions={availablePermissions}
+                groupedPermissions={groupedPermissions}
+                selectedPermissions={selectedPermissions}
+                setSelectedPermissions={setSelectedPermissions}
+                formData={formData}
+                setFormData={(data) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    ...data,
+                    roleId: prev.roleId || generateRoleId(),
+                  }))
+                }
+                togglePermission={(id) =>
+                  setSelectedPermissions((prev) =>
+                    prev.includes(id)
+                      ? prev.filter((p) => p !== id)
+                      : [...prev, id]
+                  )
+                }
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                onCancel={() => setIsAddDialogOpen(false)}
+                companies={companies}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Role Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
@@ -259,52 +310,77 @@ export default function Page() {
         </div>
 
         {/* Permissions Dialog */}
-        <Dialog
-          open={isPermissionsDialogOpen}
-          onOpenChange={setIsPermissionsDialogOpen}
-        >
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-            <ViewPermission
-              selectedRole={selectedRole}
-              groupedPermissions={groupedPermissions}
-              selectedPermissions={selectedPermissions}
-              setSelectedPermissions={setSelectedPermissions}
-              onClose={() => setIsPermissionsDialogOpen(false)}
-              onUpdate={() => {
-                if (!selectedRole) return;
-                setRoles((prev) =>
-                  prev.map((role) =>
-                    role.role_id === selectedRole.role_id
-                      ? { ...role, permissions: selectedPermissions }
-                      : role
-                  )
-                );
-                setIsPermissionsDialogOpen(false);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+        {isPermissionsDialogOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="max-w-4xl max-h-[90vh] overflow-hidden">
+              <ViewPermission
+                selectedRole={selectedRole}
+                groupedPermissions={groupedPermissions}
+                selectedPermissions={selectedPermissions}
+                setSelectedPermissions={setSelectedPermissions}
+                onClose={() => setIsPermissionsDialogOpen(false)}
+                onUpdate={async () => {
+                  if (!selectedRole?._id) return;
+                  try {
+                    await updateRole(selectedRole._id, { permissions: selectedPermissions });
+                    setRoles((prev) =>
+                      prev.map((role) =>
+                        role._id === selectedRole._id
+                          ? { ...role, permissions: selectedPermissions }
+                          : role
+                      )
+                    );
+                    setIsPermissionsDialogOpen(false);
+                  } catch (err) {
+                    console.error('Failed to update permissions', err);
+                    alert('Failed to update permissions.');
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Edit Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <EditRole
-              selectedRole={selectedRole}
-              formData={formData}
-              setFormData={setFormData}
-              onSubmit={(e) => e.preventDefault()}
-              onCancel={() => setIsEditDialogOpen(false)}
-              companies={companies}
-            />
-          </DialogContent>
-        </Dialog>
+        {isEditDialogOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="max-w-2xl">
+              <EditRole
+                selectedRole={selectedRole}
+                formData={formData}
+                setFormData={(data) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    ...data,
+                    roleId: prev.roleId, // keep roleId intact
+                  }))
+                }
+                onSubmit={handleEditSubmit}
+                onCancel={() => setIsEditDialogOpen(false)}
+                companies={companies}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Delete Dialog */}
         <DeleteDialog
           selectedRole={selectedRole}
           isOpen={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
-          onDelete={() => {}}
+          onDelete={async () => {
+            if (selectedRole?._id) {
+              try {
+                await deleteRole(selectedRole._id);
+                setRoles((prev) => prev.filter((r) => r._id !== selectedRole._id));
+                setIsDeleteDialogOpen(false);
+                setSelectedRole(null);
+              } catch (error) {
+                console.error("Failed to delete role:", error);
+                alert("Failed to delete role. Please try again.");
+              }
+            }
+          }}
         />
       </div>
     </div>

@@ -6,11 +6,10 @@ import { columns as designationColumns } from "./columns"
 import { type Designation } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
-import { createDesignation, updateDesignation } from "../../../services/designation.service"
+import { createDesignation, updateDesignation, deleteDesignation } from "../../../services/designation.service"
 import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import { DesignationForm } from "../../../components/forms/addDesignation"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../../components/ui/dialog"
 
 type Props = {
   designations: Designation[]
@@ -45,6 +44,22 @@ export function DesignationTable({ designations }: Props) {
     }
   }
 
+  //delete a specific designation
+  const handleDeleteDesignation = async (designation_id: string) => {
+    const designation = designations.find(d => d.designation_id === designation_id)
+    if (!designation) return
+
+    if (window.confirm(`Are you sure you want to delete ${designation.title}?`)) {
+      try {
+        await deleteDesignation(designation._id)
+        window.location.reload()
+      } catch (error) {
+        console.error("Failed to delete designation:", error)
+        alert("Failed to delete designation. Please try again.")
+      }
+    }
+  }
+
   return (
     <div className="border p-5 rounded-md">
       {/* Header */}
@@ -72,7 +87,7 @@ export function DesignationTable({ designations }: Props) {
 </div>
       {/* Table */}
       <DataTable
-        columns={designationColumns(handleViewDesignation, handleEditDesignation)}
+        columns={designationColumns(handleViewDesignation, handleEditDesignation, handleDeleteDesignation)}
         data={designations}
         filterColumn="title"
         showStatusFilter
@@ -86,12 +101,8 @@ export function DesignationTable({ designations }: Props) {
       />
 
       {/* adding a new designation */}
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Add New Designation</DialogTitle>
-            <DialogDescription>Enter designation details below.</DialogDescription>
-          </DialogHeader>
+      {isAddOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <DesignationForm
             onSubmit={async (data) => {
               try {
@@ -103,35 +114,31 @@ export function DesignationTable({ designations }: Props) {
                 alert("Failed to create designation. Please try again.")
               }
             }}
+            onClose={() => setIsAddOpen(false)}
           />
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* editing an existing designation */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Designation</DialogTitle>
-            <DialogDescription>Update designation details below.</DialogDescription>
-          </DialogHeader>
-          {designationToEdit && (
-            <EditDesignationForm
-              designation={designationToEdit}
-              onSubmit={async (data) => {
-                try {
-                  await updateDesignation(designationToEdit._id, data)
-                  setIsEditOpen(false)
-                  setDesignationToEdit(null)
-                  window.location.reload()
-                } catch (error) {
-                  console.error("Failed to update designation:", error)
-                  alert("Failed to update designation. Please try again.")
-                }
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      {isEditOpen && designationToEdit && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <EditDesignationForm
+            designation={designationToEdit}
+            onSubmit={async (data) => {
+              try {
+                await updateDesignation(designationToEdit._id, data)
+                setIsEditOpen(false)
+                setDesignationToEdit(null)
+                window.location.reload()
+              } catch (error) {
+                console.error("Failed to update designation:", error)
+                alert("Failed to update designation. Please try again.")
+              }
+            }}
+            onClose={() => setIsEditOpen(false)}
+          />
+        </div>
+      )}
     </div>
   )
 }

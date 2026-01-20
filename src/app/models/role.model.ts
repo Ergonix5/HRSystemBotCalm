@@ -27,12 +27,18 @@ const roleSchema = new Schema(
       trim: true,
     },
 
+    // store company/organization name snapshot for convenience
+    company_name: {
+      type: String,
+      trim: true,
+    },
+
     // permissions from UI checkboxes
     permissions: {
       type: [String],
       default: [], // ["employee.read", "attendance.mark"]
     },
-    status: { type: String, enum: ["active", "inactive"], default: "active" },
+    status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
   },
   { timestamps: true }
 );

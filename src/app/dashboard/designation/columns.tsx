@@ -8,7 +8,7 @@ import { Designation } from "../../types/types"
 import { TableActions } from "../../../components/table/table_actions" 
 
 
-export const columns = (onView: (id: string) => void, onEdit: (id: string) => void): ColumnDef<Designation>[] => [
+export const columns = (onView: (id: string) => void, onEdit: (id: string) => void, onDelete?: (id: string) => void): ColumnDef<Designation>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -96,7 +96,7 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
       type="designation"
       onView={onView}
       onEdit={onEdit}
-      onDelete={(id) => console.log("Delete designation", id)}
+      onDelete={onDelete}
     />
   ),
 }
