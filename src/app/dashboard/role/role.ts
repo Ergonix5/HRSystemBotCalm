@@ -4,6 +4,7 @@ export const availablePermissions: Permission[] = [
 
   // Dashboard Permissions
   { id: 'dashboard.view', name: 'View Dashboard', description: 'View dashboard information', category: 'Dashboard' },
+  
   // Employee Permissions
   { id: 'employees.view', name: 'View Employees', description: 'View employee information', category: 'Employee' },
   { id: 'employees.create', name: 'Create Employees', description: 'Add new employees', category: 'Employee' },
@@ -15,7 +16,6 @@ export const availablePermissions: Permission[] = [
   { id: 'announcement.create', name: 'Create Announcements', description: 'Post new announcements', category: 'Announcement' },
   { id: 'announcement.edit', name: 'Edit Announcements', description: 'Modify announcements', category: 'Announcement' },
   { id: 'announcement.delete', name: 'Delete Announcements', description: 'Remove announcements', category: 'Announcement' },
-
 
   // Reports
   { id: 'reports.view', name: 'View Reports', description: 'Access system reports', category: 'Reports' },
@@ -52,5 +52,5 @@ export const availablePermissions: Permission[] = [
 { id: 'profile.edit', name: 'Edit Profile', description: 'Edit personal profile information', category: 'Profile' },
 
   // System Settings
-  { id: 'system_settings', name: 'System Settings', description: 'Configure system settings', category: 'Settings' },
+  // { id: 'system_settings', name: 'System Settings', description: 'Configure system settings', category: 'Settings' },
 ];

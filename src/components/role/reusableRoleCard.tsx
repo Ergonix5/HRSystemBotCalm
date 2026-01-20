@@ -170,7 +170,10 @@ export default function ReusableRoleCard({
         <div className="mt-5 flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
             <Clock className="size-3" />
-            <span>Updated: {formatDateTime(role.updatedAt)}</span>
+           <span>
+  Updated: {formatDateTime(role.updatedAt ?? role.createdAt)}
+</span>
+
           </div>
           <button className="text-slate-300 hover:text-slate-600 transition-colors">
             <MoreVertical className="size-4" />

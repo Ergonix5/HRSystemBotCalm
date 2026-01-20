@@ -79,7 +79,7 @@ export default function Page() {
         
         // Set first organization as selected by default if any exist
         if (companiesData.length > 0) {
-          setSelectedOrganization(companiesData[0]._id);
+          setSelectedOrganization("all");
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
