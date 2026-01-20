@@ -1,4 +1,5 @@
 "use client"
+import { useRouter } from 'next/navigation';
 
 import {  useState } from "react"
 import { DataTable } from "../../../components/table/Data-table"
@@ -22,7 +23,7 @@ type Props = {
 export function CompanyTable({ organizations }: Props) {
     //loading state for operations like API request
   const [loading, setLoading] = useState(false)
-
+  const router = useRouter();
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)//viewing a company
   const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)//editing a company
 
@@ -132,7 +133,7 @@ export function CompanyTable({ organizations }: Props) {
               try {
                 await createOrganization(data)
                 setIsAddOpen(false)
-                window.location.reload()
+                router.refresh();
               } catch (error) {
                 console.error("Failed to create company:", error)
                 alert("Failed to create company. Please try again.")
@@ -153,7 +154,7 @@ export function CompanyTable({ organizations }: Props) {
                 await updateOrganization(companyToEdit._id, data)
                 setIsEditOpen(false)
                 setCompanyToEdit(null)
-                window.location.reload()
+               router.refresh();
               } catch (error) {
                 console.error("Failed to update organization:", error)
                 alert("Failed to update organization. Please try again.")

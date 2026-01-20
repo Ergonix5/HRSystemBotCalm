@@ -54,7 +54,7 @@ export default function ReusableRoleCard({
             </div> */}
 
             <div className="flex flex-col">
-              <h3 className="text-xl font-extrabold tracking-tight text-[#B91434] transition-colors">
+              <h3 className="text-xl font-extrabold tracking-normal uppercase text-[#B91434] transition-colors">
                 {role.roleName}
               </h3>
               <div className="flex items-center gap-2 mt-1">
