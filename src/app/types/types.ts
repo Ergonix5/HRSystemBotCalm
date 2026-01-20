@@ -59,7 +59,7 @@ export type Permission ={
   id: string;
   name: string;
   description: string;
-  category: 'Users' | 'Content' | 'Reports' | 'Settings';
+  category: 'Role' | 'Employee' | 'Announcement' | 'Leave' | 'Company' | 'Designation' | 'Leave' | 'Reports' | 'Settings' |"Profile"| 'Dashboard'
 }
 
 //Resusableform types

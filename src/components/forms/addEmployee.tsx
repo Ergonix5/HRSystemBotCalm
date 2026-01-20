@@ -137,7 +137,7 @@ export function EmployeeForm({
     { id: "address", name: "address", label: "Address", type: "textarea", defaultValue: employee?.address },
     { id: "dob", name: "date_of_birth", label: "Date of Birth", type: "input", inputType: "date", defaultValue: employee?.date_of_birth },
     { id: "join-date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
-    { id: "status", name: "employment_status", label: "Status", type: "select", defaultValue: employee?.employment_status, options: [{ value: "active", label: "Active" }, { value: "inactive", label: "Inactive" }] },
+    { id: "status", name: "employment_status", label: "Status", type: "select", defaultValue: employee?.employment_status, options: [{ value: "Active", label: "Active" }, { value: "Inactive", label: "Inactive" }] },
   ]
 
   const handleSubmit = (data: any) => {

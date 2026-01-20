@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { CheckCircle2, XCircle, X } from 'lucide-react';
 import { type Permission, type Role } from '@/src/app/types/types';
-
+import { FormButton } from '../ui/formbutton';
 interface ViewPermissionProps {
   selectedRole: Role | null;
   groupedPermissions: Record<string, Permission[]>;
@@ -44,15 +44,15 @@ const togglePermission = (id: string) => {
   if (!selectedRole) return null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex max-h-[90vh]">
+<div className="w-full max-w-6xl mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex max-h-[90vh]">
       {/* Left Accent Border */}
       <div className="w-[6px] bg-[#B91434] flex-shrink-0" />
       
       <div className="flex-grow flex flex-col">
         {/* Header */}
-        <div className="bg-neutral-50 p-8 border-b border-neutral-100 relative">
+        <div className="bg-neutral-50 p-8 border-b border-neutral-100 relative ">
           <h2 className="text-3xl font-black text-black tracking-tighter uppercase">
-            Manage Permissions - {selectedRole.roleName}
+           Manage Permissions - {selectedRole.roleName}
           </h2>
           <p className="text-neutral-500 text-sm mt-2 font-medium">
             Configure access permissions for this role.
@@ -106,8 +106,8 @@ const togglePermission = (id: string) => {
       </ScrollArea>
 
       <div className="flex justify-end gap-4 pt-6 border-t">
-        <Button type="button" variant="outline" onClick={onClose} className="border-black text-black hover:bg-neutral-50">Cancel</Button>
-        <Button onClick={onUpdate} className='bg-[#B91434] hover:bg-black'>Update Permissions</Button>
+        <FormButton type="button" variant="outline" onClick={onClose} className="border-black text-black hover:bg-neutral-50">Cancel</FormButton>
+        <FormButton onClick={onUpdate} className='bg-[#B91434] hover:bg-black'>Update Permissions</FormButton>
       </div>
       </div>
       </div>

@@ -42,8 +42,8 @@ export  function DynamicForm({
   fields,
   onSubmit,
   onClose,
-  submitLabel = "Save",
-  gridCols = 1,
+  submitLabel = "Save  ",
+  gridCols = 2,
   hiddenFields,
   readOnlyFields,
   errors = {}
@@ -56,7 +56,7 @@ export  function DynamicForm({
       <div className="flex-grow">
         {/* Header */}
         <div className="bg-neutral-50 p-4 sm:p-6 md:p-8 border-b border-neutral-100 relative w-full">
-          <h2 className="text-2xl sm:text-2xl md:text-3xl font-black text-black tracking-tighter uppercase">
+          <h2 className="text-2xl sm:text-2xl md:text-3xl font-black text-black   tracking-wide uppercase">
             {title}
           </h2>
           {description && (
