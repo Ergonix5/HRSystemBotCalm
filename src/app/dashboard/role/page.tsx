@@ -19,15 +19,17 @@ import {
 } from "../../../components/ui/select";
 import { Dialog, DialogContent } from "../../../components/ui/dialog";
 
-import { type Role, type Permission } from "@/src/app/types/types";
+import { type Role, type Permission, type Company } from "@/src/app/types/types";
 import { availablePermissions } from "./role";
 import { createRole ,getRoles } from "../../../services/role.service";
+import { getOrganizations } from "../../../services/organization.service";
 
 
 export default function Page() {
   //  STATE 
   const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -37,6 +39,9 @@ export default function Page() {
   const [formData, setFormData] = useState({
     roleName: "",
     description: "",
+    status: "active",
+    companyId: "",
+    roleId: "",
   });
 
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
@@ -44,43 +49,59 @@ export default function Page() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //  FETCH ROLES 
+  //  FETCH ROLES & COMPANIES
   useEffect(() => {
-    const fetchRoles = async () => {
-      const data = await getRoles("507f1f77bcf86cd799439011");
-      console.log("Fetched roles:", data);
-      setRoles(data);
+    const fetchData = async () => {
+      const [rolesData, companiesData] = await Promise.all([
+        getRoles("507f1f77bcf86cd799439011"),
+        getOrganizations(),
+      ]);
+      console.log("Fetched roles:", rolesData);
+      console.log("Fetched companies:", companiesData);
+      setRoles(rolesData);
+      setCompanies(companiesData);
     };
 
-    fetchRoles();
+    fetchData();
   }, []);
 
   //  HELPERS 
   const generateRoleId = () => {
-    const prefix = "ROL";
-    const timestamp = Date.now().toString().slice(-6);
-    return `${prefix}-${timestamp}`;
+    const existingNumbers = roles
+      .map(r => {
+        const match = r.role_id.match(/ROLE(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+      })
+      .filter(n => n > 0);
+    
+    const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+    return `ROLE${String(nextNumber).padStart(3, '0')}`;
   };
 
   const formatDateTime = (dateString: string) =>
     new Date(dateString).toLocaleString();
 
+  const getCompanyName = (companyId: string) => {
+    const company = companies.find(c => c._id === companyId);
+    return company?.company_name || "Unknown Company";
+  };
+
   //  CREATE ROLE 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.roleName.trim() || !formData.description.trim()) return;
+    if (!formData.roleName.trim() || !formData.description.trim() || !formData.companyId || !formData.roleId) return;
 
     setIsSubmitting(true);
 
     try {
       const payload = {
-        organization: "507f1f77bcf86cd799439011",
-        role_id: generateRoleId(),
+        organization: formData.companyId,
+        role_id: formData.roleId,
         role_name: formData.roleName.trim(),
         description: formData.description.trim(),
         permissions: selectedPermissions,
-        status: "Active"
+        status: formData.status
       };
 
       const response = await createRole(payload);
@@ -90,7 +111,7 @@ export default function Page() {
           role_id: payload.role_id,
           roleName: payload.role_name,
           description: payload.description,
-          status: "Active",
+          status: payload.status === "active" ? "Active" : "Inactive",
           userCount: 0,
           permissions: selectedPermissions,
           color: "blue",
@@ -99,7 +120,7 @@ export default function Page() {
         };
 
         setRoles((prev) => [newRole, ...prev]);
-        setFormData({ roleName: "", description: "" });
+        setFormData({ roleName: "", description: "", status: "active", companyId: "", roleId: "" });
         setSelectedPermissions([]);
         setIsAddDialogOpen(false);
       }
@@ -169,7 +190,12 @@ export default function Page() {
         </div>
 
         {/* Add Role Dialog */}
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+          setIsAddDialogOpen(open);
+          if (open) {
+            setFormData({ ...formData, roleId: generateRoleId() });
+          }
+        }}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <NewRoleForm
               availablePermissions={availablePermissions}
@@ -188,6 +214,7 @@ export default function Page() {
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               onCancel={() => setIsAddDialogOpen(false)}
+              companies={companies}
             />
           </DialogContent>
         </Dialog>
@@ -195,17 +222,21 @@ export default function Page() {
         {/* Role Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
           {filteredRoles.length ? (
-            filteredRoles.map((role) => (
+            filteredRoles.map((role, index) => (
               <ReusableRoleCard
-                key={role.role_id}
+                key={`${role.role_id}-${index}`}
                 role={role}
                 availablePermissions={availablePermissions}
                 formatDateTime={formatDateTime}
+                companyName={getCompanyName((role as any).organization || "")}
                 onEdit={(r) => {
                   setSelectedRole(r);
                   setFormData({
                     roleName: r.roleName,
                     description: r.description,
+                    status: r.status.toLowerCase(),
+                    companyId: (r as any).organization || "",
+                    roleId: r.role_id,
                   });
                   setIsEditDialogOpen(true);
                 }}
@@ -263,6 +294,7 @@ export default function Page() {
               setFormData={setFormData}
               onSubmit={(e) => e.preventDefault()}
               onCancel={() => setIsEditDialogOpen(false)}
+              companies={companies}
             />
           </DialogContent>
         </Dialog>

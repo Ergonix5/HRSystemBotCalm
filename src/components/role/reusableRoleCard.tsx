@@ -19,6 +19,7 @@ interface ReusableRoleCardProps {
   onPermissions: (role: Role) => void;
   onDelete: (role: Role) => void;
   formatDateTime: (date: string) => string;
+  companyName?: string;
 }
 
 export default function ReusableRoleCard({
@@ -28,6 +29,7 @@ export default function ReusableRoleCard({
   onPermissions,
   onDelete,
   formatDateTime,
+  companyName,
 }: ReusableRoleCardProps) {
 
 
@@ -47,11 +49,12 @@ export default function ReusableRoleCard({
           <div>
             <h3 className="font-bold text-xl text-gray-900  ">{role.roleName}</h3>
             <p className="text-[10px]  text-gray-600 uppercase ">{role.role_id}</p>
+            {companyName && <p className="text-[10px] text-gray-500 font-medium">{companyName}</p>}
           </div>
         </div>
        <span
           className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
-            role.status === "Active"
+            role.status === "Active" || role.status === "active"
               ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
           }`}
