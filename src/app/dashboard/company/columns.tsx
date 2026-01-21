@@ -81,6 +81,7 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
       <TableActions
         id={row.original.company_id}
         type="company"
+      
         onView={onView}
         onEdit={onEdit}
         onDelete={(id) => console.log("Delete company", id)}

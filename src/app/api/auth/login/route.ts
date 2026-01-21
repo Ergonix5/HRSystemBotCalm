@@ -34,7 +34,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
     }
 
-    const payload = { sub: String(user._id), role: user.role ,organization_id: user.organization ,designation: user.designation  };
+   const payload = { sub: String(user._id), orgId: String(user.organization), role: String(user.role) };
+
 
     
 

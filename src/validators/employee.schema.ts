@@ -1,15 +1,15 @@
 import { z } from "zod";
 
 export const employeeCreateSchema = z.object({
-  company_id: z
+  organization: z
     .string()
     .min(1, "Company ID is required"),
 
-  designation_id: z
+  designation: z
     .string()
     .min(1, "Designation ID is required"),
 
-  role_id: z
+  role: z
     .string()
     .min(1, "Role ID is required"),
 
@@ -55,7 +55,7 @@ export const employeeCreateSchema = z.object({
       message: "Invalid date format",
     }),
 
-  status: z
+  employment_status: z
     .enum(["Active", "Inactive"])
     .default("Active"),
 });

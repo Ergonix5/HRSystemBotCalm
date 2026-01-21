@@ -4,7 +4,7 @@ import { Company } from "../../app/types/types"
 import { DynamicForm } from "./reusableform"
 import { type FormField } from '@/src/app/types/types';
 import { useFormValidation } from '../../hooks/useFormValidation'
-import { companyCreateSchema } from '../../validators/organization.schema'
+import { oraganiationCreateSchema } from '../../validators/organization.schema'
 
 interface CompanyFormProps {
   company?: Company
@@ -12,7 +12,7 @@ interface CompanyFormProps {
 }
 
 export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
-  const { errors, validate } = useFormValidation(companyCreateSchema)
+  const { errors, validate } = useFormValidation(oraganiationCreateSchema)
 
   const fields: FormField[] = [
     {

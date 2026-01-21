@@ -1,20 +1,43 @@
-import { DashboardCard } from "../../components/dashboard/dashboard-card"
-import StudentAttendanceChart from "../../components/dashboard/employee-attendance-chart"
-import { CompanyDistributionChart } from "../../components/dashboard/company-distribution-chart"
-import { EmployeeOverview } from "../../components/dashboard/employee-overview"
-import { PendingLeaveRequests } from "../../components/dashboard/pending-leave-requests"
-import { RecentActivities } from "../../components/dashboard/pending-recent-activities"
-import { Button } from "../../components/ui/button"
-import { Users, UserCheck, Calendar, Briefcase, Building, Megaphone, Clock, FileText, Eye } from "lucide-react"
-import Link from "next/link"
+"use client";
+
+import { DashboardCard } from "../../components/dashboard/dashboard-card";
+import StudentAttendanceChart from "../../components/dashboard/employee-attendance-chart";
+import { CompanyDistributionChart } from "../../components/dashboard/company-distribution-chart";
+import { EmployeeOverview } from "../../components/dashboard/employee-overview";
+import { PendingLeaveRequests } from "../../components/dashboard/pending-leave-requests";
+import { RecentActivities } from "../../components/dashboard/pending-recent-activities";
+import { Button } from "../../components/ui/button";
+import {
+  Users,
+  UserCheck,
+  Calendar,
+  Briefcase,
+  Building,
+  Megaphone,
+  Clock,
+  FileText,
+  Eye,
+} from "lucide-react";
+import Link from "next/link";
+
+import { useEffect } from "react";
+import { useAuth } from "../store/authStore";
 
 export default function Dashboard() {
+  const { fetchMe } = useAuth();
+
+  useEffect(() => {
+    fetchMe();
+  }, [fetchMe]);
+
   return (
     <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">
+          Dashboard
+        </h1>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <DashboardCard
           title="Total Employees"
@@ -24,7 +47,7 @@ export default function Dashboard() {
           changeType="positive"
           icon={Users}
         />
-        
+
         <DashboardCard
           title="Today's Attendance"
           value="92.3%"
@@ -33,7 +56,7 @@ export default function Dashboard() {
           changeType="positive"
           icon={UserCheck}
         />
-        
+
         <DashboardCard
           title="Pending Leaves"
           value="3"
@@ -42,7 +65,7 @@ export default function Dashboard() {
           changeType="neutral"
           icon={Calendar}
         />
-        
+
         <DashboardCard
           title="Active Roles"
           value="7"
@@ -51,7 +74,7 @@ export default function Dashboard() {
           changeType="neutral"
           icon={Briefcase}
         />
-        
+
         <DashboardCard
           title="Companies"
           value="12"
@@ -60,7 +83,7 @@ export default function Dashboard() {
           changeType="positive"
           icon={Building}
         />
-        
+
         <DashboardCard
           title="Announcements"
           value="6"
@@ -69,7 +92,7 @@ export default function Dashboard() {
           changeType="neutral"
           icon={Megaphone}
         />
-        
+
         <DashboardCard
           title="Avg Work Hours"
           value="8.7h"
@@ -78,7 +101,7 @@ export default function Dashboard() {
           changeType="positive"
           icon={Clock}
         />
-        
+
         <DashboardCard
           title="Report Logs"
           value="156"
@@ -88,12 +111,12 @@ export default function Dashboard() {
           icon={FileText}
         />
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <StudentAttendanceChart />
         <CompanyDistributionChart />
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div className="lg:col-span-2">
           <EmployeeOverview />
@@ -106,5 +129,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
