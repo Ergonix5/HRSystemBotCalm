@@ -6,11 +6,13 @@ import { type FormField } from '@/src/app/types/types';
 interface EditDesignationFormProps {
   designation: Designation
   onSubmit: (data: any) => void
+  onClose?: () => void
 }
 
 export function EditDesignationForm({
   designation,
   onSubmit,
+  onClose,
 }: EditDesignationFormProps) {
   const fields: FormField[] = [
     {
@@ -61,11 +63,11 @@ export function EditDesignationForm({
       title="Edit Designation"
       description="Update designation details"
       fields={fields}
-      mode="edit"
       readOnlyFields={["designation_id"]}
       hiddenFields={{ _id: designation._id }}
       submitLabel="Update Designation"
       onSubmit={onSubmit}
+      onClose={onClose}
     />
   )
 }

@@ -9,9 +9,11 @@ import { designationCreateSchema } from '../../validators/designation.schema'
 export function DesignationForm({
   designation,
   onSubmit,
+  onClose,
 }: {
   designation?: Designation
   onSubmit: (data: any) => void
+  onClose?: () => void
 }) {
   const { errors, validate } = useFormValidation(designationCreateSchema)
 
@@ -20,6 +22,7 @@ export function DesignationForm({
       id: "designation-id",
       name: "designation_id",
       label: "Designation ID",
+      placeholder: "DES_001",
       type: "input",
       required: true,
       defaultValue: designation?.designation_id,
@@ -29,6 +32,7 @@ export function DesignationForm({
       name: "title",
       label: "Title",
       type: "input",
+      placeholder: "Designation Title",
       required: true,
       defaultValue: designation?.title,
     },
@@ -36,6 +40,7 @@ export function DesignationForm({
       id: "description",
       name: "description",
       label: "Description",
+      placeholder: "Designation Description",
       type: "textarea",
       defaultValue: designation?.description,
     },
@@ -64,6 +69,7 @@ export function DesignationForm({
       description="Enter designation details below."
       fields={fields}
       onSubmit={handleSubmit}
+      onClose={onClose}
       errors={errors}
     />
   )

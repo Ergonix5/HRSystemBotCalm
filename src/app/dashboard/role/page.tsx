@@ -1,90 +1,208 @@
-"use client"
-import { useState, useMemo } from "react";
-import HeaderSection from '../../../components/role/headerSection';
-import ReusableRoleCard from '../../../components/role/reusableRoleCard';
-import NewRoleForm from '../../../components/role/newRoleForm';
-import ViewPermission from '../../../components/role/viewPermisson';
-import EditRole from '../../../components/role/EditRole';
+"use client";
+
+import { useState, useMemo, useEffect } from "react";
+import HeaderSection from "../../../components/role/headerSection";
+import ReusableRoleCard from "../../../components/role/reusableRoleCard";
+import NewRoleForm from "../../../components/role/newRoleForm";
+import ViewPermission from "../../../components/role/viewPermisson";
+import EditRole from "../../../components/role/EditRole";
 import DeleteDialog from "../../../components/role/deleteRoleDialog";
-import { Search } from 'lucide-react';
-import { Input } from '../../../components/ui/input';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../components/ui/select';
-import { type Role, type Permission } from '@/src/app/types/types';
-import { initialRoles, availablePermissions } from "./role";
-import { Dialog, DialogContent } from '../../../components/ui/dialog';
-import { createRole } from '@/src/lib/api';
+
+import { Search } from "lucide-react";
+import { Input } from "../../../components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../../../components/ui/select";
+
+import { type Role, type Permission, type Company } from "@/src/app/types/types";
+import { availablePermissions } from "./role";
+import { createRole, getRoles, updateRole, deleteRole } from "../../../services/role.service";
+import { getOrganizations } from "../../../services/organization.service";
 
 export default function Page() {
-
-  // State for roles and form/dialog management
-  const [roles, setRoles] = useState<Role[]>(initialRoles);
+  //  STATE 
+  const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [selectedOrganization, setSelectedOrganization] = useState<string>("all");
+  const [isLoading, setIsLoading] = useState(true);
+
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isPermissionsDialogOpen, setIsPermissionsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({ roleName: '', description: '' });
+
+  const [formData, setFormData] = useState<{
+    roleName: string;
+    description: string;
+    status: string;
+    companyId: string;
+    roleId: string;
+  }>({
+    roleName: "",
+    description: "",
+    status: "Active",
+    companyId: "",
+    roleId: "",
+  });
+
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Generate role ID
-  const generateRoleId = () => {
-    const prefix = 'ROL';
-    const timestamp = Date.now().toString().slice(-6);
-    return `${prefix}-${timestamp}`;
-  };
+  //  FETCH ROLES & COMPANIES
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const companiesData = await getOrganizations();
+        setCompanies(companiesData);
 
-  // Handle form submission
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!formData.roleName.trim() || !formData.description.trim()) {
-    return;
-  }
-
-  setIsSubmitting(true);
-
-  try {
-    const roleData = {
-      organization: '507f1f77bcf86cd799439011',
-      role_id: generateRoleId(),
-      role_name: formData.roleName.trim(),
-      description: formData.description.trim(),
-      permissions: selectedPermissions
+        // Fetch roles for all organizations by fetching each organization's roles
+        if (companiesData.length > 0) {
+          const allRoles: Role[] = [];
+          for (const company of companiesData) {
+            try {
+              const companyRoles = await getRoles(company._id);
+              allRoles.push(...companyRoles);
+            } catch (error) {
+              console.error(`Failed to fetch roles for organization ${company._id}:`, error);
+            }
+          }
+          setRoles(allRoles);
+        }
+        
+        // Set first organization as selected by default if any exist
+        if (companiesData.length > 0) {
+          setSelectedOrganization("all");
+        }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    const response = await createRole(roleData);
+    fetchData();
+  }, []);
 
-    if (response.success) {
-      const newRole: Role = {
-        role_id: roleData.role_id,
-        roleName: roleData.role_name,
-        description: roleData.description,
-        status: 'Active',
-        userCount: 0,
+  //  HELPERS 
+  const generateRoleId = () => {
+    const existingNumbers = roles
+      .map(r => {
+        const match = r.role_id.match(/ROLE(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+      })
+      .filter(n => n > 0);
+
+    const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+    return `ROLE${String(nextNumber).padStart(3, '0')}`;
+  };
+
+  const formatDateTime = (dateString: string) =>
+    new Date(dateString).toLocaleString();
+
+  const getCompanyName = (companyId: string) => {
+    const company = companies.find(c => c._id === companyId);
+    return company?.company_name || "Unknown Company";
+  };
+
+  //  CREATE ROLE 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.roleName.trim() || !formData.description.trim() || !formData.companyId || !formData.roleId) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const company = companies.find((c) => c._id === formData.companyId);
+      const payload = {
+        organization: formData.companyId,
+        company_name: company?.company_name || "",
+        role_id: formData.roleId,
+        role_name: formData.roleName.trim(),
+        description: formData.description.trim(),
         permissions: selectedPermissions,
-        color: 'blue',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        status: formData.status,
       };
 
-      setRoles(prev => [newRole, ...prev]);
+      const response = await createRole(payload);
 
-      setFormData({ roleName: '', description: '' });
-      setSelectedPermissions([]);
-      setIsAddDialogOpen(false);
+      if (response?.success && response.data) {
+        const created = response.data;
+        const newRole: Role = {
+          _id: created._id,
+          role_id: created.role_id || created._id,
+          roleName: created.role_name,
+          description: created.description || "",
+          status: created.status === "Active" ? "Active" : "Inactive",
+          userCount: created.user_count || 0,
+          permissions: created.permissions || [],
+          color: created.color || "gray",
+          createdAt: created.createdAt || created.created_at || new Date().toISOString(),
+          updatedAt: created.updatedAt || created.updated_at || new Date().toISOString(),
+          organization: created.organization?._id || created.organization,
+          organizationName: created.organization?.name || created.company_name || "",
+        };
+
+        setRoles((prev) => [newRole, ...prev]);
+        setFormData({ roleName: "", description: "", status: "Active", companyId: "", roleId: "" });
+        setSelectedPermissions([]);
+        setIsAddDialogOpen(false);
+      }
+    } catch (error) {
+      console.error("Create role failed:", error);
+      alert("Failed to create role. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (error) {
-    console.error('Create role failed:', error);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
-  // Group permissions by category 
+  // EDIT ROLE - save changes
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedRole?._id) return;
+    try {
+      const company = companies.find((c) => c._id === formData.companyId);
+      const payload = {
+        organization: formData.companyId,
+        company_name: company?.company_name || "",
+        role_id: formData.roleId,
+        role_name: formData.roleName.trim(),
+        description: formData.description.trim(),
+        permissions: selectedPermissions,
+        status: formData.status,
+      };
+
+      const res = await updateRole(selectedRole._id, payload);
+      if (res?.success && res.data) {
+        const updated = res.data;
+        setRoles((prev) => prev.map((r) => (r._id === updated._id ? {
+          ...r,
+          role_id: updated.role_id || updated._id,
+          roleName: updated.role_name,
+          description: updated.description || "",
+          status: updated.status === "Active" ? "Active" : "Inactive",
+          permissions: updated.permissions || [],
+          organization: updated.organization?._id || updated.organization,
+          organizationName: updated.organization?.name || updated.company_name || "",
+          updatedAt: updated.updatedAt || updated.updated_at || new Date().toISOString(),
+        } : r)));
+        setIsEditDialogOpen(false);
+      }
+    } catch (err) {
+      console.error("Update role failed:", err);
+      alert("Failed to update role. Please try again.");
+    }
+  };
+
+  //  GROUP PERMISSIONS 
   const groupedPermissions = useMemo(() => {
     return availablePermissions.reduce((acc, permission) => {
       if (!acc[permission.category]) acc[permission.category] = [];
@@ -93,10 +211,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     }, {} as Record<string, Permission[]>);
   }, []);
 
-    //  format date and time
-  const formatDateTime = (dateString: string) => new Date(dateString).toLocaleString();
-
-  // Filter and search logic
+  //  FILTER ROLES 
   const filteredRoles = useMemo(() => {
     return roles.filter((role) => {
       const matchesSearch =
@@ -104,23 +219,30 @@ const handleSubmit = async (e: React.FormEvent) => {
         role.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         role.role_id.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus = statusFilter === 'all' || role.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "all" || role.status === statusFilter;
 
-      return matchesSearch && matchesStatus;
+      // Filter by selected organization
+      const matchesOrganization =
+        selectedOrganization === "all" || role.organization === selectedOrganization;
+
+      return matchesSearch && matchesStatus && matchesOrganization;
     });
-  }, [roles, searchTerm, statusFilter]);
+  }, [roles, searchTerm, statusFilter, selectedOrganization]);
 
-
+  //  UI 
   return (
     <div className="p-6">
       <div className="border p-5 rounded-md">
-
-        <HeaderSection title="Roles and Permissions" description="Manage user roles and access control" onAddClick={() => setIsAddDialogOpen(true)} />
+        <HeaderSection
+          title="Roles and Permissions"
+          description="Manage user roles and access control"
+          onAddClick={() => setIsAddDialogOpen(true)}
+        />
 
         {/* Search + Filter */}
-        <div className="flex items-center gap-3 mb-6">
-          {/* Search */}
-          <div className="relative flex-1">
+        <div className="flex flex-col md:flex-row items-center gap-3 mb-6">
+          <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               placeholder="Search roles..."
@@ -130,106 +252,187 @@ const handleSubmit = async (e: React.FormEvent) => {
             />
           </div>
 
-          {/* Filter */}
-          <div className="flex items-center gap-2">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={selectedOrganization} onValueChange={setSelectedOrganization}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Select Organization" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Organizations</SelectItem>
+              {companies.map((company) => (
+                <SelectItem key={company._id} value={company._id}>
+                  {company.company_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full md:w-[150px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Inactive">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Add Role Dialog */}
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <NewRoleForm
-              availablePermissions={availablePermissions}
-              groupedPermissions={groupedPermissions}
-              selectedPermissions={selectedPermissions}
-              setSelectedPermissions={setSelectedPermissions}
-              formData={formData}
-              setFormData={setFormData}
-              togglePermission={id => setSelectedPermissions(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])}
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              onCancel={() => setIsAddDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        {isAddDialogOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <NewRoleForm
+                availablePermissions={availablePermissions}
+                groupedPermissions={groupedPermissions}
+                selectedPermissions={selectedPermissions}
+                setSelectedPermissions={setSelectedPermissions}
+                formData={formData}
+                setFormData={(data) => {
+                  // If company ID is not set and we have a selected organization, use it
+                  const companyId = data.companyId || (selectedOrganization !== "all" ? selectedOrganization : "");
+                  setFormData((prev) => ({
+                    ...prev,
+                    ...data,
+                    companyId,
+                    roleId: prev.roleId || generateRoleId(),
+                  }));
+                }}
+                togglePermission={(id) =>
+                  setSelectedPermissions((prev) =>
+                    prev.includes(id)
+                      ? prev.filter((p) => p !== id)
+                      : [...prev, id]
+                  )
+                }
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                onCancel={() => setIsAddDialogOpen(false)}
+                companies={companies}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Role Cards */}
-        <div className="grid grid-cols-1  lg:grid-cols-3 2xl:grid-cols-4 gap-5">
-          {filteredRoles.length > 0 ? (
-            filteredRoles.map((role: Role) => (
-              <ReusableRoleCard
-                key={role.role_id}
-                role={role}
-                availablePermissions={availablePermissions}
-                formatDateTime={formatDateTime}
-                onEdit={r => { setSelectedRole(r); setIsEditDialogOpen(true); }}
-                onPermissions={r => { setSelectedRole(r); setSelectedPermissions(r.permissions); setIsPermissionsDialogOpen(true); }}
-                onDelete={r => { setSelectedRole(r); setIsDeleteDialogOpen(true); }}
+        {isLoading ? (
+          <div className="col-span-full text-center py-12 text-muted-foreground">
+            <p>Loading roles...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3  2xl:grid-cols-3 3xl:grid-cols-5 gap-8">
+            {filteredRoles.length ? (
+              filteredRoles.map((role, index) => (
+                <ReusableRoleCard
+                  key={`${role.role_id}-${index}`}
+                  role={role}
+                  availablePermissions={availablePermissions}
+                  formatDateTime={formatDateTime}
+                  companyName={getCompanyName((role as any).organization || "")}
+                  onEdit={(r) => {
+                    setSelectedRole(r);
+                    setFormData({
+                      roleName: r.roleName,
+                      description: r.description,
+                      status: r.status.toLowerCase(),
+                      companyId: (r as any).organization || "",
+                      roleId: r.role_id,
+                  });
+                  setIsEditDialogOpen(true);
+                }}
+                onPermissions={(r) => {
+                  setSelectedRole(r);
+                  setSelectedPermissions(r.permissions);
+                  setIsPermissionsDialogOpen(true);
+                }}
+                onDelete={(r) => {
+                  setSelectedRole(r);
+                  setIsDeleteDialogOpen(true);
+                }}
               />
             ))
-          ) : (
-            <div className="col-span-full text-center text-muted-foreground">
-              No roles found.
+            ) : (
+              <div className="col-span-full text-center text-muted-foreground">
+                No roles found.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Permissions Dialog */}
+        {isPermissionsDialogOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="max-w-4xl max-h-[90vh] overflow-hidden">
+              <ViewPermission
+                selectedRole={selectedRole}
+                groupedPermissions={groupedPermissions}
+                selectedPermissions={selectedPermissions}
+                setSelectedPermissions={setSelectedPermissions}
+                onClose={() => setIsPermissionsDialogOpen(false)}
+                onUpdate={async () => {
+                  if (!selectedRole?._id) return;
+                  try {
+                    await updateRole(selectedRole._id, { permissions: selectedPermissions });
+                    setRoles((prev) =>
+                      prev.map((role) =>
+                        role._id === selectedRole._id
+                          ? { ...role, permissions: selectedPermissions }
+                          : role
+                      )
+                    );
+                    setIsPermissionsDialogOpen(false);
+                  } catch (err) {
+                    console.error('Failed to update permissions', err);
+                    alert('Failed to update permissions.');
+                  }
+                }}
+              />
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Permissions Dialogs */}
-        <Dialog open={isPermissionsDialogOpen} onOpenChange={setIsPermissionsDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-            <ViewPermission
-              selectedRole={selectedRole}
-              groupedPermissions={groupedPermissions}
-              selectedPermissions={selectedPermissions}
-              setSelectedPermissions={setSelectedPermissions}
-              onClose={() => setIsPermissionsDialogOpen(false)}
-              onUpdate={() => {
-                if (selectedRole) {
-                  setRoles(prev => prev.map(role =>
-                    role.role_id === selectedRole.role_id
-                      ? { ...role, permissions: selectedPermissions }
-                      : role
-                  ));
-                  setIsPermissionsDialogOpen(false);
+        {/* Edit Dialog */}
+        {isEditDialogOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="max-w-2xl">
+              <EditRole
+                selectedRole={selectedRole}
+                formData={formData}
+                setFormData={(data) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    ...data,
+                    roleId: prev.roleId, // keep roleId intact
+                  }))
                 }
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+                onSubmit={handleEditSubmit}
+                onCancel={() => setIsEditDialogOpen(false)}
+                companies={companies}
+              />
+            </div>
+          </div>
+        )}
 
-
-{/* Edit Role Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <EditRole
-              selectedRole={selectedRole}
-              formData={formData}
-              setFormData={setFormData}
-              onSubmit={e => e.preventDefault()}
-              onCancel={() => setIsEditDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
-
-
-{/* Delete Role Dialog */}
+        {/* Delete Dialog */}
         <DeleteDialog
           selectedRole={selectedRole}
           isOpen={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
-          onDelete={() => { }}
+          onDelete={async () => {
+            if (selectedRole?._id) {
+              try {
+                await deleteRole(selectedRole._id);
+                setRoles((prev) => prev.filter((r) => r._id !== selectedRole._id));
+                setIsDeleteDialogOpen(false);
+                setSelectedRole(null);
+              } catch (error) {
+                console.error("Failed to delete role:", error);
+                alert("Failed to delete role. Please try again.");
+              }
+            }
+          }}
         />
-      </div></div>
+      </div>
+    </div>
   );
 }

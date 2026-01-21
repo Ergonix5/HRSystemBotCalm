@@ -9,7 +9,8 @@ import {
 } from "../ui/dialog"
 
 import { Button } from "../ui/button"
-
+import {X} from "lucide-react"
+import { FormButton } from "../ui/formbutton"
 
 
 interface Detail {
@@ -60,7 +61,7 @@ export function DetailsModal({
       <DialogContent className="max-w-lg p-0 bg-white overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
 
         {/* Header */}
-       <DialogHeader className="px-6 py-5 border-b sticky top-0 bg-white z-10 flex flex-col items-center">
+       <DialogHeader className="px-6 py-5 border-b bg-neutral-50 sticky top-0 border-neutral-100 z-10 flex flex-col items-start">
     
   {headerImage && (
     <div className="w-16 h-16 rounded-full overflow-hidden mb-3 border-2 border-gray-200">
@@ -68,14 +69,29 @@ export function DetailsModal({
     </div>
   )}
 
-  <DialogTitle className="text-lg font-semibold text-gray-900">
+  <DialogTitle className="text-2xl sm:text-2xl md:text-3xl font-black text-black tracking-wide uppercase">
     {title}
   </DialogTitle>
 
-  <DialogDescription className="text-xs text-gray-500 mt-1 text-center">
+  <DialogDescription className="text-neutral-500 text-xs sm:text-sm mt-2 font-medium">
     {subtitle ?? "Details information dialog"}
   </DialogDescription>
+
+
+    
+          {/* Close Button */}
+          {onClose && (
+            <button 
+              type="button"
+              onClick={onClose}
+              className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 text-neutral-400 hover:text-black transition-colors hover:bg-neutral-200"
+              aria-label="Close form"
+            >
+              <X size={24} strokeWidth={2.5} />
+            </button>
+          )}
 </DialogHeader>
+
 
         {/* Body */}
         <div className="relative flex-1 overflow-y-auto">
@@ -103,13 +119,13 @@ export function DetailsModal({
 
         {/* Footer */}
         <div className="bg-gray-50 px-6 py-4 flex justify-end sticky bottom-0 z-10">
-          <Button
+          <FormButton
             onClick={onClose}
             className="px-6 bg-[#B91434] hover:bg-[#B91434] "
           
           >
             Close
-          </Button>
+          </FormButton>
         </div>
 
       </DialogContent>

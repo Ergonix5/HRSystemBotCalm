@@ -7,31 +7,33 @@ import { type FormField } from '@/src/app/types/types';
 interface EditCompanyFormProps {
   company: Company
   onSubmit: (data: any) => void
+  onClose?: () => void
 }
 
 export function EditCompanyForm({
   company,
   onSubmit,
+  onClose,
 }: EditCompanyFormProps) {
   const fields: FormField[] = [
     {
-      id: "company-id",
-      name: "company_id",
-      label: "Company ID",
+      id: "organization-id",
+      name: "organization_id",
+      label: "Organization ID",
       type: "input",
       defaultValue: company.company_id,
     },
     {
-      id: "company-name",
-      name: "company_name",
-      label: "Company Name",
+      id: "organization-name",
+      name: "name",
+      label: "Organization Name",
       type: "input",
       required: true,
       defaultValue: company.company_name,
     },
     {
-      id: "company-description",
-      name: "company_description",
+      id: "organization-description",
+      name: "description",
       label: "Description",
       type: "textarea",
       defaultValue: company.company_description,
@@ -54,11 +56,11 @@ export function EditCompanyForm({
       title="Edit Company"
       description="Update company information"
       fields={fields}
-      mode="edit"
-      readOnlyFields={["company_id"]}
+      readOnlyFields={["organization_id"]}
       hiddenFields={{ _id: company._id }}
       submitLabel="Update Company"
       onSubmit={onSubmit}
+      onClose={onClose}
     />
   )
 }

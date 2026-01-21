@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ProfileHeader,
   ContactCard,
@@ -10,37 +10,134 @@ import {
   type Employee,
   type SystemData
 } from './components';
+import { useUser } from '@/src/contexts/UserContext';
+
+interface EmployeeData {
+  _id: string;
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  date_of_birth?: string;
+  join_date: string;
+  employment_status: string;
+  organization: { name: string } | null;
+  designation: { name: string } | null;
+  role: { name: string } | null;
+}
 
 export default function App() {
+  const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-
-  const systemData: SystemData = {
-    name: "Alex Rivera",
-    employeeId: "CORP-9921-X",
-    company: "Global Solutions Inc."
-  };
-
+  const [loading, setLoading] = useState(true);
+  const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [employee, setEmployee] = useState<Employee>({
-    email: "a.rivera@corporate.com",
-    phone: "+1 (555) 987-6543",
-    department: "Operations & Strategy",
-    position: "Senior Project Manager",
-    location: "Chicago, IL",
-    bio: "Result-oriented professional with over 8 years of experience in cross-functional team leadership and process optimization. Driven by data and strategic efficiency.",
-    skills: ["Project Management", "Strategic Planning", "Budgeting", "Team Leadership"],
+    email: "",
+    phone: "",
+    department: "No Department",
+    position: "No Position",
+    location: "No Location",
+    bio: "Professional employee with dedication to excellence and continuous improvement.",
+    skills: ["Communication", "Team Work", "Problem Solving", "Time Management"],
     experience: [
-      { role: "Senior Project Manager", company: "Global Solutions Inc.", period: "2021 - Present", desc: "Overseeing operational budgets and leading cross-functional teams." },
-      { role: "Operations Specialist", company: "Metro Logistics", period: "2018 - 2021", desc: "Streamlined supply chain workflows reducing costs by 20%." }
+      { role: "Current Role", company: "Current Company", period: "Present", desc: "Contributing to organizational goals and objectives." }
     ],
     education: [
-      { degree: "MBA", school: "University of Chicago", year: "2018" }
+      { degree: "Degree", school: "Institution", year: "Year" }
     ]
   });
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    if (employeeData) {
+      setEmployee(prev => ({
+        ...prev,
+        email: employeeData.email,
+        phone: employeeData.phone || "",
+        department: employeeData.designation?.name || "No Department",
+        position: employeeData.role?.name || "No Position",
+        location: employeeData.address || "No Location"
+      }));
+    }
+  }, [employeeData]);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('/api/test-profile');
+      const data = await response.json();
+      
+      if (response.ok) {
+        setEmployeeData(data.employee);
+      }
+    } catch (err) {
+      console.error('Failed to fetch profile:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B91434]"></div>
+      </div>
+    );
+  }
+
+  const systemData: SystemData = {
+    name: user?.name || (employeeData ? `${employeeData.first_name} ${employeeData.last_name}` : "User"),
+    employeeId: user?.employeeId || employeeData?.employee_id || "N/A",
+    company: user?.company || employeeData?.organization?.name || "No Company"
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setEmployee(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/test-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: employee.phone,
+          address: employee.location,
+          bio: employee.bio,
+          skills: employee.skills,
+          education: employee.education,
+          experience: employee.experience
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setEmployeeData(data.employee);
+        setIsEditing(false);
+        setSaveMessage('Profile updated successfully!');
+        setTimeout(() => setSaveMessage(null), 3000);
+        // Refetch to ensure UI shows latest data
+        await fetchProfile();
+      } else {
+        console.error('Failed to update profile:', data.error);
+        setSaveMessage('Failed to update profile');
+        setTimeout(() => setSaveMessage(null), 3000);
+      }
+    } catch (err) {
+      console.error('Network error while updating profile:', err);
+      setSaveMessage('Network error while updating profile');
+      setTimeout(() => setSaveMessage(null), 3000);
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,13 +167,37 @@ export default function App() {
     <div className="min-h-screen bg-[#FAFAFA] py-12 px-4 text-black selection:bg-[#B91434] selection:text-white">
       <div className="max-w-4xl mx-auto space-y-6">
         
+        {saveMessage && (
+          <div className={`p-4 rounded-lg text-center font-medium ${
+            saveMessage.includes('successfully') 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}>
+            {saveMessage}
+          </div>
+        )}
+        
         <ProfileHeader 
           employee={employee}
           systemData={systemData}
           isEditing={isEditing}
           profileImage={profileImage}
           onToggleEdit={() => setIsEditing(!isEditing)}
-          onCancel={() => setIsEditing(false)}
+          onCancel={() => {
+            setIsEditing(false);
+            // Reset employee data to original values
+            if (employeeData) {
+              setEmployee(prev => ({
+                ...prev,
+                email: employeeData.email,
+                phone: employeeData.phone || "",
+                department: employeeData.designation?.name || "No Department",
+                position: employeeData.role?.name || "No Position",
+                location: employeeData.address || "No Location"
+              }));
+            }
+          }}
+          onSave={handleSave}
           onInputChange={handleInputChange}
           onImageUpload={handleImageUpload}
         />

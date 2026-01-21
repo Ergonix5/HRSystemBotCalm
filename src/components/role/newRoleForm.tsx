@@ -5,26 +5,28 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Switch } from "../ui/switch";
-import { Users ,  Settings ,FileSliders, ChartNoAxesCombined,Lock} from "lucide-react";
+import { Users ,  Settings ,FileSliders, ChartNoAxesCombined,Lock, X} from "lucide-react";
 import {
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "../ui/dialog";
-import { type Permission } from "@/src/app/types/types";
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../ui/select";
+import { type Permission, type Company } from "@/src/app/types/types";
 
 interface NewRoleFormProps {
   availablePermissions: Permission[];
   groupedPermissions: Record<string, Permission[]>;
   selectedPermissions: string[];
   setSelectedPermissions: (permissions: string[]) => void;
-  formData: { roleName: string; description: string };
-  setFormData: (data: { roleName: string; description: string }) => void;
+  formData: { roleName: string; description: string; status?: string; companyId?: string };
+  setFormData: (data: { roleName: string; description: string; status?: string; companyId?: string }) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   togglePermission: (id: string) => void;
   isSubmitting?: boolean;
+  companies?: Company[];
 }
 
 export default function NewRoleForm({
@@ -36,6 +38,7 @@ export default function NewRoleForm({
   onCancel,
   togglePermission,
   isSubmitting = false,
+  companies = [],
 }: NewRoleFormProps) {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -59,25 +62,75 @@ export default function NewRoleForm({
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <DialogHeader>
-        <DialogTitle>Create New Role</DialogTitle>
-        <DialogDescription>
-          Define a new role with specific permissions.
-        </DialogDescription>
-      </DialogHeader>
+    <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl  mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex flex-col sm:flex-row">
+      {/* Left Accent Border */}
+      <div className="w-full sm:w-[6px] h-[6px] sm:h-auto bg-[#B91434] flex-shrink-0" />
+      
+      <div className="flex-grow">
+        {/* Header */}
+        <div className="bg-neutral-50 p-4 sm:p-6 md:p-8 border-b border-neutral-100 relative w-full">
+          <h2 className="text-2xl sm:text-2xl md:text-3xl font-black text-black tracking-tighter uppercase">
+            Create New Role
+          </h2>
+          <p className="text-neutral-500 text-xs sm:text-sm mt-2 font-medium">
+            Define a new role with specific permissions.
+          </p>
+          
+          {/* Close Button */}
+          <button 
+            type="button"
+            onClick={onCancel}
+            className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 text-neutral-400 hover:text-black transition-colors hover:bg-neutral-200"
+            aria-label="Close form"
+          >
+            <X size={24} strokeWidth={2.5} />
+          </button>
+        </div>
+
+    <form onSubmit={onSubmit} className="p-4 sm:p-6 md:p-8 flex-grow">
 
       <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="roleName">Role Name *</Label>
+            <Input
+              id="roleName"
+              name="roleName"
+              placeholder="Enter role name"
+              value={formData.roleName}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="status">Status *</Label>
+            <Select value={formData.status || "Active"} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+              <SelectTrigger id="status">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Active">Active</SelectItem>
+                <SelectItem value="Inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <div className="grid gap-2">
-          <Label htmlFor="roleName">Role Name *</Label>
-          <Input
-            id="roleName"
-            name="roleName"
-            placeholder="Enter role name"
-            value={formData.roleName}
-            onChange={handleInputChange}
-            required
-          />
+          <Label htmlFor="companyId">Company *</Label>
+          <Select value={formData.companyId || ""} onValueChange={(value) => setFormData({ ...formData, companyId: value })}>
+            <SelectTrigger id="companyId">
+              <SelectValue placeholder="Select company" />
+            </SelectTrigger>
+            <SelectContent>
+              {companies.map((company) => (
+                <SelectItem key={company._id} value={company._id}>
+                  {company.company_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="grid gap-2">
@@ -129,14 +182,16 @@ export default function NewRoleForm({
         </div>
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+      <div className="flex justify-end gap-4 pt-6 border-t flex-col-reverse sm:flex-row">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="border-black text-black hover:bg-neutral-50 w-full sm:w-auto">
           Cancel
         </Button>
-        <Button type="submit" className="bg-[#B91434]" disabled={isSubmitting}>
+        <Button type="submit" className="bg-[#B91434] hover:bg-black w-full sm:w-auto" disabled={isSubmitting}>
           {isSubmitting ? 'Creating...' : 'Create Role'}
         </Button>
-      </DialogFooter>
+      </div>
     </form>
+    </div>
+    </div>
   );
 }

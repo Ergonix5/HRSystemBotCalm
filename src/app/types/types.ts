@@ -25,9 +25,9 @@ export type Designation = {
 export type Employee = {
   _id: string
   employee_id: string
-  company_id: string
-  role_id: string
-  designation_id: string
+  organization: string
+  role: string
+  designation: string
   first_name: string
   last_name: string
   email: string
@@ -36,11 +36,14 @@ export type Employee = {
   date_of_birth: string
   join_date: string
   profile_pic?: string
-  status: "Active" | "Inactive"
+  employment_status: "Active"   | "Inactive"
 }
 
 
 export type Role= {
+  _id?: string;
+  organization?: string;
+  organizationName?: string;
   role_id: string; 
   roleName: string;
   description: string;
@@ -56,7 +59,7 @@ export type Permission ={
   id: string;
   name: string;
   description: string;
-  category: 'Users' | 'Content' | 'Reports' | 'Settings';
+  category: 'Role' | 'Employee' | 'Announcement' | 'Leave' | 'Company' | 'Designation' | 'Leave' | 'Reports' | 'Settings' |"Profile"| 'Dashboard'
 }
 
 //Resusableform types
@@ -70,4 +73,5 @@ export type FormField = {
   required?: boolean
   defaultValue?: any
   options?: { value: string; label: string }[]
+  onChange?: (value: string) => void
 }

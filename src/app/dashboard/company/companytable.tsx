@@ -49,6 +49,22 @@ export function CompanyTable({ organizations }: Props) {
     }
   };
 
+  //delete a specific company
+  const handleDeleteCompany = async (companyId: string) => {
+    const company = organizations.find(o => o.company_id === companyId)
+    if (!company) return
+
+    if (window.confirm(`Are you sure you want to delete ${company.company_name}?`)) {
+      try {
+        await deleteOrganization(company._id)
+        window.location.reload()
+      } catch (error) {
+        console.error("Failed to delete company:", error)
+        alert("Failed to delete company. Please try again.")
+      }
+    }
+  }
+
   //loading spinner if the component perform
   if (loading) {
     return (
@@ -98,7 +114,7 @@ export function CompanyTable({ organizations }: Props) {
 
       {/* Table */}
       <DataTable
-        columns={columns(handleViewCompany, handleEditCompany)}
+        columns={columns(handleViewCompany, handleEditCompany, handleDeleteCompany)}
         data={organizations}
         filterColumn="company_name"
         showStatusFilter
@@ -112,8 +128,8 @@ export function CompanyTable({ organizations }: Props) {
       />
 
       {/* Add new company  */}
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="max-w-2xl">
+      {isAddOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <CompanyForm
             onSubmit={async (data) => {
               try {
@@ -125,6 +141,7 @@ export function CompanyTable({ organizations }: Props) {
                 alert("Failed to create company. Please try again.");
               }
             }}
+            onClose={() => setIsAddOpen(false)}
           />
         </DialogContent>
       </Dialog>

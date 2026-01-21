@@ -33,7 +33,7 @@ export async function POST() {
       email: "test@example.com",
       hash_password: hashedPassword,
       phone: "+1234567890",
-      employment_status: "active"
+      employment_status: "Active"
     });
 
     await testUser.save();

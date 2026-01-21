@@ -1,6 +1,6 @@
-import { Designation , Company,Employee } from "../app/types/types"
+import { Designation , Company,Employee, Role } from "../app/types/types"
 
-const BASE_URL = "http://localhost:3000"
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 //fetch organizations
 export async function getOrganizations(): Promise<Company[]> {
@@ -61,6 +61,40 @@ export async function getDesignations(): Promise<Designation[]> {
     )
   } catch (error) {
     console.error("API Error (getDesignations):", error)
+    return []
+  }
+}
+
+//fetch roles
+export async function getRoles(): Promise<Role[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Role?organizationId=507f1f77bcf86cd799439011`, {
+      cache: "no-store",
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch roles")
+    }
+
+    const result = await response.json()
+    console.log("Roles API Response:", result)
+
+    // Transform backend → frontend type
+    return (
+      result.data?.map((role: any) => ({
+        role_id: role.role_id || role._id,
+        roleName: role.role_name,
+        description: role.description,
+        status: role.status,
+        userCount: role.user_count || 0,
+        permissions: role.permissions || [],
+        color: role.color || "gray",
+        createdAt: role.created_at,
+        updatedAt: role.updated_at,
+      })) || []
+    )
+  } catch (error) {
+    console.error("API Error (getRoles):", error)
     return []
   }
 }

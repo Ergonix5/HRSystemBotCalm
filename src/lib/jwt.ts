@@ -1,7 +1,11 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-const accessSecret = process.env.JWT_ACCESS_SECRET!;
-const refreshSecret = process.env.JWT_REFRESH_SECRET!;
+const accessSecret = process.env.JWT_ACCESS_SECRET;
+const refreshSecret = process.env.JWT_REFRESH_SECRET;
+
+if (!accessSecret || !refreshSecret) {
+  throw new Error('JWT secrets are not configured. Please set JWT_ACCESS_SECRET and JWT_REFRESH_SECRET in your environment variables.');
+}
 const accessExp = process.env.JWT_ACCESS_EXPIRES_IN || "15m";
 const refreshExp = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 

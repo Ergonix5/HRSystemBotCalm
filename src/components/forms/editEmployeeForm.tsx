@@ -9,11 +9,13 @@ import { type FormField } from '@/src/app/types/types';
 interface EditEmployeeFormProps {
   employee: Employee
   onSubmit: (data: any) => void
+  onClose?: () => void
 }
 
 export function EditEmployeeForm({
   employee,
   onSubmit,
+  onClose,
 }: EditEmployeeFormProps) {
   const fields: FormField[] = [
     {
@@ -60,10 +62,10 @@ export function EditEmployeeForm({
     { id: "join-date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
     {
       id: "status",
-      name: "status",
+      name: "employment_status",
       label: "Status",
       type: "select",
-      defaultValue: employee.status,
+      defaultValue: employee.employment_status,
       options: [
         { value: "Active", label: "Active" },
         { value: "Inactive", label: "Inactive" },
@@ -77,12 +79,12 @@ export function EditEmployeeForm({
       title="Edit Employee"
       description="Update employee details"
       fields={fields}
-      mode="edit"
       gridCols={2}
       readOnlyFields={["employee_id"]}
       hiddenFields={{ _id: employee._id }}
       submitLabel="Update Employee"
       onSubmit={onSubmit}
+      onClose={onClose}
     />
   )
 }

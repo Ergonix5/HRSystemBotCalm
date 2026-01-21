@@ -7,9 +7,8 @@ import { type Employee } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
 import { EmployeeForm } from "../../../components/forms/addEmployee"
-import { createEmployee } from "../../../lib/api"
+import { createEmployee, updateEmployee, deleteEmployee } from "../../../services/employee.service"
 import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
 import { PermissionCheck } from "../../../components/PermissionCheck";
 
@@ -43,6 +42,22 @@ export function EmployeeTable({ employees }: Props) {
     if (employee) {
       setEmployeeToEdit(employee)
       setIsEditOpen(true)
+    }
+  }
+
+  //delete a specific employee
+  const handleDeleteEmployee = async (employeeId: string) => {
+    const employee = employees.find(e => e.employee_id === employeeId)
+    if (!employee) return
+
+    if (window.confirm(`Are you sure you want to delete ${employee.first_name} ${employee.last_name}?`)) {
+      try {
+        await deleteEmployee(employee._id)
+        window.location.reload()
+      } catch (error) {
+        console.error("Failed to delete employee:", error)
+        alert("Failed to delete employee. Please try again.")
+      }
     }
   }
 
@@ -86,7 +101,7 @@ export function EmployeeTable({ employees }: Props) {
 </div>
       {/* Table */}
       <DataTable
-        columns={columns(handleViewEmployee, handleEditEmployee)}
+        columns={columns(handleViewEmployee, handleEditEmployee, handleDeleteEmployee)}
         data={employees}
         filterColumn="name"
         showStatusFilter
@@ -101,39 +116,44 @@ export function EmployeeTable({ employees }: Props) {
       />
 
       {/* add new employee  */}
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="max-w-2xl">
+      {isAddOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <EmployeeForm
             onSubmit={async (data) => {
               try {
                 await createEmployee(data)
                 setIsAddOpen(false)
-                // Refresh the page to show new employee
                 window.location.reload()
               } catch (error) {
                 console.error("Failed to create employee:", error)
                 alert("Failed to create employee. Please try again.")
               }
             }}
+            onClose={() => setIsAddOpen(false)}
           />
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Edit employee details */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-2xl">
-          {employeeToEdit && (
-            <EditEmployeeForm
-              employee={employeeToEdit}
-              onSubmit={(data) => {
-                console.log("Updated employee data:", data)
+      {isEditOpen && employeeToEdit && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <EditEmployeeForm
+            employee={employeeToEdit}
+            onSubmit={async (data) => {
+              try {
+                await updateEmployee(employeeToEdit._id, data)
                 setIsEditOpen(false)
                 setEmployeeToEdit(null)
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+                window.location.reload()
+              } catch (error) {
+                console.error("Failed to update employee:", error)
+                alert("Failed to update employee. Please try again.")
+              }
+            }}
+            onClose={() => setIsEditOpen(false)}
+          />
+        </div>
+      )}
     </div>
   )
 }

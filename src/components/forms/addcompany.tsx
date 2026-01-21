@@ -4,16 +4,18 @@ import { Company } from "../../app/types/types"
 import { DynamicForm } from "./reusableform"
 import { type FormField } from '@/src/app/types/types';
 import { useFormValidation } from '../../hooks/useFormValidation'
-import { oraganiationCreateSchema } from '../../validators/organization.schema'
+import { organizationCreateSchema } from '../../validators/organization.schema'
+import { useState } from "react";
 
 interface CompanyFormProps {
   company?: Company
   onSubmit: (data: any) => void
+  onClose?: () => void
 }
 
-export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
-  const { errors, validate } = useFormValidation(oraganiationCreateSchema)
-
+export function CompanyForm({ company, onSubmit, onClose }: CompanyFormProps) {
+  const { errors, validate } = useFormValidation(organizationCreateSchema)
+    const [loading, setLoading] = useState(true)
   const fields: FormField[] = [
     {
       id: "organization-id",
@@ -60,12 +62,14 @@ export function CompanyForm({ company, onSubmit }: CompanyFormProps) {
     }
   }
 
+
   return (
     <DynamicForm
       title={company ? "Edit Organization" : "Add New Organization"}
       description="Enter organization details below."
       fields={fields}
       onSubmit={handleSubmit}
+      onClose={onClose}
       errors={errors}
     />
   )

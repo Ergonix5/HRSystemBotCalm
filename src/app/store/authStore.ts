@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-const BASE_URL = "http://localhost:3000";
+// .ENV
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 async function request<T>(path: string, options: RequestInit = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -39,6 +40,7 @@ export const useAuth = create<AuthState>((set, get) => ({
   user: null,
   loading: false,
   permissions: [],
+
 
   login: async (email, password) => {
     set({ loading: true });
