@@ -1,55 +1,53 @@
-"use client"
-import { useRouter } from 'next/navigation';
+"use client";
 
-import {  useState } from "react"
-import { DataTable } from "../../../components/table/Data-table"
-import { columns } from "./columns"
-import { type Company } from "../../types/types"
-import { Spinner } from "@/src/components/ui/spinner"
-import { Button } from "../../../components/ui/button"
-import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
-import {CompanyForm} from "../../../components/forms/addcompany"
-import { createOrganization, updateOrganization, deleteOrganization } from "../../../services/organization.service"
-import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
-import { Plus ,Search} from "lucide-react"
-
+import { useState } from "react";
+import { DataTable } from "../../../components/table/Data-table";
+import { columns } from "./columns";
+import { type Company } from "../../types/types";
+import { Spinner } from "@/src/components/ui/spinner";
+import { Button } from "../../../components/ui/button";
+import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-";
+import { CompanyForm } from "../../../components/forms/addcompany";
+import { createOrganization, updateOrganization } from "../../../lib/api";
+import { EditCompanyForm } from "../../../components/forms/editCompanyForm";
+import { Dialog, DialogContent } from "../../../components/ui/dialog";
+import { Plus, Search } from "lucide-react";
+import { PermissionCheck } from "../../../components/PermissionCheck";
 
 type Props = {
-  organizations: Company[]
-  onRefresh?: () => void
-}// Optional callback to refresh parent data
-
+  organizations: Company[];
+  onRefresh?: () => void;
+}; // Optional callback to refresh parent data
 
 export function CompanyTable({ organizations }: Props) {
-    //loading state for operations like API request
-  const [loading, setLoading] = useState(false)
-  const router = useRouter();
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)//viewing a company
-  const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null)//editing a company
+  //loading state for operations like API request
+  const [loading, setLoading] = useState(false);
 
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null); //viewing a company
+  const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null); //editing a company
 
   //visibility add view edit states
-  const [isViewOpen, setIsViewOpen] = useState(false)
-  const [isAddOpen, setIsAddOpen] = useState(false)
-  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
-    // Open the view dialog for the selected company
+  // Open the view dialog for the selected company
   const handleViewCompany = (companyId: string) => {
-    const company = organizations.find(o => o.company_id === companyId)
+    const company = organizations.find((o) => o.company_id === companyId);
     if (company) {
-      setSelectedCompany(company)
-      setIsViewOpen(true)
+      setSelectedCompany(company);
+      setIsViewOpen(true);
     }
-  }
+  };
 
   // Open the vedit  dialog for the selected company
   const handleEditCompany = (companyId: string) => {
-    const company = organizations.find(o => o.company_id === companyId)
+    const company = organizations.find((o) => o.company_id === companyId);
     if (company) {
-      setCompanyToEdit(company)
-      setIsEditOpen(true)
+      setCompanyToEdit(company);
+      setIsEditOpen(true);
     }
-  }
+  };
 
   //delete a specific company
   const handleDeleteCompany = async (companyId: string) => {
@@ -73,42 +71,46 @@ export function CompanyTable({ organizations }: Props) {
       <div className="p-6 flex justify-center items-center h-64">
         <Spinner />
       </div>
-    )
+    );
   }
 
   return (
     <div className="border  p-5 rounded-md">
       {/* Header */}
       <div className="space-y-6 mb-10">
-  <div className="flex flex-wrap items-center justify-between gap-4">
-    <div className="space-y-1">
-      <h1 className="text-3xl font-bold text-gray-900">Organizations Management</h1>
-      <p className="text-gray-500 text-md italic">
-        Manage organizations information and settings
-      </p>
-    </div>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Organizations Management
+            </h1>
+            <p className="text-gray-500 text-md italic">
+              Manage organizations information and settings
+            </p>
+          </div>
 
-    <div className="flex items-center gap-3">
-      <div className="relative group">
-        {/* <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#B91434]" />
+          <div className="flex items-center gap-3">
+            <div className="relative group">
+              {/* <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#B91434]" />
         <input 
           type="text" 
           placeholder="Search companies..." 
           className="pl-10 pr-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B91434]/20 focus:border-[#B91434] transition-all"
         /> */}
+            </div>
+
+            <PermissionCheck permission="companies.create">
+              <Button
+                variant="outline"
+                onClick={() => setIsAddOpen(true)}
+                className="border-[#B91434] text-[#B91434] hover:bg-[#B91434] hover:text-white transition-colors"
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add Company
+              </Button>
+            </PermissionCheck>
+          </div>
+        </div>
+        <hr className="border-gray-100" />
       </div>
-      
-      <Button 
-        variant="outline"
-        onClick={() => setIsAddOpen(true)}
-        className="border-[#B91434] text-[#B91434] hover:bg-[#B91434] hover:text-white transition-colors"
-      >
-        <Plus className="mr-2 h-4 w-4" /> Add Company
-      </Button>
-    </div>
-  </div>
-  <hr className="border-gray-100" />
-</div>
 
       {/* Table */}
       <DataTable
@@ -131,39 +133,41 @@ export function CompanyTable({ organizations }: Props) {
           <CompanyForm
             onSubmit={async (data) => {
               try {
-                await createOrganization(data)
-                setIsAddOpen(false)
-                router.refresh();
+                await createOrganization(data);
+                setIsAddOpen(false);
+                window.location.reload();
               } catch (error) {
-                console.error("Failed to create company:", error)
-                alert("Failed to create company. Please try again.")
+                console.error("Failed to create company:", error);
+                alert("Failed to create company. Please try again.");
               }
             }}
             onClose={() => setIsAddOpen(false)}
           />
-        </div>
-      )}
-
+        </DialogContent>
+      </Dialog>
+<PermissionCheck permission="companies.edit">
       {/* Edit company details */}
-      {isEditOpen && companyToEdit && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <EditCompanyForm
-            company={companyToEdit}
-            onSubmit={async (data) => {
-              try {
-                await updateOrganization(companyToEdit._id, data)
-                setIsEditOpen(false)
-                setCompanyToEdit(null)
-               router.refresh();
-              } catch (error) {
-                console.error("Failed to update organization:", error)
-                alert("Failed to update organization. Please try again.")
-              }
-            }}
-            onClose={() => setIsEditOpen(false)}
-          />
-        </div>
-      )}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="max-w-2xl">
+          {companyToEdit && (
+            <EditCompanyForm
+              company={companyToEdit}
+              onSubmit={async (data) => {
+                try {
+                  await updateOrganization(companyToEdit._id, data);
+                  setIsEditOpen(false);
+                  setCompanyToEdit(null);
+                  window.location.reload();
+                } catch (error) {
+                  console.error("Failed to update organization:", error);
+                  alert("Failed to update organization. Please try again.");
+                }
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+</PermissionCheck>
     </div>
-  )
+  );
 }
