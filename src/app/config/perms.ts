@@ -39,5 +39,11 @@ export const PERMS = {
   DESIG_EDIT: "designations.edit", // Add these
   DESIG_DELETE: "designations.delete", // Add these
 
+  INTERVIEW_VIEW: "interviews.view",
+INTERVIEW_CREATE: "interviews.create", 
+INTERVIEW_EDIT: "interviews.edit",
+INTERVIEW_DELETE: "interviews.delete",
+
+
   SYS_SETTINGS: "system_settings",
 } as const;

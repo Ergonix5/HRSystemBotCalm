@@ -8,11 +8,12 @@ import { Spinner } from "@/src/components/ui/spinner";
 import { Button } from "../../../components/ui/button";
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-";
 import { CompanyForm } from "../../../components/forms/addcompany";
-import { createOrganization, updateOrganization } from "../../../lib/api";
+
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm";
 import { Dialog, DialogContent } from "../../../components/ui/dialog";
 import { Plus, Search } from "lucide-react";
 import { PermissionCheck } from "../../../components/PermissionCheck";
+import { createOrganization, updateOrganization } from "../../../lib/api";
 
 type Props = {
   organizations: Company[];
@@ -127,9 +128,9 @@ export function CompanyTable({ organizations }: Props) {
         onClose={() => setIsViewOpen(false)}
       />
 
-      {/* Add new company  */}
-      {isAddOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      {/* Add new company */}
+      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+        <DialogContent className="max-w-2xl">
           <CompanyForm
             onSubmit={async (data) => {
               try {
@@ -141,11 +142,10 @@ export function CompanyTable({ organizations }: Props) {
                 alert("Failed to create company. Please try again.");
               }
             }}
-            onClose={() => setIsAddOpen(false)}
           />
         </DialogContent>
       </Dialog>
-<PermissionCheck permission="companies.edit">
+
       {/* Edit company details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
@@ -167,7 +167,6 @@ export function CompanyTable({ organizations }: Props) {
           )}
         </DialogContent>
       </Dialog>
-</PermissionCheck>
     </div>
   );
 }
