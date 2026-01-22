@@ -40,53 +40,31 @@ const menu = [
     name: "Company",
     icon: Building2,
     href: "/dashboard/company",
-    permAny: [
-      "companies.view",
-      "companies.create",
-      "companies.edit",
-      "companies.delete",
-    ],
+    perm: PERMS.COMPANY_VIEW,
   },
-
   {
     name: "Designation",
     icon: Award,
     href: "/dashboard/designation",
-    permAny: [
-      "designations.view",
-      "designations.create",
-      "designations.edit",
-      "designations.delete",
-    ],
+    perm: PERMS.DESIG_VIEW,
   },
   {
     name: "Role",
     icon: Shield,
     href: "/dashboard/role",
-    permAny: ["roles.view", "roles.create", "roles.edit", "roles.delete"],
+    perm: PERMS.ROLE_VIEW,
   },
-
   {
     name: "Employee",
     icon: Users,
     href: "/dashboard/employee",
-    permAny: [
-      "employees.view",
-      "employees.create",
-      "employees.edit",
-      "employees.delete",
-    ],
+    perm: PERMS.EMP_VIEW,
   },
   {
     name: "Announcements",
     icon: Megaphone,
     href: "/dashboard/announcements",
-    permAny: [
-      "announcement.view",
-      "announcement.create",
-      "announcement.edit",
-      "announcement.delete",
-    ],
+    perm: PERMS.ANN_VIEW,
   },
   {
     name: "Attendance",
@@ -98,21 +76,16 @@ const menu = [
     name: "Leave Management",
     icon: Plane,
     href: "/dashboard/LeaveManagement",
-    permAny: [
-      "leave.view",
-      "leave.create",
-      "leave.edit",
-      "leave.delete",
-      "leave.approve",
-    ],
+    perm: PERMS.LEAVE_VIEW,
   },
   {
     name: "Interview",
     icon: UserCheck,
     href: "/dashboard/interview",
-    perm: PERMS.EMP_CREATE,
+    perm: PERMS.INTERVIEW_VIEW,
   },
 ];
+
 
 const bottomMenu = [
   {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   StatsGrid,
   ProfileCard,
@@ -8,25 +8,23 @@ import {
   RecentActivity,
   UpcomingLeaves
 } from './components';
-import { useUser } from '@/src/contexts/UserContext';
 
 export default function Dashboard() {
   const [isEditing, setIsEditing] = useState(false);
-  const { user } = useUser();
+
+  const systemData = {
+    name: "Alex Rivera",
+    employeeId: "BC-6557-Z",
+    company: "BotCalm Private Limited",
+    department: "Operations & Strategy",
+    position: "Senior Project Manager",
+    hotline: "0412246557",
+  };
 
   const [employee, setEmployee] = useState({
-    email: user?.email || "",
-    phone: user?.phone || "",
+    email: "a.rivera@botcalm.com",
+    phone: "07123456789",
   });
-
-  useEffect(() => {
-    if (user) {
-      setEmployee({
-        email: user.email,
-        phone: user.phone,
-      });
-    }
-  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,7 +41,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           <div className="lg:col-span-5 space-y-6">
-            <ProfileCard isEditing={isEditing} />
+            <ProfileCard systemData={systemData} isEditing={isEditing} />
             <RecentActivity />
           </div>
 
@@ -52,7 +50,7 @@ export default function Dashboard() {
               employee={employee} 
               isEditing={isEditing} 
               onInputChange={handleInputChange} 
-              hotline={user?.hotline || ""} 
+              hotline={systemData.hotline} 
             />
             <UpcomingLeaves />
           </div>

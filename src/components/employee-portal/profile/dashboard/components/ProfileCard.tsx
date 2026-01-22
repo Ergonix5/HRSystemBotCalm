@@ -3,32 +3,23 @@ import { Card, CardContent } from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/src/components/ui/avatar";
 import { User, Camera } from "lucide-react";
-import { useUser } from "@/src/contexts/UserContext";
+
+interface SystemData {
+  name: string;
+  employeeId: string;
+  company: string;
+  department: string;
+  position: string;
+}
 
 interface ProfileCardProps {
+  systemData: SystemData;
   isEditing: boolean;
 }
 
-export function ProfileCard({ isEditing }: ProfileCardProps) {
-  const { user, loading } = useUser();
+export function ProfileCard({ systemData, isEditing }: ProfileCardProps) {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  if (loading) {
-    return (
-      <Card className="p-8">
-        <CardContent className="p-0">
-          <div className="flex flex-col items-center text-center space-y-6">
-            <div className="animate-pulse">
-              <div className="w-32 h-32 bg-gray-200 rounded-2xl"></div>
-              <div className="mt-4 h-6 bg-gray-200 rounded w-32"></div>
-              <div className="mt-2 h-4 bg-gray-200 rounded w-24"></div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="p-8">
@@ -66,21 +57,21 @@ export function ProfileCard({ isEditing }: ProfileCardProps) {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight text-black">{user?.name}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-black">{systemData.name}</h1>
             <div className="flex flex-wrap justify-center gap-2">
-              <Badge className="bg-[#B91434] text-white">{user?.position}</Badge>
-              <Badge variant="outline">{user?.department}</Badge>
+              <Badge className="bg-[#B91434] text-white">{systemData.position}</Badge>
+              <Badge variant="outline">{systemData.department}</Badge>
             </div>
           </div>
 
           <div className="w-full pt-6 border-t border-black/5 space-y-4 text-left">
             <div className="flex justify-between text-[10px] font-bold">
               <span className="text-black/40 uppercase tracking-widest">Employee ID</span>
-              <span className="text-black font-black">{user?.employeeId}</span>
+              <span className="text-black font-black">{systemData.employeeId}</span>
             </div>
             <div className="flex justify-between text-[10px] font-bold">
               <span className="text-black/40 uppercase tracking-widest">Company</span>
-              <span className="text-black font-black">{user?.company}</span>
+              <span className="text-black font-black">{systemData.company}</span>
             </div>
           </div>
         </div>

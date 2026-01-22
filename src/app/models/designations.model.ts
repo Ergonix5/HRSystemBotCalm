@@ -23,6 +23,4 @@ const designationSchema = new Schema(
   },
   { timestamps: true }
 );
-
-export const Designation =
-  models.Designation || model("designation", designationShema);
+export const Designation = models.Designation || model("designation", designationSchema);
