@@ -94,10 +94,10 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
 
   /* Company
     */
-  // {
-  //   accessorKey: "company_id",
-  //   header: "Company",
-  // },
+  {
+    accessorKey: "company_id",
+    header: "Company",
+  },
 
   /* 
      Designation
@@ -106,6 +106,12 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
     accessorKey: "designation_id",
     header: "Designation",
   },
+
+//Role
+{
+  accessorKey:"role_id",
+  header: "Role",
+},
 
   /* 
      Date of Birth
