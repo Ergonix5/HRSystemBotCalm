@@ -20,6 +20,7 @@ import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from ".
 import { ChevronDown, Filter, Plus, Search, SlidersHorizontal } from "lucide-react"
 import { DataTablePagination } from "./DataTablePagination"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
+import { SearchInput } from "../ui/searchBar";
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -63,7 +64,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
 
          
 
-        <Input
+        <SearchInput
           placeholder=" Search..."
           value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
           onChange={(e) => table.getColumn(filterColumn)?.setFilterValue(e.target.value)}
