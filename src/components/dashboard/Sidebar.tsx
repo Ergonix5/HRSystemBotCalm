@@ -48,7 +48,7 @@ export default function Sidebar() {
       <div className="relative">
       <aside className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-white border-r shadow-sm hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 overflow-hidden`}>
         <div className="flex items-center p-4 border-b">
-          <Logo className={isCollapsed ? "text-sm" : ""} />
+          <Logo className={isCollapsed ? "text-md" : ""} />
         </div>
         
         {/* <Button
@@ -87,7 +87,7 @@ export default function Sidebar() {
                   className="w-full justify-start gap-3 h-10 px-3"
                 >
                   <item.icon size={16} />
-                  <span className="text-sm">{item.name}</span>
+                  <span className="text-md">{item.name}</span>
                 </Button>
               </Link>
             )

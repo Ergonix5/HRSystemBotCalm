@@ -1,1 +1,1 @@
-export const LOGO_TEXT = "AB"
+export const LOGO_TEXT = "BC"
