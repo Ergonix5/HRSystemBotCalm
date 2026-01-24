@@ -239,44 +239,8 @@ export default function Sidebar() {
               ),
             )}
 
-        <nav className="flex-1 p-2 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
-          {menu.map((item) => (
-            isCollapsed ? (
-              <Tooltip key={item.name} delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Link href={item.href}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-center h-10"
-                    >
-                      <item.icon size={16} />
-                    </Button>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>{item.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Link key={item.name} href={item.href}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start gap-3 h-10 px-3"
-                >
-                  <item.icon size={16} />
-                  <span className="text-md">{item.name}</span>
-                </Button>
-              </Link>
-            )
-          ))}
-        </nav>
-
-        <nav className="p-2 space-y-1 border-t">
-          {bottomMenu.map((item) => (
-            isCollapsed ? (
-              <Tooltip key={item.name} delayDuration={0}>
+            {isCollapsed ? (
+              <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
