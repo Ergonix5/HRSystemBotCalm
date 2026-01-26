@@ -43,19 +43,20 @@ export  function DynamicForm({
   onSubmit,
   onClose,
   submitLabel = "Save  ",
-  gridCols = 2,
+  gridCols = 3,
   hiddenFields,
   readOnlyFields,
   errors = {}
 }: DynamicFormProps) {
   return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl   mx-auto bg-white border border-black/10 shadow-xl overflow-hidden flex flex-col sm:flex-row">
-      {/* Left Accent Border */}
-      <div className="w-full sm:w-[6px] h-[6px] sm:h-auto bg-[#B91434] flex-shrink-0" />
-      
-      <div className="flex-grow">
-        {/* Header */}
-        <div className="bg-neutral-50 p-4 sm:p-6 md:p-8 border-b border-neutral-100 relative w-full">
+<div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-3xl mx-auto 
+  bg-white 
+  border 
+  border-l-5 border-l-[#B91434] 
+  shadow-xl overflow-hidden flex flex-col xl:h-[70vh]"
+>
+      {/* Header */}
+        <div className="bg-neutral-50 p-4 sm:p-6 md:p-8 border-b border-neutral-100 relative flex-shrink-0">
           <h2 className="text-2xl sm:text-2xl md:text-3xl font-black text-black   tracking-wide uppercase">
             {title}
           </h2>
@@ -80,7 +81,7 @@ export  function DynamicForm({
 
       {/* Form submission handling */}
       <form
-        className="p-4 sm:p-6 md:p-8 flex-grow"
+        className="flex flex-col flex-1 overflow-hidden"
         onSubmit={(e) => {
           e.preventDefault()
           const formData = new FormData(e.currentTarget)
@@ -94,12 +95,15 @@ export  function DynamicForm({
           onSubmit(data)
         }}
       >
+
+        {/* scrolble body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8"> 
         <FieldGroup>
           <FieldSet>
 
             {/* grid for form fields */}
             <div
-              className={`grid gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-4 sm:gap-y-5 md:gap-y-6 ${gridCols === 3 ? "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2"
+              className={`grid gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-4 sm:gap-y-5 md:gap-y-6 ${gridCols === 2 ? "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2"
                 }`}
             >
               {fields.map((field) => (
@@ -173,30 +177,36 @@ export  function DynamicForm({
               ))}
             </div>
           </FieldSet>
-
+          </FieldGroup>
+</div>
           {/* Separator line */}
-          <FieldSeparator className="my-4 sm:my-5 md:my-6" />
+          {/* <FieldSeparator className="my-4 sm:my-5 md:my-6" /> */}
 
+ <div className="flex-shrink-0 border-t border-neutral-100 
+          p-4 sm:p-6 bg-white"
+        >
+
+  
           {/* Submit button */}
-          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 ">
             <FormButton
               type="button"
               variant="outline"
               onClick={() => onClose?.()}
-              className="border-black text-black hover:bg-neutral-50 text-sm sm:text-base sm:w-auto"
+
             >
               Cancel
             </FormButton>
             <FormButton
               type="submit"
-              className="bg-[#B91434] text-white hover:bg-black text-sm sm:text-base w-full sm:w-auto"
+              className="bg-[#B91434] text-white hover:bg-black text-sm sm:text-base "
             >
               {submitLabel}
             </FormButton>
           </div>
-        </FieldGroup>
+        </div>
       </form>
       </div>
-    </div>
+   
   )
 }
