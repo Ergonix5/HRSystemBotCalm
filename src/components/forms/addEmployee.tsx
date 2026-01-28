@@ -158,7 +158,7 @@ export function EmployeeForm({
       fields={fields}
       onSubmit={handleSubmit}
       onClose={onClose}
-      gridCols={3}
+      gridCols={2}
       errors={errors}
     />
   )
