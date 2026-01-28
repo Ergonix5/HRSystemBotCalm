@@ -53,17 +53,17 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
       </Button>
     ),
   },
-  // {
-  //   accessorKey: "company_name",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       Company <ArrowUpDown />
-  //     </Button>
-  //   ),
-  // },
+  {
+    accessorKey: "company_name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Company <ArrowUpDown />
+      </Button>
+    ),
+  },
   {
     accessorKey: "description",
     header: "Description",

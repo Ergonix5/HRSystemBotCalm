@@ -10,7 +10,7 @@ import Link from "next/link"
 
 export default function Dashboard() {
   return (
-    <div className="p-6 space-y-4  dark:bg-gray-900 min-h-screen">
+    <div className="space-y-4 p-3  dark:bg-gray-900 min-h-screen">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Dashboard</h1>
       </div>
@@ -105,6 +105,6 @@ export default function Dashboard() {
           <RecentActivities />
         </div>
       </div>
-    </div>
+   </div> 
   )
 }
