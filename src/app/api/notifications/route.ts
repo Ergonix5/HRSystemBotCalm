@@ -5,6 +5,7 @@ import { Notification } from "../../models/notification.model";
 import { NextResponse } from "next/server";
 import { createNotification, createBulkNotifications } from "../../service/notification.service";
 import { paginate } from "../../service/pagination.service";
+import { triggerNotificationsReadAll } from "@/src/lib/pusher";
 
 
 
@@ -231,6 +232,18 @@ export async function PATCH(req: Request)
                 readAt: new Date(),
             }
         );
+
+        // Trigger real-time event
+        try
+        {
+            await triggerNotificationsReadAll(
+                recipientId,
+                organizationId
+            );
+        } catch (pusherError)
+        {
+            console.error('Failed to trigger notifications read all event:', pusherError);
+        }
 
         return NextResponse.json(
             {

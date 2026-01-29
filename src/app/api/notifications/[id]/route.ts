@@ -1,20 +1,21 @@
 import { connectDB } from "@/src/lib/db";
 import { Notification } from "../../../models/notification.model";
 import { NextResponse } from "next/server";
+import { triggerNotificationRead, triggerNotificationDeleted } from "@/src/lib/pusher";
 
 
 
 // GET /api/notifications/[id] - Get a specific notification
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 )
 {
     try
     {
         await connectDB();
 
-        const { id } = params;
+        const { id } = await params;
         const { searchParams } = new URL(req.url);
         const organizationId = searchParams.get("organizationId");
 
@@ -61,14 +62,14 @@ export async function GET(
 // PATCH /api/notifications/[id] - Mark a specific notification as read
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 )
 {
     try
     {
         await connectDB();
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { organizationId, recipientId } = body;
 
@@ -100,6 +101,19 @@ export async function PATCH(
         notification.readAt = new Date();
         await notification.save();
 
+        // Trigger real-time event
+        try
+        {
+            await triggerNotificationRead(
+                recipientId,
+                organizationId,
+                id
+            );
+        } catch (pusherError)
+        {
+            console.error('Failed to trigger notification read event:', pusherError);
+        }
+
         return NextResponse.json(
             {
                 success: true,
@@ -121,14 +135,14 @@ export async function PATCH(
 // DELETE /api/notifications/[id] - Delete a specific notification
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 )
 {
     try
     {
         await connectDB();
 
-        const { id } = params;
+        const { id } = await params;
         const { searchParams } = new URL(req.url);
         const organizationId = searchParams.get("organizationId");
         const recipientId = searchParams.get("recipientId");
@@ -154,6 +168,19 @@ export async function DELETE(
                 { message: "Notification not found or access denied" },
                 { status: 404 }
             );
+        }
+
+        // Trigger real-time event
+        try
+        {
+            await triggerNotificationDeleted(
+                recipientId,
+                organizationId,
+                id
+            );
+        } catch (pusherError)
+        {
+            console.error('Failed to trigger notification deleted event:', pusherError);
         }
 
         return NextResponse.json(
