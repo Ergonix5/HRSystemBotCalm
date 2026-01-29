@@ -8,6 +8,7 @@ import { validateBody } from "@/src/lib/validate";
 import { leaveRequestStatusSchema, leaveRequestUpdateSchema } from "@/src/validators/leaveRequest.schema";
 import { NextResponse } from "next/server";
 import { success } from "zod";
+import { createNotification, NotificationTemplates } from "@/src/app/service/notification.service";
 
 
 
@@ -275,6 +276,39 @@ export async function DELETE(req: Request, { params }: Params)
             .populate('employee', 'first_name last_name email employee_id')
             .populate('leave_type', 'leave_type_id name description');
 
+        // Send notification to HR/Manager about cancellation
+        try
+        {
+            const employeeData = populatedRequest.employee as any;
+            const leaveTypeData = populatedRequest.leave_type as any;
+
+            // Get HR/Manager employees
+            const hrManagers = await Employee.find({
+                organization: leaveRequest.organization,
+            }).select('_id');
+
+            for (const hrManager of hrManagers)
+            {
+                await createNotification({
+                    organizationId: leaveRequest.organization.toString(),
+                    recipientId: hrManager._id.toString(),
+                    type: 'system',
+                    title: 'Leave Request Cancelled',
+                    message: `${employeeData.first_name} ${employeeData.last_name} has cancelled their ${leaveTypeData.name} request from ${new Date(leaveRequest.start_date).toLocaleDateString()} to ${new Date(leaveRequest.end_date).toLocaleDateString()}.`,
+                    priority: 'low',
+                    metadata: {
+                        leaveRequestId: leaveRequest._id.toString(),
+                        employeeId: leaveRequest.employee.toString(),
+                        actionUrl: `${process.env.NEXT_PUBLIC_API_URL}/dashboard/LeaveManagement`
+                    },
+                    sendEmail: false,
+                });
+            }
+        } catch (notificationError)
+        {
+            console.error('Failed to send cancellation notification:', notificationError);
+        }
+
         return NextResponse.json({
             success: true,
             message: "Leave request cancelled successfully",
@@ -368,7 +402,7 @@ export async function PATCH(req: Request, { params }: Params)
                     { status: 400 }
                 )
             }
-            
+
 
         } else if (normalizedStatus === 'rejected' || normalizedStatus === 'cancelled')
         {
@@ -386,6 +420,55 @@ export async function PATCH(req: Request, { params }: Params)
             .populate('employee', 'first_name last_name email employee_id')
             .populate('leave_type', 'leave_type_id name description')
             .populate('organization', 'name');
+
+        // Send notification to employee about status change
+        try
+        {
+            const employeeData = updatedRequest.employee as any;
+            const leaveTypeData = updatedRequest.leave_type as any;
+            const approverName = `${approver.first_name} ${approver.last_name}`;
+
+            let template;
+            if (normalizedStatus === 'approved')
+            {
+                template = NotificationTemplates.leaveRequestApproved(
+                    leaveTypeData.name,
+                    new Date(leaveRequest.start_date).toLocaleDateString(),
+                    new Date(leaveRequest.end_date).toLocaleDateString(),
+                    approverName
+                );
+            } else if (normalizedStatus === 'rejected')
+            {
+                template = NotificationTemplates.leaveRequestRejected(
+                    leaveTypeData.name,
+                    new Date(leaveRequest.start_date).toLocaleDateString(),
+                    new Date(leaveRequest.end_date).toLocaleDateString(),
+                    'Please contact HR for more details'
+                );
+            }
+
+            if (template)
+            {
+                await createNotification({
+                    organizationId: leaveRequest.organization.toString(),
+                    recipientId: leaveRequest.employee.toString(),
+                    type: template.type,
+                    title: template.title,
+                    message: template.message,
+                    priority: template.priority,
+                    metadata: {
+                        leaveRequestId: leaveRequest._id.toString(),
+                        status: normalizedStatus,
+                        approverName: approverName,
+                        actionUrl: `${process.env.NEXT_PUBLIC_API_URL}/dashboard/LeaveManagement`
+                    },
+                    sendEmail: true,
+                });
+            }
+        } catch (notificationError)
+        {
+            console.error('Failed to send status change notification:', notificationError);
+        }
 
         return NextResponse.json({
             success: true,
