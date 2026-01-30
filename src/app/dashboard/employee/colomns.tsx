@@ -94,24 +94,24 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
 
   /* Company
     */
-  {
-    accessorKey: "company_id",
-    header: "Company",
-  },
+  // {
+  //   accessorKey: "company_id",
+  //   header: "Company",
+  // },
 
   /* 
      Designation
       */
-  {
-    accessorKey: "designation_id",
-    header: "Designation",
-  },
+  // {
+  //   accessorKey: "designation_id",
+  //   header: "Designation",
+  // },
 
 //Role
-{
-  accessorKey:"role_id",
-  header: "Role",
-},
+// {
+//   accessorKey:"role_id",
+//   header: "Role",
+// },
 
   /* 
      Date of Birth
@@ -141,10 +141,10 @@ export const columns = (onView: (id: string) => void, onEdit: (id: string) => vo
      Status
       */
   {
-    accessorKey: "status",
+    accessorKey: "employment_status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string
+      const status = row.getValue("employment_status") as string
       return (
         <span
           className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${status === "Active"
