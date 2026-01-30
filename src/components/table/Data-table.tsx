@@ -161,8 +161,8 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
         </DropdownMenu>
       </div>
 
-      <div className="rounded-md border">
-        <div className="max-h-125 overflow-y-auto scrollbar-none">
+      <div className="border">
+        <div className="max-h-125   overflow-y-auto scrollbar-none">
           <Table>
             <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
               {table.getHeaderGroups().map(headerGroup => (

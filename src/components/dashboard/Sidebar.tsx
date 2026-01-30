@@ -1,10 +1,12 @@
 "use client";
-
-
+import { MotionTooltip } from "../ui/motion-tooltip";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import {
-  Home,
+  LayoutDashboard,
   Building2,
-  Award,
+  MapPinHouse,
   Shield,
   Users,
   Megaphone,
@@ -12,11 +14,9 @@ import {
   Plane,
   UserCheck,
   FileText,
-  Settings,
   User,
   ChevronLeft,
   ChevronRight,
-  Clock,
   LogOut,
 } from "lucide-react";
 import { Button } from "../ui/button";
@@ -27,82 +27,57 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { Logo } from "../ui/logo";
-import Link from "next/link";
 import { useAuth } from "../../app/store/authStore";
-import { useRouter } from "next/navigation";
-import { PERMS } from "../../app/config/perms";
-import React, { useState, useMemo, useCallback } from "react";
 
+// -------------------- Types --------------------
+interface MenuItem {
+  name: string;
+  icon: React.ComponentType<{ size?: number }>;
+  href: string;
+}
 
-const menu = [
-  { name: "Dashboard", icon: Home, href: "/dashboard" },
+interface MenuSection {
+  label: string;
+  items: MenuItem[];
+}
+
+// -------------------- Menu Data --------------------
+const menuSections: MenuSection[] = [
   {
-    name: "Company",
-    icon: Building2,
-    href: "/dashboard/company",
-    perm: PERMS.COMPANY_VIEW,
+    label: "Main",
+    items: [{ name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" }],
   },
   {
-    name: "Designation",
-    icon: Award,
-    href: "/dashboard/designation",
-    perm: PERMS.DESIG_VIEW,
+    label: "Organization",
+    items: [
+      { name: "Company", icon: Building2, href: "/dashboard/company" },
+      { name: "Designation", icon: MapPinHouse, href: "/dashboard/designation" },
+      { name: "Role", icon: Shield, href: "/dashboard/role" },
+      { name: "Employees", icon: Users, href: "/dashboard/employee" },
+    ],
   },
   {
-    name: "Role",
-    icon: Shield,
-    href: "/dashboard/role",
-    perm: PERMS.ROLE_VIEW,
+    label: "HR & Operations",
+    items: [
+      { name: "Attendance", icon: Calendar, href: "/dashboard/attendance" },
+      { name: "Leave Management", icon: Plane, href: "/dashboard/LeaveManagement" },
+      { name: "Announcements", icon: Megaphone, href: "/dashboard/announcements" },
+      { name: "Report Log", icon: FileText, href: "/dashboard/report-log" },
+    ],
   },
   {
-    name: "Employee",
-    icon: Users,
-    href: "/dashboard/employee",
-    perm: PERMS.EMP_VIEW,
-  },
-  {
-    name: "Announcements",
-    icon: Megaphone,
-    href: "/dashboard/announcements",
-    perm: PERMS.ANN_VIEW,
-  },
-  {
-    name: "Attendance",
-    icon: Calendar,
-    href: "/dashboard/attendance",
-    perm: PERMS.ATT_VIEW,
-  },
-  {
-    name: "Leave Management",
-    icon: Plane,
-    href: "/dashboard/LeaveManagement",
-    perm: PERMS.LEAVE_VIEW,
-  },
-  {
-    name: "Interview",
-    icon: UserCheck,
-    href: "/dashboard/interview",
-    perm: PERMS.INTERVIEW_VIEW,
+    label: "Recruitment",
+    items: [{ name: "Interviews", icon: UserCheck, href: "/dashboard/interview" }],
   },
 ];
 
-
-const bottomMenu = [
-  {
-    name: "Report Log",
-    icon: FileText,
-    href: "/dashboard/report-log",
-    perm: PERMS.LOG_VIEW,
-  },
-  {
-    name: "Settings",
-    icon: Settings,
-    href: "/dashboard/settings",
-    perm: PERMS.SYS_SETTINGS,
-  },
+// Footer menu
+const footerMenu: MenuItem[] = [
   { name: "Profile", icon: User, href: "/dashboard/profile" },
+  { name: "Logout", icon: LogOut, href: "/logout" },
 ];
 
+// -------------------- Sidebar Component --------------------
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { logout, has, user, loading } = useAuth();
@@ -112,33 +87,24 @@ export default function Sidebar() {
   // console.log("Has employees.view:", has("employees.view"));
 
   const router = useRouter();
+  const pathname = usePathname();
 
+  // Collapse sidebar width
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--sidebar-width",
+      isCollapsed ? "4rem" : "16rem"
+    );
+  }, [isCollapsed]);
 
-
+  // Logout handler
   const handleLogout = async () => {
     await logout();
     router.push("/login");
   };
 
-  const filteredMenu = menu.filter((item) => {
-    if (item.perm) return has(item.perm);
-    if (item.permAny) return item.permAny.some((perm) => has(perm));
-    return true;
-  });
-
-  const filteredBottomMenu = bottomMenu.filter((item) => {
-    if (item.perm) return has(item.perm);
-    if (item.permAny) return item.permAny.some((perm) => has(perm));
-    return true;
-  });
-
-  // Update CSS custom property for main content margin
-  React.useEffect(() => {
-    document.documentElement.style.setProperty(
-      "--sidebar-width",
-      isCollapsed ? "4rem" : "16rem",
-    );
-  }, [isCollapsed]);
+  // Check if a menu item is active
+  const isActive = (href: string) => pathname === href;
 
     // ADD THIS LOADING CHECK HERE
   if (loading || (!user && !loading)) {
@@ -158,121 +124,144 @@ export default function Sidebar() {
   return (
     <TooltipProvider>
       <div className="relative">
+        {/* Sidebar */}
         <aside
-          className={`${isCollapsed ? "w-16" : "w-64"} h-screen bg-white border-r shadow-sm hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 overflow-hidden`}
+          className={`${
+            isCollapsed ? "w-20" : "w-60"
+          } h-screen bg-white border-r hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40`}
         >
-          <div className="flex items-center p-4 border-b">
-            <Logo className={isCollapsed ? "text-sm" : ""} />
+          {/* Logo */}
+          <div className="flex items-center p-5">
+            <Logo className={isCollapsed ? "text-lg" : ""} />
           </div>
 
-          {/* <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute right-2 top-2 z-10 bg-gray-100 hover:bg-gray-200 border shadow-sm rounded-md p-2 h-8 w-8"
-        > */}
+          {/* Main Menu */}
+          <nav className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+            {menuSections.map((section: MenuSection) => (
+              <div key={section.label}>
+                {!isCollapsed && (
+                  <p className="px-3 py-1 text-[12px] font-semibold text-gray-500 uppercase">
+                    {section.label}
+                  </p>
+                )}
 
-          <nav className="flex-1 p-2 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
-            {filteredMenu.map((item) =>
-              isCollapsed ? (
-                <Tooltip key={item.name} delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Link href={item.href}>
+                {section.items.map((item: MenuItem) => {
+                  const Icon = item.icon;
+                  const activeClass = isActive(item.href)
+                        ? "bg-red-100 text-[#B91434] font-semibold"
+    : "hover:text-[#B91434] hover:bg-red-50";
+
+
+                  return isCollapsed ? (
+                    <Tooltip key={item.name} delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <Link href={item.href}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className={`w-full justify-center h-10 ${activeClass}`}
+                          >
+                            <Icon size={16} />
+                          </Button>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{item.name}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Link key={item.name} href={item.href}>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="w-full justify-center h-10"
+                        className={`w-full justify-start gap-3 h-10 px-3 ${activeClass}`}
                       >
-                        <item.icon size={16} />
+                        <Icon size={16} />
+                        <span className="text-md">{item.name}</span>
                       </Button>
                     </Link>
+                  );
+                })}
+              </div>
+            ))}
+          </nav>
+
+          {/* Footer Menu */}
+          <div className="p-6 flex flex-col space-y-1">
+            {footerMenu.map((item: MenuItem) => {
+              const Icon = item.icon;
+              const isLogout = item.name === "Logout";
+              const href = isLogout ? undefined : item.href;
+              const onClick = isLogout ? handleLogout : undefined;
+           const activeClass =
+  !isLogout && isActive(href!)
+    ? "bg-red-100 text-[#B91434] font-semibold"
+    : "hover:text-[#B91434] hover:bg-red-50";
+
+
+              return isCollapsed ? (
+                <Tooltip key={item.name} delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    {isLogout ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onClick}
+                        className={`w-full justify-center h-10 ${activeClass}`}
+                      >
+                        <Icon size={16} />
+                      </Button>
+                    ) : (
+                      <Link href={href!}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`w-full justify-center h-10 ${activeClass}`}
+                        >
+                          <Icon size={16} />
+                        </Button>
+                      </Link>
+                    )}
                   </TooltipTrigger>
                   <TooltipContent side="right">
                     <p>{item.name}</p>
                   </TooltipContent>
                 </Tooltip>
+              ) : isLogout ? (
+                <Button
+                  key={item.name}
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClick}
+                  className={`w-full justify-start gap-3 h-10 px-3 ${activeClass}`}
+                >
+                  <Icon size={16} />
+                  <span className="text-sm">{item.name}</span>
+                </Button>
               ) : (
-                <Link key={item.name} href={item.href}>
+                <Link key={item.name} href={href!}>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start gap-3 h-10 px-3"
+                    className={`w-full justify-start gap-3 h-10 px-3 ${activeClass}`}
                   >
-                    <item.icon size={16} />
+                    <Icon size={16} />
                     <span className="text-sm">{item.name}</span>
                   </Button>
                 </Link>
-              ),
-            )}
-          </nav>
-
-          <nav className="p-2 space-y-1 border-t">
-            {filteredBottomMenu.map((item) =>
-              isCollapsed ? (
-                <Tooltip key={item.name} delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Link href={item.href}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-center h-10"
-                      >
-                        <item.icon size={16} />
-                      </Button>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p>{item.name}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <Link key={item.name} href={item.href}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start gap-3 h-10 px-3"
-                  >
-                    <item.icon size={16} />
-                    <span className="text-sm">{item.name}</span>
-                  </Button>
-                </Link>
-              ),
-            )}
-
-            {isCollapsed ? (
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="w-full justify-center h-10"
-                  >
-                    <LogOut size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>Logout</p>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="w-full justify-start gap-3 h-10 px-3"
-              >
-                <LogOut size={16} />
-                <span className="text-sm">Logout</span>
-              </Button>
-            )}
-          </nav>
+              );
+            })}
+          </div>
         </aside>
+
+        {/* Collapse Button */}
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`fixed ${isCollapsed ? "left-12" : "left-60"} top-6 z-50 bg-white border shadow-sm rounded-full p-1 h-6 w-6 transition-all duration-300`}
+          className={`fixed ${
+            isCollapsed ? "left-12" : "left-60"
+          } top-6 z-50 bg-white border shadow-sm rounded-full p-1 h-6 w-6 transition-all duration-300`}
         >
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </Button>

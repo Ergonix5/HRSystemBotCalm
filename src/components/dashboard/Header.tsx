@@ -118,7 +118,7 @@ export default function Header()
   };
 
   return (
-    <header className="flex items-center justify-end gap-4 px-6 py-4 border-b bg-background">
+    <header className="sticky top-0 z-50 flex items-center justify-end gap-4 px-6 py-3 border-b  bg-gray-50">
       <span className="text-sm text-muted-foreground">{dateTime}</span>
 
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>

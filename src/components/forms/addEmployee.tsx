@@ -100,52 +100,57 @@ export function EmployeeForm({
   }
 
   const fields: FormField[] = [
-    {
-      id: "organization",
-      name: "organization",
-      label: "Company Name",
-      type: "select",
-      required: true,
-      defaultValue: employee?.organization || "",
-      options: companies,
-      onChange: handleCompanyChange
-    },
-    {
-      id: "designation",
-      name: "designation",
-      label: "Designation Name",
-      type: "select",
-      required: true,
-      defaultValue: employee?.designation || "",
-      options: designations
-    },
-    {
-      id: "role",
-      name: "role",
-      label: "Role Name",
-      type: "select",
-      required: true,
-      defaultValue: employee?.role || "",
-      options: roles
-    },
+   {
+    id: "company_id",
+    name: "company_id",
+    label: "Company Name",
+    type: "select",
+    required: true,
+    defaultValue: employee?.organization || "",
+    options: companies,
+    onChange: handleCompanyChange
+  },
+  {
+    id: "designation_id",
+    name: "designation_id",
+    label: "Designation Name",
+    type: "select",
+    required: true,
+    defaultValue: employee?.designation || "",
+    options: designations
+  },
+  {
+    id: "role_id",
+    name: "role_id",
+    label: "Role Name",
+    type: "select",
+    required: true,
+    defaultValue: employee?.role || "",
+    options: roles
+  },
+  
 
-    { id: "employee-id", name: "employee_id", label: "Employee ID", type: "input", required: true, defaultValue: employee?.employee_id },
-    { id: "first-name", name: "first_name", label: "First Name", type: "input", required: true, defaultValue: employee?.first_name },
-    { id: "last-name", name: "last_name", label: "Last Name", type: "input", required: true, defaultValue: employee?.last_name },
+    { id: "employee_id", name: "employee_id", label: "Employee ID", type: "input", required: true, defaultValue: employee?.employee_id },
+    { id: "first_name", name: "first_name", label: "First Name", type: "input", required: true, defaultValue: employee?.first_name },
+    { id: "last_name", name: "last_name", label: "Last Name", type: "input", required: true, defaultValue: employee?.last_name },
      { id: "address", name: "address", label: "Address", type: "textarea", defaultValue: employee?.address },
     { id: "email", name: "email", label: "Email", type: "input", required: true, defaultValue: employee?.email },
     { id: "phone", name: "phone", label: "Phone", type: "input", required: true, defaultValue: employee?.phone },
     { id: "dob", name: "date_of_birth", label: "Date of Birth", type: "input", inputType: "date", defaultValue: employee?.date_of_birth },
-    { id: "join-date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
+    { id: "join_date", name: "join_date", label: "Join Date", type: "input", inputType: "date", defaultValue: employee?.join_date },
     { id: "status", name: "employment_status", label: "Status", type: "select", defaultValue: employee?.employment_status, options: [{ value: "Active", label: "Active" }, { value: "Inactive", label: "Inactive" }] },
    
   ]
 
-  const handleSubmit = (data: any) => {
-    if (validate(data)) {
-      onSubmit(data)
-    }
+ const handleSubmit = (data: any) => {
+  console.log("Form data submitted:", data)
+  if (validate(data)) {
+    onSubmit(data)
+  } else {
+    console.log("Validation failed:", errors)
   }
+}
+
 
   if (loading) {
     return <div className="flex justify-center items-center p-8">Loading...</div>
@@ -158,7 +163,7 @@ export function EmployeeForm({
       fields={fields}
       onSubmit={handleSubmit}
       onClose={onClose}
-      gridCols={3}
+      gridCols={2}
       errors={errors}
     />
   )
