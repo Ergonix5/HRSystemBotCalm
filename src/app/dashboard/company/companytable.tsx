@@ -17,10 +17,11 @@ import { createOrganization, updateOrganization } from "../../../lib/api";
 
 type Props = {
   organizations: Company[];
-  onRefresh?: () => void;
-}; // Optional callback to refresh parent data
+  onRefresh?: () => void | Promise<void>; // Callback to refresh data
+};
 
-export function CompanyTable({ organizations }: Props) {
+export function CompanyTable({ organizations, onRefresh }: Props)
+{
   //loading state for operations like API request
   const [loading, setLoading] = useState(false);
 
@@ -33,33 +34,44 @@ export function CompanyTable({ organizations }: Props) {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   // Open the view dialog for the selected company
-  const handleViewCompany = (companyId: string) => {
+  const handleViewCompany = (companyId: string) =>
+  {
     const company = organizations.find((o) => o.company_id === companyId);
-    if (company) {
+    if (company)
+    {
       setSelectedCompany(company);
       setIsViewOpen(true);
     }
   };
 
   // Open the vedit  dialog for the selected company
-  const handleEditCompany = (companyId: string) => {
+  const handleEditCompany = (companyId: string) =>
+  {
     const company = organizations.find((o) => o.company_id === companyId);
-    if (company) {
+    if (company)
+    {
       setCompanyToEdit(company);
       setIsEditOpen(true);
     }
   };
 
   //delete a specific company
-  const handleDeleteCompany = async (companyId: string) => {
+  const handleDeleteCompany = async (companyId: string) =>
+  {
     const company = organizations.find(o => o.company_id === companyId)
     if (!company) return
 
-    if (window.confirm(`Are you sure you want to delete ${company.company_name}?`)) {
-      try {
+    if (window.confirm(`Are you sure you want to delete ${company.company_name}?`))
+    {
+      try
+      {
         await deleteOrganization(company._id)
-        window.location.reload()
-      } catch (error) {
+        if (onRefresh)
+        {
+          await onRefresh(); // Refresh data instead of full page reload
+        }
+      } catch (error)
+      {
         console.error("Failed to delete company:", error)
         alert("Failed to delete company. Please try again.")
       }
@@ -67,7 +79,8 @@ export function CompanyTable({ organizations }: Props) {
   }
 
   //loading spinner if the component perform
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className="p-6 flex justify-center items-center h-64">
         <Spinner />
@@ -132,12 +145,18 @@ export function CompanyTable({ organizations }: Props) {
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="max-w-2xl">
           <CompanyForm
-            onSubmit={async (data) => {
-              try {
+            onSubmit={async (data) =>
+            {
+              try
+              {
                 await createOrganization(data);
                 setIsAddOpen(false);
-                window.location.reload();
-              } catch (error) {
+                if (onRefresh)
+                {
+                  await onRefresh(); // Refresh data instead of full page reload
+                }
+              } catch (error)
+              {
                 console.error("Failed to create company:", error);
                 alert("Failed to create company. Please try again.");
               }
@@ -152,13 +171,19 @@ export function CompanyTable({ organizations }: Props) {
           {companyToEdit && (
             <EditCompanyForm
               company={companyToEdit}
-              onSubmit={async (data) => {
-                try {
+              onSubmit={async (data) =>
+              {
+                try
+                {
                   await updateOrganization(companyToEdit._id, data);
                   setIsEditOpen(false);
                   setCompanyToEdit(null);
-                  window.location.reload();
-                } catch (error) {
+                  if (onRefresh)
+                  {
+                    await onRefresh(); // Refresh data instead of full page reload
+                  }
+                } catch (error)
+                {
                   console.error("Failed to update organization:", error);
                   alert("Failed to update organization. Please try again.");
                 }

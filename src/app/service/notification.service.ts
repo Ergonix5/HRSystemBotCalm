@@ -1,7 +1,9 @@
 import { Notification } from "../models/notification.model";
 import { Employee } from "../models/employee.model";
+import { NotificationPreferences } from "../models/notificationPreferences.model";
 import { sendEmail } from "./email.service";
 import { Types } from "mongoose";
+import { triggerNewNotification, triggerNotificationRead, triggerNotificationDeleted, triggerNotificationsReadAll } from "@/src/lib/pusher";
 
 export interface NotificationData
 {
@@ -30,6 +32,57 @@ export interface BulkNotificationData
 }
 
 
+// Helper function to map notification type to preference key
+function getPreferenceKey(type: string, metadata?: Record<string, any>): string
+{
+    // Map notification types to preference keys
+    const typeMap: Record<string, string> = {
+        'approval': 'leaveApproval',
+        'rejection': 'leaveRejection',
+        'reminder': 'timesheetReminder',
+        'system': 'systemAnnouncement',
+        'announcement': 'systemAnnouncement',
+        'alert': 'generalAlert',
+    };
+
+    // Check metadata for more specific mapping
+    if (metadata)
+    {
+        if (metadata.leaveRequestId)
+        {
+            if (type === 'approval') return 'leaveApproval';
+            if (type === 'rejection') return 'leaveRejection';
+            if (type === 'system') return 'leaveSubmission';
+        }
+        if (metadata.timesheetId || metadata.actionUrl?.includes('work-hours'))
+        {
+            return 'timesheetReminder';
+        }
+        if (metadata.leaveBalanceId || metadata.leaveTypeId)
+        {
+            return 'leaveBalanceAlert';
+        }
+        if (metadata.probationEndDate)
+        {
+            return 'probationEnding';
+        }
+        if (metadata.birthdayEmployeeId)
+        {
+            return 'birthdayNotification';
+        }
+        if (metadata.upcomingLeave)
+        {
+            return 'upcomingLeaveReminder';
+        }
+        if (metadata.welcome)
+        {
+            return 'welcomeMessage';
+        }
+    }
+
+    return typeMap[type] || 'generalAlert';
+}
+
 // Create a single notification
 
 export async function createNotification(data: NotificationData)
@@ -47,6 +100,28 @@ export async function createNotification(data: NotificationData)
             throw new Error('Recipient not found in organization');
         }
 
+        // Get user's notification preferences
+        const preferences = await (NotificationPreferences as any).getOrCreate(
+            data.recipientId,
+            data.organizationId
+        );
+
+        // Map notification type to preference key
+        const preferenceKey = getPreferenceKey(data.type, data.metadata);
+        const userPreference = preferences.getPreference(preferenceKey);
+
+        // Check if in-app notification is enabled
+        if (!userPreference.inApp)
+        {
+            // User has disabled in-app notifications for this type
+            return {
+                success: true,
+                notification: null,
+                skipped: true,
+                reason: 'In-app notifications disabled for this type',
+            };
+        }
+
         // Create notification in database
         const notification = await Notification.create({
             organization: data.organizationId,
@@ -61,8 +136,8 @@ export async function createNotification(data: NotificationData)
             emailSent: false,
         });
 
-        // Send email if requested
-        if (data.sendEmail)
+        // Send email if requested AND user has email enabled for this type
+        if (data.sendEmail && userPreference.email)
         {
             try
             {
@@ -83,6 +158,20 @@ export async function createNotification(data: NotificationData)
             {
                 console.error('Failed to send notification email:', emailError);
             }
+        }
+
+        // Trigger real-time event for new notification
+        try
+        {
+            await triggerNewNotification(
+                data.recipientId,
+                data.organizationId,
+                notification._id.toString()
+            );
+        } catch (pusherError)
+        {
+            console.error('Failed to trigger real-time notification:', pusherError);
+            // Don't fail the notification creation if Pusher fails
         }
 
         return {
@@ -113,32 +202,59 @@ export async function createBulkNotifications(data: BulkNotificationData)
             throw new Error('No valid recipients found in organization');
         }
 
-        // Create notifications for all recipients
-        const notifications = recipients.map(recipient => ({
-            organization: data.organizationId,
-            recipient: recipient._id,
-            type: data.type,
-            title: data.title,
-            message: data.message,
-            metadata: data.metadata || {},
-            priority: data.priority || 'medium',
-            expiresAt: data.expiresAt || null,
-            read: false,
-            emailSent: false,
-        }));
+        // Get preference key for this notification type
+        const preferenceKey = getPreferenceKey(data.type, data.metadata);
 
-        const createdNotifications = await Notification.insertMany(notifications);
+        // Filter recipients based on their preferences
+        const recipientsWithPreferences = await Promise.all(
+            recipients.map(async (recipient) =>
+            {
+                const preferences = await (NotificationPreferences as any).getOrCreate(
+                    recipient._id.toString(),
+                    data.organizationId
+                );
+                const userPreference = preferences.getPreference(preferenceKey);
+                return {
+                    recipient,
+                    preference: userPreference,
+                };
+            })
+        );
 
-        // Send emails if requested
+        // Create notifications only for users who have in-app enabled
+        const notificationsToCreate = recipientsWithPreferences
+            .filter(item => item.preference.inApp)
+            .map(item => ({
+                organization: data.organizationId,
+                recipient: item.recipient._id,
+                type: data.type,
+                title: data.title,
+                message: data.message,
+                metadata: data.metadata || {},
+                priority: data.priority || 'medium',
+                expiresAt: data.expiresAt || null,
+                read: false,
+                emailSent: false,
+            }));
+
+        let createdNotifications: any[] = [];
+        if (notificationsToCreate.length > 0)
+        {
+            createdNotifications = await Notification.insertMany(notificationsToCreate);
+        }
+
+        // Send emails only to users who have email enabled
         if (data.sendEmail)
         {
-            const emailPromises = recipients.map(async (recipient) =>
+            const emailRecipients = recipientsWithPreferences.filter(item => item.preference.email);
+
+            const emailPromises = emailRecipients.map(async (item) =>
             {
                 try
                 {
                     await sendNotificationEmail(
-                        recipient.email,
-                        `${recipient.first_name} ${recipient.last_name}`,
+                        item.recipient.email,
+                        `${item.recipient.first_name} ${item.recipient.last_name}`,
                         data.title,
                         data.message,
                         data.metadata
@@ -147,7 +263,7 @@ export async function createBulkNotifications(data: BulkNotificationData)
                     // Mark email as sent for this recipient's notification
                     await Notification.findOneAndUpdate(
                         {
-                            recipient: recipient._id,
+                            recipient: item.recipient._id,
                             _id: { $in: createdNotifications.map(n => n._id) }
                         },
                         {
@@ -157,7 +273,7 @@ export async function createBulkNotifications(data: BulkNotificationData)
                     );
                 } catch (emailError)
                 {
-                    console.error(`Failed to send email to ${recipient.email}:`, emailError);
+                    console.error(`Failed to send email to ${item.recipient.email}:`, emailError);
                 }
             });
 
@@ -165,10 +281,28 @@ export async function createBulkNotifications(data: BulkNotificationData)
             Promise.allSettled(emailPromises);
         }
 
+        // Trigger real-time events for all created notifications
+        try
+        {
+            const pusherPromises = notificationsToCreate.map((notification, index) =>
+                triggerNewNotification(
+                    notification.recipient.toString(),
+                    data.organizationId,
+                    createdNotifications[index]._id.toString()
+                )
+            );
+            await Promise.allSettled(pusherPromises);
+        } catch (pusherError)
+        {
+            console.error('Failed to trigger real-time notifications:', pusherError);
+            // Don't fail the bulk creation if Pusher fails
+        }
+
         return {
             success: true,
             count: createdNotifications.length,
             notifications: createdNotifications,
+            skipped: recipients.length - createdNotifications.length,
         };
     } catch (error)
     {

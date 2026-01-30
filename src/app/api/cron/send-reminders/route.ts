@@ -9,7 +9,7 @@ import { createBulkNotifications, NotificationTemplates } from "../../../service
 //  This endpoint should be called by a cron job scheduler
 //  Query params:
 //  cronSecret (required for security)
-//  type (optional: 'timesheet', 'leave_balance', 'upcoming_leave', 'birthday', 'all')
+//  type (optional: 'timesheet', 'leave_balance', 'upcoming_leave', 'probation', 'birthday', 'all')
 //  organizationId (optional: send to specific organization only)
 export async function POST(req: Request)
 {
@@ -42,6 +42,7 @@ export async function POST(req: Request)
             leaveBalance: 0,
             upcomingLeave: 0,
             birthday: 0,
+            probation: 0,
             total: 0,
         };
 
@@ -54,7 +55,7 @@ export async function POST(req: Request)
 
         // Get all active employees
         const employees = await Employee.find(employeeFilter)
-            .select('_id first_name last_name email organization date_of_birth')
+            .select('_id first_name last_name email organization date_of_birth join_date')
             .lean();
 
         if (employees.length === 0)
@@ -146,7 +147,7 @@ export async function POST(req: Request)
                                 remainingDays: balance.remaining_days,
                                 actionUrl: `${process.env.NEXT_PUBLIC_API_URL}/dashboard/LeaveManagement`
                             },
-                            sendEmail: false, // Don't spam email for balance updates
+                            sendEmail: false,
                         });
                         results.leaveBalance++;
                     }
@@ -201,6 +202,66 @@ export async function POST(req: Request)
             }
         }
 
+        // Send probation period alerts (7 days before probation ends)
+        if (reminderType === 'probation' || reminderType === 'all')
+        {
+            // Assuming standard 90-day probation period
+            const PROBATION_DAYS = 90;
+            const ALERT_DAYS_BEFORE = 7;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Calculate target date range (employees who joined 83 days ago)
+            const targetJoinDate = new Date(today);
+            targetJoinDate.setDate(targetJoinDate.getDate() - (PROBATION_DAYS - ALERT_DAYS_BEFORE));
+
+            const nextDayAfterTarget = new Date(targetJoinDate);
+            nextDayAfterTarget.setDate(nextDayAfterTarget.getDate() + 1);
+
+            // Find employees whose probation ends in 7 days
+            const probationEndingEmployees = employees.filter(emp =>
+            {
+                if (!emp.join_date) return false;
+                const joinDate = new Date(emp.join_date);
+                joinDate.setHours(0, 0, 0, 0);
+                return joinDate >= targetJoinDate && joinDate < nextDayAfterTarget;
+            });
+
+            for (const employee of probationEndingEmployees)
+            {
+                const joinDate = new Date(employee.join_date);
+                const probationEndDate = new Date(joinDate);
+                probationEndDate.setDate(probationEndDate.getDate() + PROBATION_DAYS);
+
+                // Get HR employees in the organization
+                const hrEmployees = employees.filter(
+                    emp => emp.organization.toString() === employee.organization.toString()
+                    // Add role filter here if you have HR role: && emp.role === 'HR'
+                );
+
+                if (hrEmployees.length > 0)
+                {
+                    await createBulkNotifications({
+                        organizationId: employee.organization.toString(),
+                        recipientIds: hrEmployees.map(e => e._id.toString()),
+                        type: 'alert',
+                        title: '⏰ Probation Period Ending',
+                        message: `${employee.first_name} ${employee.last_name}'s probation period ends on ${probationEndDate.toLocaleDateString()}. Please schedule performance review and confirmation.`,
+                        priority: 'high',
+                        metadata: {
+                            employeeId: employee._id.toString(),
+                            joinDate: employee.join_date,
+                            probationEndDate: probationEndDate.toISOString(),
+                            actionUrl: `${process.env.NEXT_PUBLIC_API_URL}/dashboard/employees`
+                        },
+                        sendEmail: true,
+                    });
+                    results.probation += hrEmployees.length;
+                }
+            }
+        }
+
         // Send birthday notifications (daily check)
         if (reminderType === 'birthday' || reminderType === 'all')
         {
@@ -239,7 +300,7 @@ export async function POST(req: Request)
             }
         }
 
-        results.total = results.timesheet + results.leaveBalance + results.upcomingLeave + results.birthday;
+        results.total = results.timesheet + results.leaveBalance + results.upcomingLeave + results.birthday + results.probation;
 
         return NextResponse.json({
             success: true,

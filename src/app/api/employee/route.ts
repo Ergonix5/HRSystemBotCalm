@@ -14,6 +14,7 @@ import { sendEmail } from "../../service/email.service";
 import { welcomeTemplate } from "../../constant/email.template";
 import { LeaveType } from "../../models/leaveType.model";
 import { initializeLeaveBalance } from "../../service/leaveBalance.service";
+import { createBulkNotifications } from "../../service/notification.service";
 
 /**
  * GET /api/Employee - Fetch paginated employees with search
@@ -124,6 +125,7 @@ export async function POST(req: Request)
             designation: data.designation,
             role: data.role,
 
+            employee_id: data.employee_id,
             first_name: data.first_name,
             last_name: data.last_name,
             email: data.email,
@@ -133,7 +135,7 @@ export async function POST(req: Request)
             phone: data.phone,
             date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : undefined,
             join_date: data.join_date ? new Date(data.join_date) : undefined,
-            employment_status: data.employment_status ?? "active",
+            employment_status: data.employment_status ?? "Active",
             address: data.address,
         });
 
@@ -176,6 +178,73 @@ export async function POST(req: Request)
         } catch (emailError)
         {
             console.error("Failed to send welcome email:", emailError);
+        }
+
+        // Send notification to system administrators
+        try
+        {
+            console.log('Creating employee notification...');
+
+            // Find all active employees and populate their roles
+            const employees = await Employee.find({
+                employment_status: 'Active'
+            })
+                .populate('role', 'role_name')
+                .select('_id organization role');
+
+            console.log(`Found ${employees.length} active employees`);
+
+            // Filter for admins based on populated role_name
+            const admins = employees.filter((emp: any) =>
+            {
+                const roleName = emp.role?.role_name;
+                return roleName && ['Admin', 'Super Admin', 'HR Manager'].includes(roleName);
+            });
+
+            console.log(`Found ${admins.length} admin users:`, admins.map((a: any) => ({
+                id: a._id,
+                role: a.role?.role_name
+            })));
+
+            if (admins.length > 0)
+            {
+                console.log('Sending notifications to each admin...');
+
+                // Send notification to each admin individually using their organization
+                for (const admin of admins)
+                {
+                    try
+                    {
+                        await createBulkNotifications({
+                            organizationId: (admin as any).organization.toString(),
+                            recipientIds: [(admin as any)._id.toString()],
+                            type: 'system',
+                            title: 'New Employee Created',
+                            message: `Employee "${created.first_name} ${created.last_name}" has been created successfully`,
+                            priority: 'medium',
+                            metadata: {
+                                employeeId: created._id.toString(),
+                                employeeName: `${created.first_name} ${created.last_name}`,
+                                action: 'created',
+                                actionUrl: '/dashboard/employees'
+                            },
+                            sendEmail: false
+                        });
+                    } catch (err)
+                    {
+                        console.error(`Failed to notify admin ${(admin as any)._id}:`, err);
+                    }
+                }
+
+                console.log('Notifications sent successfully');
+            } else
+            {
+                console.log('No admin users found to notify');
+            }
+        } catch (notifError)
+        {
+            console.error('Failed to send employee creation notification:', notifError);
+            // Don't fail the request if notification fails
         }
 
         return NextResponse.json(
