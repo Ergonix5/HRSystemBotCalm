@@ -20,18 +20,26 @@ if (!cached)
 
 export async function connectDB()
 {
-    if (cached.com)
+    if (cached.conn)
     {
         return cached.conn;
     }
 
     if (!cached.promise)
     {
+        console.log('Attempting to connect to MongoDB:', MONGODB_URI ? 'URI provided' : 'URI missing');
+        
         cached.promise = mongoose.connect(MONGODB_URI, {
             bufferCommands: false,
-        }).then(mongoose => mongoose);
+        }).then(mongoose => {
+            console.log('MongoDB connected successfully');
+            return mongoose;
+        }).catch(err => {
+            console.error('MongoDB connection error:', err);
+            throw err;
+        });
     }
 
-    cached.com = await cached.promise;
+    cached.conn = await cached.promise;
     return cached.conn;
 }

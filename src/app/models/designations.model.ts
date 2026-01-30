@@ -1,6 +1,6 @@
 import { Schema, models, model } from "mongoose";
 
-const designationShema = new Schema(
+const designationSchema = new Schema(
   {
     designation_id: {
       type: String,
@@ -23,6 +23,4 @@ const designationShema = new Schema(
   },
   { timestamps: true }
 );
-
-export const Designation =
-  models.Designation || model("designation", designationShema);
+export const Designation = models.Designation || model("designation", designationSchema);
