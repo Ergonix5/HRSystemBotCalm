@@ -107,8 +107,8 @@ export default function Sidebar() {
         {/* Sidebar */}
         <aside
           className={`${
-            isCollapsed ? "w-20" : "w-60"
-          } h-screen bg-white border-r hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40`}
+            isCollapsed ? "w-20" : "w-64"
+          } h-screen bg-zinc-50 border-r hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40`}
         >
           {/* Logo */}
           <div className="flex items-center p-5">
@@ -129,7 +129,7 @@ export default function Sidebar() {
                   const Icon = item.icon;
                   const activeClass = isActive(item.href)
                         ? "bg-red-100 text-[#B91434] font-semibold"
-    : "hover:text-[#B91434] hover:bg-red-50";
+    : "hover:text-black hover:bg-gray-100";
 
 
                   return isCollapsed ? (
@@ -176,7 +176,7 @@ export default function Sidebar() {
            const activeClass =
   !isLogout && isActive(href!)
     ? "bg-red-100 text-[#B91434] font-semibold"
-    : "hover:text-[#B91434] hover:bg-red-50";
+    : "hover:text-black hover:bg-gray-100";
 
 
               return isCollapsed ? (
@@ -240,8 +240,8 @@ export default function Sidebar() {
           size="sm"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className={`fixed ${
-            isCollapsed ? "left-12" : "left-60"
-          } top-6 z-50 bg-white border shadow-sm rounded-full p-1 h-6 w-6 transition-all duration-300`}
+            isCollapsed ? "left-17" : "left-60"
+          } top-6 z-51 bg-white border shadow-sm rounded-full p-1 h-6 w-6 transition-all duration-300`}
         >
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </Button>

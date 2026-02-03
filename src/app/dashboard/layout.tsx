@@ -5,7 +5,7 @@ import Header from "../../components/dashboard/Header";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-gray-50">
+    <div className="bg-white">
 
       {/* h-screen bg-muted/30 */}
       <Sidebar />

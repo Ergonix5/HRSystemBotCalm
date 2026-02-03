@@ -8,7 +8,7 @@ import { type Company } from "../../types/types"
 import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
-import {CompanyForm} from "../../../components/forms/addcompany"
+import {AddCompanyForm} from "../../../components/forms/addcompany"
 import { createOrganization, updateOrganization, deleteOrganization } from "../../../services/organization.service"
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
 import { Plus ,Search} from "lucide-react"
@@ -77,7 +77,7 @@ export function CompanyTable({ organizations }: Props) {
   }
 
   return (
-    <div className="border  p-5 rounded-md">
+    <div className="border bg-white  p-5 rounded-md">
       {/* Header */}
       <div className="space-y-6 mb-10">
   <div className="flex flex-wrap items-center justify-between gap-4">
@@ -128,8 +128,8 @@ export function CompanyTable({ organizations }: Props) {
       {/* Add new company  */}
       {isAddOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <CompanyForm
-            onSubmit={async (data) => {
+          <AddCompanyForm
+            onSubmit={async (data: Company) => {
               try {
                 await createOrganization(data)
                 setIsAddOpen(false)
