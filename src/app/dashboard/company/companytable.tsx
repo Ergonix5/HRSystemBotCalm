@@ -7,11 +7,13 @@ import { columns } from "./columns"
 import { type Company } from "../../types/types"
 import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
+import { Dialog, DialogContent } from "../../../components/ui/dialog"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
 import {AddCompanyForm} from "../../../components/forms/addcompany"
 import { createOrganization, updateOrganization, deleteOrganization } from "../../../services/organization.service"
 import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
 import { Plus ,Search} from "lucide-react"
+import { PermissionCheck } from "../../../components/PermissionCheck"
 
 
 type Props = {
@@ -21,6 +23,7 @@ type Props = {
 
 export function CompanyTable({ organizations, onRefresh }: Props)
 {
+  const router = useRouter();
   //loading state for operations like API request
   const [loading, setLoading] = useState(false);
 
@@ -155,8 +158,8 @@ export function CompanyTable({ organizations, onRefresh }: Props)
               }
             }}
           />
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Edit company details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
