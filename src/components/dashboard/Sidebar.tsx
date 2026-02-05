@@ -80,7 +80,12 @@ const footerMenu: MenuItem[] = [
 // -------------------- Sidebar Component --------------------
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { logout } = useAuth();
+  const { logout, has, user, loading } = useAuth();
+
+  // console.log("Auth store state:", useAuth.getState());
+  // console.log("User permissions:", useAuth.getState().permissions);
+  // console.log("Has employees.view:", has("employees.view"));
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -100,6 +105,21 @@ export default function Sidebar() {
 
   // Check if a menu item is active
   const isActive = (href: string) => pathname === href;
+
+    // ADD THIS LOADING CHECK HERE
+  if (loading || (!user && !loading)) {
+    return (
+      <TooltipProvider>
+        <div className="relative">
+          <aside className="w-64 h-screen bg-white border-r shadow-sm hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 overflow-hidden">
+            <div className="flex items-center p-4 border-b">
+              <div>Loading...</div>
+            </div>
+          </aside>
+        </div>
+      </TooltipProvider>
+    );
+  }
 
   return (
     <TooltipProvider>

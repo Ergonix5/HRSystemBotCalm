@@ -8,30 +8,35 @@ import { type Company } from "../../types/types"
 import { getOrganizations } from "../../../services/organization.service"
 import { Spinner } from "@/src/components/ui/spinner"
 
-export default function CompanyPage() {
+export default function CompanyPage()
+{
   const [organizations, setOrganizations] = useState<Company[]>([]) //store the list of companies fetched from the API
   const [loading, setLoading] = useState(true) //track loading status while fetching data
 
 
   //load companies asynchronously
-  useEffect(() => {
-    async function loadData() {
-      setLoading(true)
-      const data = await getOrganizations()
-      setOrganizations(data)
-      setLoading(false)
-    }
+  const loadData = async () =>
+  {
+    setLoading(true)
+    const data = await getOrganizations()
+    setOrganizations(data)
+    setLoading(false)
+  }
+
+  useEffect(() =>
+  {
     loadData()
   }, [])
 
-   // Compute dashboard statistics
+  // Compute dashboard statistics
   const totalCompanies = organizations.length
   const activeCompanies = organizations.filter(o => o.status === "Active").length
   const inactiveCompanies = organizations.filter(o => o.status === "Inactive").length
 
 
   // loading spinner while data is being fetched
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className="p-6 flex justify-center items-center h-64">
         <Spinner />
@@ -62,7 +67,7 @@ export default function CompanyPage() {
       </div>
 
       {/* Company table */}
-      <CompanyTable organizations={organizations} />
+      <CompanyTable organizations={organizations} onRefresh={loadData} />
     </div>
   )
 }

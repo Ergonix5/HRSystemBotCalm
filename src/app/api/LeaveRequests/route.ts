@@ -9,6 +9,7 @@ import { LeaveRequest } from "../../models/leaveRequest.model";
 import { LeaveBalance } from "../../models/leaveBalance.model";
 import { paginate } from "../../service/pagination.service";
 import { checkLeaveBalance } from "../../service/leaveBalance.service";
+import { createNotification, NotificationTemplates } from "../../service/notification.service";
 
 
 
@@ -22,7 +23,7 @@ export async function POST(req: Request)
 
         const result = await validateBody(req, LeaveRequestSchema);
         if (!result.ok) return result.res;
-        
+
         const data = result.data;
 
         // Varify employee exists and belongs to the organization
@@ -105,7 +106,7 @@ export async function POST(req: Request)
             )
         }
 
-        
+
 
         // const currentYear = new Date().getFullYear();
         // const leaveBalance = await LeaveBalance.findOne({
@@ -156,7 +157,53 @@ export async function POST(req: Request)
             .populate("employee", "first_name last_name email employee_id")
             .populate("leave_type", "leave_type_id name description")
             .populate("organization", "name")
-        
+
+        // Send notification to HR/Manager about new leave request
+        try
+        {
+            const employeeData = populatedLeaveRequest.employee as any;
+            const leaveTypeData = populatedLeaveRequest.leave_type as any;
+
+            const template = NotificationTemplates.leaveRequestSubmitted(
+                `${employeeData.first_name} ${employeeData.last_name}`,
+                leaveTypeData.name,
+                start.toLocaleDateString(),
+                end.toLocaleDateString()
+            );
+
+            // Get all HR/Manager employees in the organization
+            // For now, we'll send to all employees with 'HR' or 'Manager' role
+            // You can customize this based on your role structure
+            const hrManagers = await Employee.find({
+                organization: data.organization,
+                // Add role filter here based on your role structure
+                // For example: role: { $in: ['HR', 'Manager'] }
+            }).select('_id');
+
+            // Send notification to each HR/Manager
+            for (const hrManager of hrManagers)
+            {
+                await createNotification({
+                    organizationId: data.organization,
+                    recipientId: hrManager._id.toString(),
+                    type: template.type,
+                    title: template.title,
+                    message: template.message,
+                    priority: template.priority,
+                    metadata: {
+                        leaveRequestId: leaveRequest._id.toString(),
+                        employeeId: data.employee,
+                        actionUrl: `${process.env.NEXT_PUBLIC_API_URL}/dashboard/LeaveManagement`
+                    },
+                    sendEmail: true,
+                });
+            }
+        } catch (notificationError)
+        {
+            // Log error but don't fail the request
+            console.error('Failed to send leave request notification:', notificationError);
+        }
+
         return NextResponse.json(
             {
                 success: true,
@@ -170,22 +217,20 @@ export async function POST(req: Request)
     {
         console.error('Error creating leave request:', error);
         return NextResponse.json(
-            { message: error instanceof Error ? error.message : 'Internal server error' }, 
+            { message: error instanceof Error ? error.message : 'Internal server error' },
             { status: 500 }
         );
     }
 }
 
 
-/**
- * GET /api/LeaveRequests - Fetch paginated leave requests with filtering
- * Query params: 
- *   - page, limit, q (search)
- *   - organizationId (required for multi-tenant)
- *   - employeeId (filter by specific employee)
- *   - status (filter by status: pending, approved, rejected, cancelled)
- *   - startDate, endDate (filter by date range)
- */
+//  GET /api/LeaveRequests - Fetch paginated leave requests with filtering
+//  Query params: 
+//  page, limit, q (search)
+//  organizationId (required for multi-tenant)
+//  employeeId (filter by specific employee)
+//  status (filter by status: pending, approved, rejected, cancelled)
+//  startDate, endDate (filter by date range)
 
 export async function GET(req: Request)
 {
@@ -216,7 +261,7 @@ export async function GET(req: Request)
 
         if (status && ["pending", "approved", "rejected", "cancelled"].includes(status))
         {
-            filter.status =  status;
+            filter.status = status;
         }
 
         if (startDate || endDate)
@@ -258,7 +303,7 @@ export async function GET(req: Request)
             .populate('organization', 'name')
             .sort({ createdAt: -1 })
             .lean();
-        
+
         result.data = populatedData;
 
         return NextResponse.json(result, { status: 200 });

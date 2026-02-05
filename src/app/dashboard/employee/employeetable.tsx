@@ -9,7 +9,8 @@ import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
 import { AddEmployeeForm } from "../../../components/forms/addEmployee"
 import { createEmployee, updateEmployee, deleteEmployee } from "../../../services/employee.service"
-import  {EditEmployeeForm}  from "../../../components/forms/editEmployeeForm"
+import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
+import { PermissionCheck } from "../../../components/PermissionCheck";
 
 type Props = {
   employees: Employee[]
@@ -82,13 +83,18 @@ export function EmployeeTable({ employees }: Props) {
         /> */}
       </div>
       
-      <Button 
+    <PermissionCheck permission="employees.create">
+
+           <Button 
         variant="outline"
         onClick={() => setIsAddOpen(true)}
         className="border-[#B91434] text-[#B91434] hover:bg-[#B91434] hover:text-white transition-colors"
       >
         <Plus className="mr-2 h-4 w-4" /> Add Employee
       </Button>
+
+    </PermissionCheck>
+     
     </div>
   </div>
   <hr className="border-gray-100" />

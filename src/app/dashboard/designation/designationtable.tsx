@@ -10,6 +10,9 @@ import { createDesignation, updateDesignation, deleteDesignation } from "../../.
 import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
 import { AddDesignationForm } from "../../../components/forms/addDesignation"
+import { DesignationForm } from "../../../components/forms/addDesignation"
+import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { PermissionCheck } from "../../../components/PermissionCheck";
 
 type Props = {
   designations: Designation[]
@@ -73,7 +76,7 @@ export function DesignationTable({ designations }: Props) {
     </div>
 
   
-      
+  <PermissionCheck permission="designations.create"> 
       <Button 
         variant="outline"
         onClick={() => setIsAddOpen(true)}
@@ -81,7 +84,7 @@ export function DesignationTable({ designations }: Props) {
       >
         <Plus className="mr-2 h-4 w-4" /> Add Designation
       </Button>
-    
+    </PermissionCheck>   
   </div>
   <hr className="border-gray-100" />
 </div>

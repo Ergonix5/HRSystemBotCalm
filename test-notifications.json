@@ -1,0 +1,91 @@
+{
+    "recipientId": "69443243509c41357854aadf",
+    "organizationId": "69426e67f7ac33645aad354c",
+    "notifications": [
+        {
+            "type": "system",
+            "title": "🏢 New Organization Created",
+            "message": "Organization \"Acme Corporation\" has been created successfully",
+            "priority": "medium",
+            "metadata": {
+                "organizationId": "69426e67f7ac33645aad354c",
+                "organizationTitle": "Acme Corporation",
+                "action": "created",
+                "actionUrl": "/admin/organizations"
+            },
+            "sendEmail": false
+        },
+        {
+            "type": "alert",
+            "title": "⚠️ Organization Deleted",
+            "message": "Organization \"Old Company Ltd\" has been permanently deleted",
+            "priority": "high",
+            "metadata": {
+                "organizationId": "69426e67f7ac33645aad354c",
+                "organizationTitle": "Old Company Ltd",
+                "action": "deleted",
+                "actionUrl": "/admin/organizations"
+            },
+            "sendEmail": true
+        },
+        {
+            "type": "system",
+            "title": "🔄 Organization Updated",
+            "message": "Organization \"Tech Innovations Inc\" has been updated",
+            "priority": "low",
+            "metadata": {
+                "organizationId": "69426e67f7ac33645aad354c",
+                "organizationTitle": "Tech Innovations Inc",
+                "action": "updated",
+                "actionUrl": "/admin/organizations"
+            },
+            "sendEmail": false
+        },
+        {
+            "type": "approval",
+            "title": "✅ Leave Request Approved",
+            "message": "Your leave request for 3 days has been approved by John Manager",
+            "priority": "medium",
+            "metadata": {
+                "leaveRequestId": "507f1f77bcf86cd799439011",
+                "approverName": "John Manager",
+                "actionUrl": "/dashboard/leave-requests"
+            },
+            "sendEmail": true
+        },
+        {
+            "type": "reminder",
+            "title": "⏰ Timesheet Reminder",
+            "message": "Don't forget to submit your timesheet for this week",
+            "priority": "medium",
+            "metadata": {
+                "reminderType": "timesheet",
+                "actionUrl": "/dashboard/timesheets"
+            },
+            "sendEmail": false
+        },
+        {
+            "type": "announcement",
+            "title": "📢 System Maintenance Scheduled",
+            "message": "System maintenance is scheduled for this weekend. Please save your work.",
+            "priority": "high",
+            "metadata": {
+                "announcementId": "507f1f77bcf86cd799439012",
+                "actionUrl": "/dashboard/announcements"
+            },
+            "sendEmail": true
+        },
+        {
+            "type": "alert",
+            "title": "🔴 Leave Balance Low",
+            "message": "Your annual leave balance is running low (2 days remaining)",
+            "priority": "medium",
+            "metadata": {
+                "balanceType": "annual_leave",
+                "remainingDays": 2,
+                "actionUrl": "/dashboard/leave-balance"
+            },
+            "sendEmail": false
+        }
+    ]
+}
