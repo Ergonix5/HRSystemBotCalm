@@ -1,5 +1,6 @@
 "use client"
-
+import { designationCreateSchema } from "../../validators/designation.schema"
+import { Building2 } from "lucide-react"
 import { Designation } from "../../app/types/types"
 import     {DynamicForm } from "./reusableform"
 import { type FormField } from '@/src/app/types/types';
@@ -7,12 +8,14 @@ interface EditDesignationFormProps {
   designation: Designation
   onSubmit: (data: any) => void
   onClose?: () => void
+   defaultValues: Record<string, any>   
 }
 
 export function EditDesignationForm({
   designation,
   onSubmit,
   onClose,
+  defaultValues
 }: EditDesignationFormProps) {
   const fields: FormField[] = [
     {
@@ -63,8 +66,10 @@ export function EditDesignationForm({
       title="Edit Designation"
       description="Update designation details"
       fields={fields}
-      readOnlyFields={["designation_id"]}
-      hiddenFields={{ _id: designation._id }}
+      icon={<Building2 size={20} />}
+      schema={designationCreateSchema}
+      gridCols={2}
+      defaultValues={defaultValues} 
       submitLabel="Update Designation"
       onSubmit={onSubmit}
       onClose={onClose}

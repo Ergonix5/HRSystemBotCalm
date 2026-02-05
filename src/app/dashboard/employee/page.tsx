@@ -22,7 +22,7 @@ export default function EmployeesPage() {
     loadData()
   }, [])
 
-    // loading spinner when dta is feching
+    // loading spinner when data is fetching
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center h-64">
@@ -33,7 +33,7 @@ export default function EmployeesPage() {
 
   // Render the employee table once data is loaded
   return (
-    <div className="p-6">
+    <div className="p-6 bg-white">
       <EmployeeTable employees={employees} />
     </div>
   )

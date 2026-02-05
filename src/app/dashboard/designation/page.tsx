@@ -31,7 +31,7 @@ export default function DesignationPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-white">
       <DesignationTable designations={designations} />
     </div>
   )

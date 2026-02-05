@@ -1,4 +1,5 @@
 import { id } from "zod/v4/locales"
+import React from 'react';
 
 //Company Table
 export type Company = {
@@ -68,10 +69,11 @@ export type FormField = {
   name: string
   label: string
   placeholder?: string
-  type: "input" | "textarea" | "select" |"permissions"
+  type: "input" | "textarea" | "select" |"permissions" | "custom"
   inputType?: string
   required?: boolean
   defaultValue?: any
   options?: { value: string; label: string }[]
   onChange?: (value: string) => void
+  component?: (props: { value: any; onChange: (value: any) => void }) => React.ReactElement
 }
