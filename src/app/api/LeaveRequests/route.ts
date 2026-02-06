@@ -10,6 +10,7 @@ import { LeaveBalance } from "../../models/leaveBalance.model";
 import { paginate } from "../../service/pagination.service";
 import { checkLeaveBalance } from "../../service/leaveBalance.service";
 import { createNotification, NotificationTemplates } from "../../service/notification.service";
+import { requirePermission } from "@/src/lib/permissions";
 
 
 
@@ -17,6 +18,15 @@ import { createNotification, NotificationTemplates } from "../../service/notific
 // POST: api/LeaveRequests
 export async function POST(req: Request)
 {
+    // Check permission: LEAVE_CREATE
+    const permCheck = await requirePermission("leave.create");
+
+    if (!permCheck.authorized) {
+      return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -25,6 +35,23 @@ export async function POST(req: Request)
         if (!result.ok) return result.res;
 
         const data = result.data;
+
+        // Security check: Ensure user can only create leave for themselves
+        // unless they have admin permissions
+        if (data.employee !== user.id && !user.permissions.includes("leave.view_all")) {
+          return NextResponse.json(
+            { message: "You can only create leave requests for yourself" },
+            { status: 403 }
+          );
+        }
+
+        // Ensure organization matches user's organization
+        if (data.organization !== user.organization_id) {
+          return NextResponse.json(
+            { message: "Invalid organization" },
+            { status: 403 }
+          );
+        }
 
         // Varify employee exists and belongs to the organization
         const employee = await Employee.findOne({
@@ -234,6 +261,18 @@ export async function POST(req: Request)
 
 export async function GET(req: Request)
 {
+
+    // Check permissions
+    const permCheck = await requirePermission(undefined, [
+        "leave.view",
+        "leave.view_all",
+        "leave.view_team"
+    ]);
+    
+    if (!permCheck.authorized) return permCheck.error!;
+    
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -252,10 +291,23 @@ export async function GET(req: Request)
         const startDate = searchParams.get("startDate")?.trim();
         const endDate = searchParams.get("endDate")?.trim();
 
-        // Build filter object
+        // Build filter object with role-based access
         const filter: Record<string, any> = {};
 
-        if (organizationId) filter.organization = organizationId;
+        // Apply role-based data filtering
+        if (user.permissions.includes("leave.view_all")) {
+            // HR/Admin: Can view all leave requests in organization
+            if (organizationId) filter.organization = organizationId;
+        } else if (user.permissions.includes("leave.view_team")) {
+            // Manager: Can view team members' requests
+            // TODO: Add manager hierarchy check
+            // For now, show all in organization (implement team filtering later)
+            if (organizationId) filter.organization = organizationId;
+        } else if (user.permissions.includes("leave.view")) {
+            // Employee: Can only view own requests
+            filter.employee = user.id;
+            if (organizationId) filter.organization = organizationId;
+        }
 
         if (employeeId) filter.employee = employeeId;
 

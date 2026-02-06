@@ -3,6 +3,7 @@ import { connectDB } from "@/src/lib/db";
 import { validateBody } from "@/src/lib/validate";
 import { leaveTypeCreateSchema } from "@/src/validators/leaveType.schema";
 import { NextResponse } from "next/server";
+import { requirePermission } from "@/src/lib/permissions";
 
 
 
@@ -12,6 +13,18 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function GET(req: Request, { params }: Params)
 {
+    // Check permission: LEAVE_VIEW or LEAVE_MANAGE_TYPES
+    const permCheck = await requirePermission(undefined, [
+      "leave.view",
+      "leave.manage_types"
+    ]);
+
+    if (!permCheck.authorized) {
+      return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -26,6 +39,15 @@ export async function GET(req: Request, { params }: Params)
                 { status: 400 }
             );
         }
+
+        // Security: Ensure user can only access their organization's data
+        if (organizationId !== user.organization_id && !user.permissions.includes("leave.view_all")) {
+          return NextResponse.json(
+            { message: "Access denied to this organization's data" },
+            { status: 403 }
+          );
+        }
+
         const { id } = await params;
 
         const leaveType = await LeaveType.findOne({ _id: id, organization: organizationId })
@@ -51,6 +73,15 @@ export async function GET(req: Request, { params }: Params)
 // PUT /api/LeaveType/[id] - Update Leave Type by ID
 export async function PUT(req: Request, { params }: Params)
 {
+    // Check permission: LEAVE_MANAGE_TYPES
+    const permCheck = await requirePermission("leave.manage_types");
+
+    if (!permCheck.authorized) {
+      return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -62,6 +93,14 @@ export async function PUT(req: Request, { params }: Params)
         if (!result.ok) return result.res;
 
         const data = result.data;
+
+        // Security: Ensure user can only update their organization's data
+        if (data.organization !== user.organization_id) {
+          return NextResponse.json(
+            { message: "You can only update leave types for your organization" },
+            { status: 403 }
+          );
+        }
 
         // Check if leave type exists and belongs to organization
         const existing = await LeaveType.findOne({
@@ -125,6 +164,15 @@ export async function PUT(req: Request, { params }: Params)
 
 export async function DELETE(req: Request, { params }: Params)
 {
+    // Check permission: LEAVE_MANAGE_TYPES
+    const permCheck = await requirePermission("leave.manage_types");
+
+    if (!permCheck.authorized) {
+      return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -138,6 +186,14 @@ export async function DELETE(req: Request, { params }: Params)
                 { message: "organizationId is required" },
                 { status: 400 }
             );
+        }
+
+        // Security: Ensure user can only delete from their organization
+        if (organizationId !== user.organization_id) {
+          return NextResponse.json(
+            { message: "You can only delete leave types from your organization" },
+            { status: 403 }
+          );
         }
 
         const { id } = await params;
