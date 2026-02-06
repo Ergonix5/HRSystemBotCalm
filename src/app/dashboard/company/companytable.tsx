@@ -1,19 +1,20 @@
-"use client";
+"use client"
+import { useRouter } from 'next/navigation';
 
-import { useState } from "react";
-import { DataTable } from "../../../components/table/Data-table";
-import { columns } from "./columns";
-import { type Company } from "../../types/types";
-import { Spinner } from "@/src/components/ui/spinner";
-import { Button } from "../../../components/ui/button";
-import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-";
-import { CompanyForm } from "../../../components/forms/addcompany";
+import {  useState } from "react"
+import { DataTable } from "../../../components/table/Data-table"
+import { columns } from "./columns"
+import { type Company } from "../../types/types"
+import { Spinner } from "@/src/components/ui/spinner"
+import { Button } from "../../../components/ui/button"
+import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
+import {AddCompanyForm} from "../../../components/forms/addcompany"
+import { createOrganization, updateOrganization, deleteOrganization } from "../../../services/organization.service"
+import { EditCompanyForm } from "../../../components/forms/editCompanyForm"
+import { Plus ,Search} from "lucide-react"
+import { PermissionCheck } from "../../../components/PermissionCheck"
 
-import { EditCompanyForm } from "../../../components/forms/editCompanyForm";
-import { Dialog, DialogContent } from "../../../components/ui/dialog";
-import { Plus, Search } from "lucide-react";
-import { PermissionCheck } from "../../../components/PermissionCheck";
-import { createOrganization, updateOrganization } from "../../../lib/api";
 
 type Props = {
   organizations: Company[];
@@ -22,6 +23,7 @@ type Props = {
 
 export function CompanyTable({ organizations, onRefresh }: Props)
 {
+  const router = useRouter();
   //loading state for operations like API request
   const [loading, setLoading] = useState(false);
 
@@ -89,7 +91,7 @@ export function CompanyTable({ organizations, onRefresh }: Props)
   }
 
   return (
-    <div className="border  p-5 rounded-md">
+    <div className="border bg-white  p-5 rounded-md">
       {/* Header */}
       <div className="space-y-6 mb-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -141,29 +143,23 @@ export function CompanyTable({ organizations, onRefresh }: Props)
         onClose={() => setIsViewOpen(false)}
       />
 
-      {/* Add new company */}
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="max-w-2xl">
-          <CompanyForm
-            onSubmit={async (data) =>
-            {
-              try
-              {
-                await createOrganization(data);
-                setIsAddOpen(false);
-                if (onRefresh)
-                {
-                  await onRefresh(); // Refresh data instead of full page reload
-                }
-              } catch (error)
-              {
-                console.error("Failed to create company:", error);
-                alert("Failed to create company. Please try again.");
+      {/* Add new company  */}
+      {isAddOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <AddCompanyForm
+            onSubmit={async (data: Company) => {
+              try {
+                await createOrganization(data)
+                setIsAddOpen(false)
+                router.refresh();
+              } catch (error) {
+                console.error("Failed to create company:", error)
+                alert("Failed to create company. Please try again.")
               }
             }}
           />
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Edit company details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>

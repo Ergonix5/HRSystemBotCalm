@@ -1,43 +1,23 @@
 "use client"
 
-import { Company } from "../../app/types/types"
-import {DynamicForm} from "./reusableform"
-import { type FormField } from '@/src/app/types/types';
+import { DynamicForm } from "./reusableform"
+import { organizationCreateSchema } from "../../validators/organization.schema"
+import { Company, FormField } from "@/src/app/types/types"
+import { Building2 } from "lucide-react"
 
 interface EditCompanyFormProps {
   company: Company
   onSubmit: (data: any) => void
   onClose?: () => void
+  defaultValues?: Record<string, any>   
 }
 
-export function EditCompanyForm({
-  company,
-  onSubmit,
-  onClose,
-}: EditCompanyFormProps) {
+export function EditCompanyForm({ company, onSubmit, onClose, defaultValues }: EditCompanyFormProps) {
   const fields: FormField[] = [
-    {
-      id: "organization-id",
-      name: "organization_id",
-      label: "Organization ID",
-      type: "input",
-      defaultValue: company.company_id,
-    },
-    {
-      id: "organization-name",
-      name: "name",
-      label: "Organization Name",
-      type: "input",
-      required: true,
-      defaultValue: company.company_name,
-    },
-    {
-      id: "organization-description",
-      name: "description",
-      label: "Description",
-      type: "textarea",
-      defaultValue: company.company_description,
-    },
+    { id: "org_id", name: "organization_id", label: "Organization ID", type: "input" ,defaultValue: company.company_id},
+    { id: "name", name: "name", label: "Company Name", type: "input" ,defaultValue: company.company_name},
+    { id: "desc", name: "description", label: "Description", type: "textarea" ,defaultValue: company.company_description
+},
     {
       id: "status",
       name: "status",
@@ -54,13 +34,15 @@ export function EditCompanyForm({
   return (
     <DynamicForm
       title="Edit Company"
-      description="Update company information"
+      description="Update company details"
+      icon={<Building2 size={20} />}
       fields={fields}
-      readOnlyFields={["organization_id"]}
-      hiddenFields={{ _id: company._id }}
-      submitLabel="Update Company"
+      schema={organizationCreateSchema}
       onSubmit={onSubmit}
       onClose={onClose}
+      gridCols={2}
+      defaultValues={defaultValues} 
+      submitLabel="Update Company"
     />
   )
 }

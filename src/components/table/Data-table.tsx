@@ -200,11 +200,11 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
       <div className="border">
         <div className="max-h-125   overflow-y-auto scrollbar-none">
           <Table>
-            <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
+            <TableHeader className="sticky top-0   z-20  ">
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id} className="border-b">
+                <TableRow key={headerGroup.id} className="border-b bg-white">
                   {headerGroup.headers.map(header => (
-                    <TableHead key={header.id} className="bg-background">
+                    <TableHead key={header.id} className="py-2 bg-white ">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}

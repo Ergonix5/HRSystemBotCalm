@@ -84,7 +84,7 @@ export function DetailsModal({
             <button 
               type="button"
               onClick={onClose}
-              className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 text-neutral-400 hover:text-black transition-colors hover:bg-neutral-200"
+              className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2   hover:bg-neutral-200 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-all duration-200 hover:rotate-90"
               aria-label="Close form"
             >
               <X size={24} strokeWidth={2.5} />
