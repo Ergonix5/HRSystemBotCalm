@@ -1,7 +1,8 @@
 "use client"
 import * as React from "react"
 import { useState } from 'react';
-import {
+import
+{
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
@@ -22,7 +23,8 @@ import { DataTablePagination } from "./DataTablePagination"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
 import { SearchInput } from "../ui/searchBar";
 
-interface DataTableProps<TData> {
+interface DataTableProps<TData>
+{
   columns: ColumnDef<TData>[]
   data: TData[]
   filterColumn?: string
@@ -30,7 +32,8 @@ interface DataTableProps<TData> {
   showCompanyFilter?: boolean
 }
 
-export function DataTable<TData>({ columns, data, filterColumn = "company_name", showStatusFilter = false, showCompanyFilter = false }: DataTableProps<TData>) {
+export function DataTable<TData>({ columns, data, filterColumn = "company_name", showStatusFilter = false, showCompanyFilter = false }: DataTableProps<TData>)
+{
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -42,7 +45,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
   const table = useReactTable({
     data,
     columns,
-    getRowId: (row: any) => row.company_id,
+    getRowId: (row: any, index) => row.company_id || row.leaveId || row.employee_id || String(index),
     state: { sorting, columnFilters, columnVisibility, rowSelection },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -62,7 +65,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
 
       <div className="flex items-center  gap-4">
 
-         
+
 
         <SearchInput
           placeholder=" Search..."
@@ -80,7 +83,8 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
-                onClick={() => {
+                onClick={() =>
+                {
                   table.getColumn("status")?.setFilterValue("")
                   setSelectedStatus("All Status")
                 }}
@@ -89,10 +93,9 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
                 All Status
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => {
-                  console.log("Setting active filter")
+                onClick={() =>
+                {
                   const statusColumn = table.getColumn("status")
-                  console.log("Status column:", statusColumn)
                   statusColumn?.setFilterValue("Active")
                   setSelectedStatus("Active")
                 }}
@@ -101,13 +104,44 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
                 Active
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => {
+                onClick={() =>
+                {
                   table.getColumn("status")?.setFilterValue("Inactive")
                   setSelectedStatus("Inactive")
                 }}
                 className="cursor-pointer"
               >
                 Inactive
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                {
+                  table.getColumn("status")?.setFilterValue("Approved")
+                  setSelectedStatus("Approved")
+                }}
+                className="cursor-pointer"
+              >
+                Approved
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                {
+                  table.getColumn("status")?.setFilterValue("Pending")
+                  setSelectedStatus("Pending")
+                }}
+                className="cursor-pointer"
+              >
+                Pending
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                {
+                  table.getColumn("status")?.setFilterValue("Rejected")
+                  setSelectedStatus("Rejected")
+                }}
+                className="cursor-pointer"
+              >
+                Rejected
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -124,11 +158,13 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {table.getAllColumns().filter(c => c.getCanHide()).map(column => {
-              const getColumnDisplayName = (id: string) => {
+            {table.getAllColumns().filter(c => c.getCanHide()).map(column =>
+            {
+              const getColumnDisplayName = (id: string) =>
+              {
                 const displayNames: Record<string, string> = {
                   'company_id': 'Company ID',
-                  'company_name': 'Company Name', 
+                  'company_name': 'Company Name',
                   'company_description': 'Description',
                   'designation_id': 'Designation ID',
                   'title': 'Title',
@@ -146,7 +182,7 @@ export function DataTable<TData>({ columns, data, filterColumn = "company_name",
                 }
                 return displayNames[id] || id
               }
-                console.log(column.id, column.getIsVisible(), column.getCanHide());
+
               return (
                 <DropdownMenuCheckboxItem
                   key={column.id}

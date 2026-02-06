@@ -9,8 +9,15 @@ export const PERMS = {
   ANN_EDIT: "announcement.edit",
   ANN_DELETE: "announcement.delete",
 
-  LEAVE_VIEW: "leave.view",
-  LEAVE_APPROVE: "leave.approve",
+  // Leave Management Permissions
+  LEAVE_VIEW: "leave.view",                    // View leave requests
+  LEAVE_CREATE: "leave.create",                // Create own leave request
+  LEAVE_EDIT: "leave.edit",                    // Edit own pending leave request
+  LEAVE_DELETE: "leave.delete",                // Delete/cancel own leave request
+  LEAVE_APPROVE: "leave.approve",              // Approve/reject others' requests
+  LEAVE_VIEW_ALL: "leave.view_all",           // View all organization leaves
+  LEAVE_MANAGE_TYPES: "leave.manage_types",   // Manage leave types & allocations
+  LEAVE_VIEW_TEAM: "leave.view_team",         // View team members' leaves (Managers)
 
   ATT_VIEW: "attendance.view",
 
@@ -40,9 +47,9 @@ export const PERMS = {
   DESIG_DELETE: "designations.delete", // Add these
 
   INTERVIEW_VIEW: "interviews.view",
-INTERVIEW_CREATE: "interviews.create", 
-INTERVIEW_EDIT: "interviews.edit",
-INTERVIEW_DELETE: "interviews.delete",
+  INTERVIEW_CREATE: "interviews.create",
+  INTERVIEW_EDIT: "interviews.edit",
+  INTERVIEW_DELETE: "interviews.delete",
 
 
   SYS_SETTINGS: "system_settings",

@@ -9,6 +9,7 @@ import { leaveRequestStatusSchema, leaveRequestUpdateSchema } from "@/src/valida
 import { NextResponse } from "next/server";
 import { success } from "zod";
 import { createNotification, NotificationTemplates } from "@/src/app/service/notification.service";
+import { requirePermission } from "@/src/lib/permissions";
 
 
 
@@ -26,6 +27,19 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function GET(req: Request, { params }: Params)
 {
+    // Check permission
+    const permCheck = await requirePermission(undefined, [
+        "leave.view",
+        "leave.view_team",
+        "leave.view_all"
+    ]);
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -78,6 +92,15 @@ export async function GET(req: Request, { params }: Params)
  */
 export async function PUT(req: Request, { params }: Params)
 {
+    // Check permission: LEAVE_EDIT
+    const permCheck = await requirePermission("leave.edit");
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -93,6 +116,14 @@ export async function PUT(req: Request, { params }: Params)
                 { message: "Leave request not found" },
                 { status: 404 }
             )
+        }
+
+        // Security: Users can only edit their own requests unless they have admin permissions
+        if (existingRequest.employee.toString() !== user.id && !user.permissions.includes("leave.view_all")) {
+            return NextResponse.json(
+                { message: "You can only edit your own leave requests" },
+                { status: 403 }
+            );
         }
 
         // Only pending requests can be updated
@@ -229,6 +260,15 @@ export async function PUT(req: Request, { params }: Params)
  */
 export async function DELETE(req: Request, { params }: Params)
 {
+    // Check permission: LEAVE_DELETE
+    const permCheck = await requirePermission("leave.delete");
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
@@ -244,6 +284,14 @@ export async function DELETE(req: Request, { params }: Params)
                 { message: 'Leave request not found' },
                 { status: 404 }
             )
+        }
+
+        // Security: Users can only delete their own requests unless they have admin permissions
+        if (leaveRequest.employee.toString() !== user.id && !user.permissions.includes("leave.view_all")) {
+            return NextResponse.json(
+                { message: "You can only delete your own leave requests" },
+                { status: 403 }
+            );
         }
 
         // Check if request can be cancelled
@@ -331,6 +379,15 @@ export async function DELETE(req: Request, { params }: Params)
  */
 export async function PATCH(req: Request, { params }: Params)
 {
+    // Check permission: LEAVE_APPROVE
+    const permCheck = await requirePermission("leave.approve");
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
     try
     {
         await connectDB();
