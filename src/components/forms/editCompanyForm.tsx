@@ -9,7 +9,7 @@ interface EditCompanyFormProps {
   company: Company
   onSubmit: (data: any) => void
   onClose?: () => void
-  defaultValues: Record<string, any>   
+  defaultValues?: Record<string, any>   
 }
 
 export function EditCompanyForm({ company, onSubmit, onClose, defaultValues }: EditCompanyFormProps) {
