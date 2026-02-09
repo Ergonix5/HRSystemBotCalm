@@ -111,7 +111,7 @@ export default function Sidebar() {
     return (
       <TooltipProvider>
         <div className="relative">
-          <aside className="w-64 h-screen bg-white border-r shadow-sm hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 overflow-hidden">
+          <aside className="w-64 h-screen bg-white  border-r shadow-sm hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 overflow-hidden">
             <div className="flex items-center p-4 border-b">
               <div>Loading...</div>
             </div>
@@ -123,12 +123,12 @@ export default function Sidebar() {
 
   return (
     <TooltipProvider>
-      <div className="relative">
+      <div className="relative ">
         {/* Sidebar */}
         <aside
           className={`${
             isCollapsed ? "w-20" : "w-64"
-          } h-screen bg-zinc-50 border-r hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40`}
+          } h-screen bg-zinc-50 border-r hidden md:flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 dark:bg-zinc-900 border-b border-b-gray-200 dark:border-b-gray-700 `}
         >
           {/* Logo */}
           <div className="flex items-center p-5">

@@ -31,7 +31,7 @@ export default function Dashboard() {
   }, [fetchMe]);
 
   return (
-    <div className="space-y-4 p-3  dark:bg-gray-900 min-h-screen">
+    <div className="space-y-4 p-3  dark:bg-zinc-900 min-h-screen">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">
           Dashboard

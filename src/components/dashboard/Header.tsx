@@ -4,7 +4,7 @@ import { Bell, Check, CheckCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNotifications } from "@/src/contexts/NotificationContext";
 import { useRouter } from "next/navigation";
-
+import { ThemeToggle } from '../theme-toggle';
 import
 {
   DropdownMenu,
@@ -118,9 +118,13 @@ export default function Header()
   };
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-end gap-4 px-6 py-3   bg-zinc-50">
+    <header className="sticky top-0 z-50 flex items-center justify-end gap-4 px-6 py-3   bg-zinc-50 dark:bg-zinc-900 border-b border-b-gray-200 dark:border-b-gray-700">
       <span className="text-sm text-muted-foreground">{dateTime}</span>
+   
 
+   {/* ThemeToggle */}
+      <ThemeToggle />
+  
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="relative">

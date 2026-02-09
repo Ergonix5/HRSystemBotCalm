@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }: { children: ReactNode })
 {
   return (
     <NotificationProvider>
-      <div className="flex h-screen ">
+      <div className="flex h-screen dark:bg-zinc-900  ">
 
         {/* h-screen bg-muted/30 */}
         <Sidebar />
