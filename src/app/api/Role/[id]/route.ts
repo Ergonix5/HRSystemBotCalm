@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/src/lib/db";
 import { Role } from "../../../models/role.model";
+import { logAction } from "@/src/lib/logger";
 
 // Type for dynamic route params (Next.js 15+ requires Promise)
 // Type for dynamic route params (Next.js 15+ requires Promise)
@@ -39,7 +40,7 @@ export async function GET(req: Request, { params }: Params) {
       );
     }
 
-    const { id } =await params;
+    const { id } = await params;
 
     // secure: role must belong to org
     const role = await Role.findOne({ _id: id, organization: organizationId });
@@ -69,6 +70,13 @@ export async function PUT(req: Request, { params }: Params) {
     const Roles = await Role.findByIdAndUpdate(id, data, { new: true });
     // Return 404 if not found
     if (!Roles) return NextResponse.json({ message: "Not found" }, { status: 404 });
+
+    await logAction("ROLE_UPDATE", {
+      roleId: Roles._id,
+      roleName: Roles.role_name,
+      updatedFields: Object.keys(data)
+    });
+
     return NextResponse.json({
       success: true,
       message: "Role updated successfully",
@@ -88,8 +96,20 @@ export async function DELETE(_req: Request, { params }: Params) {
     await connectDB();
     // Extract ID from dynamic route params
     const { id } = await params;
+    // Find role before deletion
+    const role = await Role.findById(id);
+    if (!role) {
+      return NextResponse.json({ message: "Role not found" }, { status: 404 });
+    }
+
     // Delete designation from database
     await Role.findByIdAndDelete(id);
+
+    await logAction("ROLE_DELETE", {
+      roleId: id,
+      roleName: role.role_name
+    });
+
     return NextResponse.json({ message: "Role Deleted successfully" });
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });

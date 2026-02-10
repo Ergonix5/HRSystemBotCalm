@@ -4,6 +4,7 @@ import { Role } from "../../models/role.model";
 import { validateBody } from "../../../lib/validate";
 import { roleCreateSchema } from "../../../validators/role.schema";
 import { paginate } from "../../service/pagination.service";
+import { logAction } from "@/src/lib/logger";
 
 
 export async function GET(req: Request) {
@@ -71,6 +72,12 @@ export async function POST(req: Request) {
 
     // Create new designation in database
     const created = await Role.create(result.data);
+
+    await logAction("ROLE_CREATE", {
+      roleId: created._id,
+      roleName: created.role_name,
+      organizationId: created.organization
+    });
 
     // Return success response with created data
     return NextResponse.json(

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/src/lib/db";
 import { Employee } from "../../../models/employee.model";
 import { LeaveBalance } from "@/src/app/models/leaveBalance.model";
+import { logAction } from "@/src/lib/logger";
 
 // Type for dynamic route params (Next.js 15+ requires Promise)
 type Params = { params: Promise<{ id: string }> };
@@ -9,10 +10,8 @@ type Params = { params: Promise<{ id: string }> };
 /**
  * GET /api/employee/[id] - Fetch single employee by ID
  */
-export async function GET(req: Request, { params }: Params)
-{
-  try
-  {
+export async function GET(req: Request, { params }: Params) {
+  try {
     // Connect to database
     await connectDB();
     // Extract ID from dynamic route params
@@ -21,8 +20,7 @@ export async function GET(req: Request, { params }: Params)
     // Get organizationId from query params
     const { searchParams } = new URL(req.url);
     const organizationId = searchParams.get("organizationId");
-    if (!organizationId)
-    {
+    if (!organizationId) {
       return NextResponse.json({ message: "organizationId is required" }, { status: 400 });
     }
 
@@ -35,8 +33,7 @@ export async function GET(req: Request, { params }: Params)
     // Return 404 if not found
     if (!employee) return NextResponse.json({ message: "Employee not found" }, { status: 404 });
     return NextResponse.json(employee);
-  } catch (err: any)
-  {
+  } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });
   }
 }
@@ -44,10 +41,8 @@ export async function GET(req: Request, { params }: Params)
 /**
  * PUT /api/employee/[id] - Update employee by ID
  */
-export async function PUT(req: Request, { params }: Params)
-{
-  try
-  {
+export async function PUT(req: Request, { params }: Params) {
+  try {
     // Connect to database
     await connectDB();
     // Extract ID from dynamic route params
@@ -58,8 +53,7 @@ export async function PUT(req: Request, { params }: Params)
     // Get organizationId from query params
     const { searchParams } = new URL(req.url);
     const organizationId = searchParams.get("organizationId");
-    if (!organizationId)
-    {
+    if (!organizationId) {
       return NextResponse.json({ message: "organizationId is required" }, { status: 400 });
     }
 
@@ -80,13 +74,19 @@ export async function PUT(req: Request, { params }: Params)
     // Return 404 if not found
     if (!employee) return NextResponse.json({ message: "Employee not found" }, { status: 404 });
 
+    await logAction("EMPLOYEE_UPDATE", {
+      employeeId: employee._id,
+      name: `${employee.first_name} ${employee.last_name}`,
+      updatedFields: Object.keys(data),
+      organizationId: organizationId
+    });
+
     return NextResponse.json({
       success: true,
       message: "Employee updated successfully",
       data: employee,
     });
-  } catch (err: any)
-  {
+  } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });
   }
 }
@@ -94,10 +94,8 @@ export async function PUT(req: Request, { params }: Params)
 /**
  * DELETE /api/employee/[id] - Delete employee by ID
  */
-export async function DELETE(req: Request, { params }: Params)
-{
-  try
-  {
+export async function DELETE(req: Request, { params }: Params) {
+  try {
     // Connect to database
     await connectDB();
     // Extract ID from dynamic route params
@@ -106,8 +104,7 @@ export async function DELETE(req: Request, { params }: Params)
     // Get organizationId from query params
     const { searchParams } = new URL(req.url);
     const organizationId = searchParams.get("organizationId");
-    if (!organizationId)
-    {
+    if (!organizationId) {
       return NextResponse.json({ message: "organizationId is required" }, { status: 400 });
     }
 
@@ -118,9 +115,14 @@ export async function DELETE(req: Request, { params }: Params)
     // Delete leave balances for the employee
     await LeaveBalance.deleteMany({ employee: id });
 
+    await logAction("EMPLOYEE_DELETE", {
+      employeeId: id,
+      name: `${employee.first_name} ${employee.last_name}`,
+      organizationId: organizationId
+    });
+
     return NextResponse.json({ message: "Employee deleted successfully" });
-  } catch (err: any)
-  {
+  } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });
   }
 }

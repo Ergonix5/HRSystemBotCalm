@@ -6,15 +6,13 @@ import { validateBody } from "../../../lib/validate";
 import { organizationCreateSchema } from "../../../validators/organization.schema";
 import { paginate } from "../../service/pagination.service";
 import { createBulkNotifications } from "../../service/notification.service";
-
+import { logAction } from "@/src/lib/logger";
 /**
  * GET /api/Designation - Fetch paginated designations with search
  * Query params: page, limit, q (search query)
  */
-export async function GET(req: Request)
-{
-  try
-  {
+export async function GET(req: Request) {
+  try {
     // Connect to database
     await connectDB();
 
@@ -37,8 +35,7 @@ export async function GET(req: Request)
     });
 
     return NextResponse.json(result, { status: 200 });
-  } catch (error: any)
-  {
+  } catch (error: any) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
@@ -46,10 +43,8 @@ export async function GET(req: Request)
 /**
  * POST /api/Organization - Create new Organizations
  */
-export async function POST(req: Request)
-{
-  try
-  {
+export async function POST(req: Request) {
+  try {
     // Connect to database
     await connectDB();
 
@@ -60,9 +55,15 @@ export async function POST(req: Request)
     // Create new designation in database
     const created = await Organization.create(result.data);
 
+    // Log the action
+    await logAction("ORGANIZATION_CREATE", {
+      organizationId: created._id,
+      name: created.name,
+      status: created.status
+    });
+
     // Send notification to system administrators
-    try
-    {
+    try {
       console.log('Creating organization notification...');
 
       // Find all active employees and populate their roles
@@ -75,8 +76,7 @@ export async function POST(req: Request)
       console.log(`Found ${employees.length} active employees`);
 
       // Filter for admins based on populated role_name
-      const admins = employees.filter((emp: any) =>
-      {
+      const admins = employees.filter((emp: any) => {
         const roleName = emp.role?.role_name;
         return roleName && ['Admin', 'Super Admin', 'HR Manager'].includes(roleName);
       });
@@ -86,43 +86,37 @@ export async function POST(req: Request)
         role: a.role?.role_name
       })));
 
-      if (admins.length > 0)
-      {
+      if (admins.length > 0) {
         console.log('📤 Sending notifications to each admin...');
 
         // Send notification to each admin individually using their organization
-        for (const admin of admins)
-        {
-          try
-          {
+        for (const admin of admins) {
+          try {
             await createBulkNotifications({
               organizationId: (admin as any).organization.toString(),
               recipientIds: [(admin as any)._id.toString()],
               type: 'system',
               title: 'New Organization Created',
-              message: `Organization "${created.title}" has been created successfully`,
+              message: `Organization "${created.name}" has been created successfully`,
               priority: 'medium',
               metadata: {
                 organizationId: created._id.toString(),
-                organizationTitle: created.title,
+                organizationTitle: created.name,
                 action: 'created',
                 actionUrl: '/dashboard/company'
               },
               sendEmail: false
             });
-          } catch (err)
-          {
+          } catch (err) {
             console.error(`Failed to notify admin ${(admin as any)._id}:`, err);
           }
         }
 
         console.log('✅ Notifications sent successfully');
-      } else
-      {
+      } else {
         console.log('⚠️ No admin users found to notify');
       }
-    } catch (notifError)
-    {
+    } catch (notifError) {
       console.error('❌ Failed to send organization creation notification:', notifError);
       // Don't fail the request if notification fails
     }
@@ -136,8 +130,7 @@ export async function POST(req: Request)
       },
       { status: 201 }
     );
-  } catch (err: any)
-  {
+  } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });
   }
 }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { Announcement } from "../../../models/announcement.model";
 import { validateBody } from "@/src/lib/validate";
 import { z } from "zod";
+import { logAction } from "@/src/lib/logger";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -18,18 +19,15 @@ const UpdateAnnouncementSchema = z.object({
 
 // GET /api/announcements/[id] - Get single announcement
 
-export async function GET(req: Request, { params }: Params)
-{
-    try
-    {
+export async function GET(req: Request, { params }: Params) {
+    try {
         await connectDB();
 
         const { id } = await params;
         const { searchParams } = new URL(req.url);
         const organizationId = searchParams.get('organizationId');
 
-        if (!organizationId)
-        {
+        if (!organizationId) {
             return NextResponse.json(
                 { message: 'Organization ID is required' },
                 { status: 400 }
@@ -43,8 +41,7 @@ export async function GET(req: Request, { params }: Params)
             .populate('author', 'first_name last_name email')
             .populate('organization', 'name');
 
-        if (!announcement)
-        {
+        if (!announcement) {
             return NextResponse.json(
                 { message: 'Announcement not found' },
                 { status: 404 }
@@ -60,8 +57,7 @@ export async function GET(req: Request, { params }: Params)
             data: announcement,
         });
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         console.error('Error fetching announcement:', error);
         return NextResponse.json(
             { message: error.message || 'Internal server error' },
@@ -73,10 +69,8 @@ export async function GET(req: Request, { params }: Params)
 
 // PATCH /api/announcements/[id] - Update announcement
 
-export async function PATCH(req: Request, { params }: Params)
-{
-    try
-    {
+export async function PATCH(req: Request, { params }: Params) {
+    try {
         await connectDB();
 
         const { id } = await params;
@@ -91,8 +85,7 @@ export async function PATCH(req: Request, { params }: Params)
             organization: data.organizationId,
         });
 
-        if (!announcement)
-        {
+        if (!announcement) {
             return NextResponse.json(
                 { message: 'Announcement not found' },
                 { status: 404 }
@@ -103,17 +96,14 @@ export async function PATCH(req: Request, { params }: Params)
         if (data.title) announcement.title = data.title;
         if (data.content) announcement.content = data.content;
         if (data.priority) announcement.priority = data.priority;
-        if (data.expiresAt !== undefined)
-        {
+        if (data.expiresAt !== undefined) {
             announcement.expiresAt = data.expiresAt ? new Date(data.expiresAt) : null;
         }
 
         // Handle status change
-        if (data.status && data.status !== announcement.status)
-        {
+        if (data.status && data.status !== announcement.status) {
             announcement.status = data.status;
-            if (data.status === 'published' && !announcement.publishedAt)
-            {
+            if (data.status === 'published' && !announcement.publishedAt) {
                 announcement.publishedAt = new Date();
             }
         }
@@ -130,8 +120,13 @@ export async function PATCH(req: Request, { params }: Params)
             data: updatedAnnouncement,
         });
 
-    } catch (error: any)
-    {
+        await logAction("ANNOUNCEMENT_UPDATE", {
+            announcementId: updatedAnnouncement._id,
+            title: updatedAnnouncement.title,
+            updatedFields: Object.keys(data)
+        });
+
+    } catch (error: any) {
         console.error('Error updating announcement:', error);
         return NextResponse.json(
             { message: error.message || 'Internal server error' },
@@ -143,18 +138,15 @@ export async function PATCH(req: Request, { params }: Params)
 
 // DELETE /api/announcements/[id] - Delete announcement
 
-export async function DELETE(req: Request, { params }: Params)
-{
-    try
-    {
+export async function DELETE(req: Request, { params }: Params) {
+    try {
         await connectDB();
 
         const { id } = await params;
         const { searchParams } = new URL(req.url);
         const organizationId = searchParams.get('organizationId');
 
-        if (!organizationId)
-        {
+        if (!organizationId) {
             return NextResponse.json(
                 { message: 'Organization ID is required' },
                 { status: 400 }
@@ -166,21 +158,25 @@ export async function DELETE(req: Request, { params }: Params)
             organization: organizationId,
         });
 
-        if (!announcement)
-        {
+        if (!announcement) {
             return NextResponse.json(
                 { message: 'Announcement not found' },
                 { status: 404 }
             );
         }
 
+        await logAction("ANNOUNCEMENT_DELETE", {
+            announcementId: id,
+            title: announcement.title,
+            organizationId: organizationId
+        });
+
         return NextResponse.json({
             success: true,
             message: 'Announcement deleted successfully',
         });
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         console.error('Error deleting announcement:', error);
         return NextResponse.json(
             { message: error.message || 'Internal server error' },

@@ -5,6 +5,7 @@ import { Employee } from "../../models/employee.model";
 import { validateBody } from "@/src/lib/validate";
 import { z } from "zod";
 import { createBulkNotifications } from "../../service/notification.service";
+import { logAction } from "@/src/lib/logger";
 
 // Validation schema for creating announcements
 const AnnouncementSchema = z.object({
@@ -25,10 +26,8 @@ const AnnouncementSchema = z.object({
 // POST /api/announcements - Create new announcement
 // Body: { organizationId, authorId, title, content, priority, target, status, sendNotification }
 
-export async function POST(req: Request)
-{
-    try
-    {
+export async function POST(req: Request) {
+    try {
         await connectDB();
 
         const result = await validateBody(req, AnnouncementSchema);
@@ -38,8 +37,7 @@ export async function POST(req: Request)
 
         // Verify author exists
         const author = await Employee.findById(data.authorId);
-        if (!author || author.organization.toString() !== data.organizationId)
-        {
+        if (!author || author.organization.toString() !== data.organizationId) {
             return NextResponse.json(
                 { message: 'Author not found or does not belong to organization' },
                 { status: 400 }
@@ -62,22 +60,18 @@ export async function POST(req: Request)
         });
 
         // Send notifications if published and notification requested
-        if (data.status === 'published' && data.sendNotification)
-        {
-            try
-            {
+        if (data.status === 'published' && data.sendNotification) {
+            try {
                 let recipientIds: string[] = [];
 
-                if (data.target === 'all')
-                {
+                if (data.target === 'all') {
                     // Get all active employees in organization
                     const employees = await Employee.find({
                         organization: data.organizationId,
                         employment_status: 'Active',
                     }).select('_id');
                     recipientIds = employees.map(e => e._id.toString());
-                } else if (data.target === 'department' && data.targetDepartments && data.targetDepartments.length > 0)
-                {
+                } else if (data.target === 'department' && data.targetDepartments && data.targetDepartments.length > 0) {
                     // Get employees in specific departments
                     const employees = await Employee.find({
                         organization: data.organizationId,
@@ -85,14 +79,12 @@ export async function POST(req: Request)
                         employment_status: 'Active',
                     }).select('_id');
                     recipientIds = employees.map(e => e._id.toString());
-                } else if (data.target === 'specific' && data.targetEmployees && data.targetEmployees.length > 0)
-                {
+                } else if (data.target === 'specific' && data.targetEmployees && data.targetEmployees.length > 0) {
                     // Use specific employee list
                     recipientIds = data.targetEmployees;
                 }
 
-                if (recipientIds.length > 0)
-                {
+                if (recipientIds.length > 0) {
                     // Determine notification priority based on announcement priority
                     const notificationPriority = data.priority === 'urgent' ? 'high' :
                         data.priority === 'high' ? 'high' : 'medium';
@@ -115,8 +107,7 @@ export async function POST(req: Request)
                     announcement.notificationSent = true;
                     await announcement.save();
                 }
-            } catch (notificationError)
-            {
+            } catch (notificationError) {
                 console.error('Failed to send announcement notifications:', notificationError);
             }
         }
@@ -125,14 +116,19 @@ export async function POST(req: Request)
             .populate('author', 'first_name last_name email')
             .populate('organization', 'name');
 
+        await logAction("ANNOUNCEMENT_CREATE", {
+            announcementId: announcement._id,
+            title: announcement.title,
+            authorId: announcement.author
+        });
+
         return NextResponse.json({
             success: true,
             message: 'Announcement created successfully',
             data: populatedAnnouncement,
         }, { status: 201 });
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         console.error('Error creating announcement:', error);
         return NextResponse.json(
             { message: error.message || 'Internal server error' },
@@ -145,10 +141,8 @@ export async function POST(req: Request)
 // GET /api/announcements - Fetch announcements
 // Query params: organizationId, status, page, limit
 
-export async function GET(req: Request)
-{
-    try
-    {
+export async function GET(req: Request) {
+    try {
         await connectDB();
 
         const { searchParams } = new URL(req.url);
@@ -157,8 +151,7 @@ export async function GET(req: Request)
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '20');
 
-        if (!organizationId)
-        {
+        if (!organizationId) {
             return NextResponse.json(
                 { message: 'Organization ID is required' },
                 { status: 400 }
@@ -167,8 +160,7 @@ export async function GET(req: Request)
 
         const filter: any = { organization: organizationId };
 
-        if (status && status !== 'all')
-        {
+        if (status && status !== 'all') {
             filter.status = status;
         }
 
@@ -202,8 +194,7 @@ export async function GET(req: Request)
             }
         });
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         console.error('Error fetching announcements:', error);
         return NextResponse.json(
             { message: error.message || 'Internal server error' },

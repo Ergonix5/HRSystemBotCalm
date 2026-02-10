@@ -15,23 +15,21 @@ import { welcomeTemplate } from "../../constant/email.template";
 import { LeaveType } from "../../models/leaveType.model";
 import { initializeLeaveBalance } from "../../service/leaveBalance.service";
 import { createBulkNotifications } from "../../service/notification.service";
+import { logAction } from "@/src/lib/logger";
 
 /**
  * GET /api/Employee - Fetch paginated employees with search
  * Query params: organizationId, page, limit, q
  */
-export async function GET(req: Request)
-{
-    try
-    {
+export async function GET(req: Request) {
+    try {
         await connectDB();
 
 
         const { searchParams } = new URL(req.url);
 
         const organizationId = (searchParams.get("organizationId") ?? "").trim();
-        if (!organizationId)
-        {
+        if (!organizationId) {
             return NextResponse.json(
                 { message: "organizationId is required" },
                 { status: 400 }
@@ -66,8 +64,7 @@ export async function GET(req: Request)
         result.data = populatedData;
 
         return NextResponse.json(result, { status: 200 });
-    } catch (error: any)
-    {
+    } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
@@ -80,10 +77,8 @@ export async function GET(req: Request)
  * POST /api/Employee - Create new employee
  * Body: { organization, designation, role, first_name, last_name, email, password, ... }
  */
-export async function POST(req: Request)
-{
-    try
-    {
+export async function POST(req: Request) {
+    try {
         await connectDB();
 
         const result = await validateBody(req, employeeCreateSchema);
@@ -96,8 +91,7 @@ export async function POST(req: Request)
             _id: data.role,
             organization: data.organization,
         });
-        if (!role)
-        {
+        if (!role) {
             return NextResponse.json(
                 { message: "Invalid role for this organization" },
                 { status: 400 }
@@ -106,8 +100,7 @@ export async function POST(req: Request)
 
         //  validate designation exists (GLOBAL)
         const designation = await Designation.findById(data.designation);
-        if (!designation)
-        {
+        if (!designation) {
             return NextResponse.json(
                 { message: "Invalid designation" },
                 { status: 400 }
@@ -140,14 +133,12 @@ export async function POST(req: Request)
         });
 
         // Initialize leave balances for the new employee
-        try
-        {
+        try {
             const leaveTypes = await LeaveType.find({
                 organization: data.organization
             });
 
-            for (const leaveType of leaveTypes)
-            {
+            for (const leaveType of leaveTypes) {
                 await initializeLeaveBalance(
                     created._id,
                     leaveType._id,
@@ -155,8 +146,7 @@ export async function POST(req: Request)
                     new Date().getFullYear()
                 );
             }
-        } catch (leaveBalanceError)
-        {
+        } catch (leaveBalanceError) {
             console.error("Failed to initialize leave balances:", leaveBalanceError);
         }
 
@@ -166,8 +156,7 @@ export async function POST(req: Request)
             .populate("role", "role_name role_id");
 
         // Send welcome email with credentials
-        try
-        {
+        try {
             const { to, subject, html } = welcomeTemplate(
                 `${data.first_name} ${data.last_name}`,
                 data.email,
@@ -175,14 +164,12 @@ export async function POST(req: Request)
             );
             await sendEmail({ to, subject, html });
             console.log("Welcome email sent to:", data.email);
-        } catch (emailError)
-        {
+        } catch (emailError) {
             console.error("Failed to send welcome email:", emailError);
         }
 
         // Send notification to system administrators
-        try
-        {
+        try {
             console.log('Creating employee notification...');
 
             // Find all active employees and populate their roles
@@ -195,8 +182,7 @@ export async function POST(req: Request)
             console.log(`Found ${employees.length} active employees`);
 
             // Filter for admins based on populated role_name
-            const admins = employees.filter((emp: any) =>
-            {
+            const admins = employees.filter((emp: any) => {
                 const roleName = emp.role?.role_name;
                 return roleName && ['Admin', 'Super Admin', 'HR Manager'].includes(roleName);
             });
@@ -206,15 +192,12 @@ export async function POST(req: Request)
                 role: a.role?.role_name
             })));
 
-            if (admins.length > 0)
-            {
+            if (admins.length > 0) {
                 console.log('Sending notifications to each admin...');
 
                 // Send notification to each admin individually using their organization
-                for (const admin of admins)
-                {
-                    try
-                    {
+                for (const admin of admins) {
+                    try {
                         await createBulkNotifications({
                             organizationId: (admin as any).organization.toString(),
                             recipientIds: [(admin as any)._id.toString()],
@@ -230,22 +213,28 @@ export async function POST(req: Request)
                             },
                             sendEmail: false
                         });
-                    } catch (err)
-                    {
+                    } catch (err) {
                         console.error(`Failed to notify admin ${(admin as any)._id}:`, err);
                     }
                 }
 
                 console.log('Notifications sent successfully');
-            } else
-            {
+            } else {
                 console.log('No admin users found to notify');
             }
-        } catch (notifError)
-        {
+        } catch (notifError) {
             console.error('Failed to send employee creation notification:', notifError);
             // Don't fail the request if notification fails
         }
+
+        await logAction("EMPLOYEE_CREATE", {
+            employeeId: safe._id,
+            name: `${safe.first_name} ${safe.last_name}`,
+            email: safe.email,
+            roleId: safe.role,
+            designationId: safe.designation,
+            organizationId: safe.organization
+        });
 
         return NextResponse.json(
             {
@@ -255,10 +244,8 @@ export async function POST(req: Request)
             },
             { status: 201 }
         );
-    } catch (err: any)
-    {
-        if (err?.code === 11000)
-        {
+    } catch (err: any) {
+        if (err?.code === 11000) {
             return NextResponse.json(
                 { message: "Email already exists in this organization" },
                 { status: 409 }

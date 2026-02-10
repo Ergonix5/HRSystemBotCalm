@@ -10,15 +10,14 @@ import { LeaveBalance } from "../../models/leaveBalance.model";
 import { paginate } from "../../service/pagination.service";
 import { checkLeaveBalance } from "../../service/leaveBalance.service";
 import { createNotification, NotificationTemplates } from "../../service/notification.service";
+import { logAction } from "@/src/lib/logger";
 
 
 
 
 // POST: api/LeaveRequests
-export async function POST(req: Request)
-{
-    try
-    {
+export async function POST(req: Request) {
+    try {
         await connectDB();
 
         const result = await validateBody(req, LeaveRequestSchema);
@@ -32,8 +31,7 @@ export async function POST(req: Request)
             organization: data.organization
         });
 
-        if (!employee)
-        {
+        if (!employee) {
             return NextResponse.json(
                 { message: "Employee not found in the organization" },
                 { status: 400 }
@@ -46,8 +44,7 @@ export async function POST(req: Request)
             organization: data.organization
         });
 
-        if (!leaveType)
-        {
+        if (!leaveType) {
             return NextResponse.json(
                 { message: "Leave Type not found in the organization" },
                 { status: 400 }
@@ -72,8 +69,7 @@ export async function POST(req: Request)
             ]
         });
 
-        if (overlapping)
-        {
+        if (overlapping) {
             return NextResponse.json(
                 {
                     message: "Leave Request overlaps with an existing request",
@@ -95,8 +91,7 @@ export async function POST(req: Request)
             total_days
         );
 
-        if (!balanceCheck.sufficient)
-        {
+        if (!balanceCheck.sufficient) {
             return NextResponse.json(
                 {
                     message: balanceCheck.message,
@@ -159,8 +154,7 @@ export async function POST(req: Request)
             .populate("organization", "name")
 
         // Send notification to HR/Manager about new leave request
-        try
-        {
+        try {
             const employeeData = populatedLeaveRequest.employee as any;
             const leaveTypeData = populatedLeaveRequest.leave_type as any;
 
@@ -181,8 +175,7 @@ export async function POST(req: Request)
             }).select('_id');
 
             // Send notification to each HR/Manager
-            for (const hrManager of hrManagers)
-            {
+            for (const hrManager of hrManagers) {
                 await createNotification({
                     organizationId: data.organization,
                     recipientId: hrManager._id.toString(),
@@ -198,11 +191,18 @@ export async function POST(req: Request)
                     sendEmail: true,
                 });
             }
-        } catch (notificationError)
-        {
+        } catch (notificationError) {
             // Log error but don't fail the request
             console.error('Failed to send leave request notification:', notificationError);
         }
+
+        await logAction("LEAVE_REQUEST_CREATE", {
+            leaveRequestId: leaveRequest._id,
+            employeeId: data.employee,
+            leaveTypeId: data.leave_type,
+            startDate: start,
+            endDate: end
+        });
 
         return NextResponse.json(
             {
@@ -213,8 +213,7 @@ export async function POST(req: Request)
             { status: 201 }
         );
 
-    } catch (error)
-    {
+    } catch (error) {
         console.error('Error creating leave request:', error);
         return NextResponse.json(
             { message: error instanceof Error ? error.message : 'Internal server error' },
@@ -232,10 +231,8 @@ export async function POST(req: Request)
 //  status (filter by status: pending, approved, rejected, cancelled)
 //  startDate, endDate (filter by date range)
 
-export async function GET(req: Request)
-{
-    try
-    {
+export async function GET(req: Request) {
+    try {
         await connectDB();
 
         const { searchParams } = new URL(req.url);
@@ -259,24 +256,20 @@ export async function GET(req: Request)
 
         if (employeeId) filter.employee = employeeId;
 
-        if (status && ["pending", "approved", "rejected", "cancelled"].includes(status))
-        {
+        if (status && ["pending", "approved", "rejected", "cancelled"].includes(status)) {
             filter.status = status;
         }
 
-        if (startDate || endDate)
-        {
+        if (startDate || endDate) {
             filter.$and = filter.$and || [];
 
-            if (startDate)
-            {
+            if (startDate) {
                 filter.$and.push({
                     end_date: { $gte: new Date(startDate) }
                 });
             }
 
-            if (endDate)
-            {
+            if (endDate) {
                 filter.$and.push({
                     start_date: { $lte: new Date(endDate) }
                 });
@@ -308,8 +301,7 @@ export async function GET(req: Request)
 
         return NextResponse.json(result, { status: 200 });
 
-    } catch (error)
-    {
+    } catch (error) {
         console.error('Error fetching leave requests:', error);
         return NextResponse.json(
             { message: error instanceof Error ? error.message : 'Internal server error' },

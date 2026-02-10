@@ -6,6 +6,7 @@ import { connectDB } from "@/src/lib/db"; // your connectDB
 import { Employee } from "@/src/app/models/employee.model";
 import { signAccessToken, signRefreshToken } from "@/src/lib/jwt";
 import { setAuthCookies } from "@/src/lib/auth-cookies";
+import { logAction } from "@/src/lib/logger";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
       JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET ? 'Set' : 'Not set',
       MONGODB_URI: process.env.MONGODB_URI ? 'Set' : 'Not set'
     });
-    
+
     await connectDB();
     console.log("DB connected");
 
@@ -34,19 +35,19 @@ export async function POST(req: Request) {
     const user = await Employee.findOne({ email }).select("+hash_password").lean();
     console.log("User query completed", user ? "User found" : "User not found");
 
-    
+
     if (!user) {
       return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
     }
 
     const ok = await bcrypt.compare(password, user.hash_password);
     console.log("Password comparison completed", ok ? "Match" : "No match");
-    
+
     if (!ok) {
       return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
     }
 
-   const payload = { sub: String(user._id), orgId: String(user.organization), role: String(user.role) };
+    const payload = { sub: String(user._id), first_name: String(user.first_name), last_name: String(user.last_name), orgId: String(user.organization), role: String(user.role) };
 
 
     console.log("Creating tokens...");
@@ -57,8 +58,11 @@ export async function POST(req: Request) {
     await setAuthCookies(accessToken, refreshToken);
     console.log("Cookies set, login successful");
 
+    // Log the successful login
+    await logAction("USER_LOGIN", { method: "email" }, payload);
+
     return NextResponse.json(
-      { message: "Logged in", user: { id: String(user._id), email: user.email, role: user.role  } },
+      { message: "Logged in", user: { id: String(user._id), email: user.email, role: user.role } },
       { status: 200 }
     );
   } catch (err: any) {
@@ -67,11 +71,11 @@ export async function POST(req: Request) {
       stack: err.stack,
       name: err.name
     });
-    
+
     // Return a more specific error message for debugging
     const errorMessage = err.message || "Internal server error";
-    return NextResponse.json({ 
-      message: "Login failed", 
+    return NextResponse.json({
+      message: "Login failed",
       error: errorMessage,
       ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     }, { status: 500 });
