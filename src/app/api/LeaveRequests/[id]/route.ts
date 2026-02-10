@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 import { success } from "zod";
 import { createNotification, NotificationTemplates } from "@/src/app/service/notification.service";
 import { logAction } from "@/src/lib/logger";
+import { requirePermission } from "@/src/lib/permissions";
 
 
 
@@ -25,8 +26,23 @@ type Params = { params: Promise<{ id: string }> };
  * Query params: organizationId (for multi-tenant)
  */
 
-export async function GET(req: Request, { params }: Params) {
-    try {
+export async function GET(req: Request, { params }: Params)
+{
+    // Check permission
+    const permCheck = await requirePermission(undefined, [
+        "leave.view",
+        "leave.view_team",
+        "leave.view_all"
+    ]);
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
+    try
+    {
         await connectDB();
 
         const { id } = await params;
@@ -72,8 +88,19 @@ export async function GET(req: Request, { params }: Params) {
  * PUT /api/LeaveRequests/[id] - Update leave request (only for pending status)
  * Body: { start_date?, end_date?, reason? }
  */
-export async function PUT(req: Request, { params }: Params) {
-    try {
+export async function PUT(req: Request, { params }: Params)
+{
+    // Check permission: LEAVE_EDIT
+    const permCheck = await requirePermission("leave.edit");
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
+    try
+    {
         await connectDB();
 
         const { id } = await params;
@@ -86,6 +113,14 @@ export async function PUT(req: Request, { params }: Params) {
                 { message: "Leave request not found" },
                 { status: 404 }
             )
+        }
+
+        // Security: Users can only edit their own requests unless they have admin permissions
+        if (existingRequest.employee.toString() !== user.id && !user.permissions.includes("leave.view_all")) {
+            return NextResponse.json(
+                { message: "You can only edit your own leave requests" },
+                { status: 403 }
+            );
         }
 
         // Only pending requests can be updated
@@ -218,8 +253,19 @@ export async function PUT(req: Request, { params }: Params) {
  * DELETE /api/LeaveRequests/[id] - Cancel leave request (soft delete)
  * Sets status to 'cancelled' instead of actually deleting
  */
-export async function DELETE(req: Request, { params }: Params) {
-    try {
+export async function DELETE(req: Request, { params }: Params)
+{
+    // Check permission: LEAVE_DELETE
+    const permCheck = await requirePermission("leave.delete");
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
+    try
+    {
         await connectDB();
 
         const { id } = await params;
@@ -232,6 +278,14 @@ export async function DELETE(req: Request, { params }: Params) {
                 { message: 'Leave request not found' },
                 { status: 404 }
             )
+        }
+
+        // Security: Users can only delete their own requests unless they have admin permissions
+        if (leaveRequest.employee.toString() !== user.id && !user.permissions.includes("leave.view_all")) {
+            return NextResponse.json(
+                { message: "You can only delete your own leave requests" },
+                { status: 403 }
+            );
         }
 
         // Check if request can be cancelled
@@ -316,8 +370,19 @@ export async function DELETE(req: Request, { params }: Params) {
  * PATCH /api/LeaveRequests/[id] - Update leave request status (approve/reject)
  * Body: { status: "Approved" | "Rejected" | "Cancelled", approver_employee_id: ObjectId }
  */
-export async function PATCH(req: Request, { params }: Params) {
-    try {
+export async function PATCH(req: Request, { params }: Params)
+{
+    // Check permission: LEAVE_APPROVE
+    const permCheck = await requirePermission("leave.approve");
+
+    if (!permCheck.authorized) {
+        return permCheck.error!;
+    }
+
+    const user = permCheck.user!;
+
+    try
+    {
         await connectDB();
 
         const { id } = await params;

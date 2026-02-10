@@ -1,54 +1,20 @@
 "use client"
 
-import { Company } from "../../app/types/types"
 import { DynamicForm } from "./reusableform"
-import { type FormField } from '@/src/app/types/types';
-import { useFormValidation } from '../../hooks/useFormValidation'
-import { organizationCreateSchema } from '../../validators/organization.schema'
-import { useState } from "react";
+import {organizationCreateSchema}  from "../../validators/organization.schema"
+import { FormField } from "@/src/app/types/types"
+import { Building2 } from "lucide-react"
 
-interface CompanyFormProps {
-  company?: Company
-  onSubmit: (data: any) => void
-  onClose?: () => void
-}
-
-export function CompanyForm({ company, onSubmit, onClose }: CompanyFormProps) {
-  const { errors, validate } = useFormValidation(organizationCreateSchema)
-    const [loading, setLoading] = useState(true)
+export function AddCompanyForm({ onSubmit, onClose }: any) {
   const fields: FormField[] = [
-    {
-      id: "organization-id",
-      name: "organization_id",
-      label: "Organization ID",
-      placeholder: "ORG_001",
-      type: "input",
-      required: true,
-      defaultValue: company?.company_id,
-    },
-    {
-      id: "organization-name",
-      name: "name",
-      label: "Organization Name",
-      placeholder: "Your organization name",
-      type: "input",
-      required: true,
-      defaultValue: company?.company_name,
-    },
-    {
-      id: "organization-description",
-      name: "description",
-      label: "Description",
-      placeholder: "Organization description",
-      type: "textarea",
-      defaultValue: company?.company_description,
-    },
+    { id: "org_id", name: "organization_id", placeholder: "e.g. ORG-001", label: "Organization ID", type: "input" },
+    { id: "name", name: "name", placeholder: "e.g. Acme Corp Industries", label: "Company Name", type: "input" },
+    { id: "desc", name: "description", placeholder: "Enter a brief overview...",label: "Description", type: "textarea" },
     {
       id: "status",
       name: "status",
       label: "Status",
       type: "select",
-      defaultValue: company?.status || "Active",
       options: [
         { value: "Active", label: "Active" },
         { value: "Inactive", label: "Inactive" },
@@ -56,21 +22,16 @@ export function CompanyForm({ company, onSubmit, onClose }: CompanyFormProps) {
     },
   ]
 
-  const handleSubmit = (data: any) => {
-    if (validate(data)) {
-      onSubmit(data)
-    }
-  }
-
-
   return (
     <DynamicForm
-      title={company ? "Edit Organization" : "Add New Organization"}
-      description="Enter organization details below."
+      title="Add Company"
+      description="Enter company details"
+      icon ={<Building2 size={20} />}
       fields={fields}
-      onSubmit={handleSubmit}
+      schema={organizationCreateSchema}
+      onSubmit={onSubmit}
       onClose={onClose}
-      errors={errors}
+      gridCols={2}
     />
   )
 }

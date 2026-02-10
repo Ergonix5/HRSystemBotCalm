@@ -41,11 +41,14 @@ export const availablePermissions: Permission[] = [
   { id: 'designations.delete', name: 'Delete Designations', description: 'Remove designations', category: 'Designation' },
 
   // Leave Management Permissions
-{ id: 'leave.view', name: 'View Leave Requests', description: 'View leave applications', category: 'Leave' },
-{ id: 'leave.create', name: 'Create Leave Requests', description: 'Submit new leave requests', category: 'Leave' },
-{ id: 'leave.edit', name: 'Edit Leave Requests', description: 'Modify existing leave requests', category: 'Leave' },
-{ id: 'leave.delete', name: 'Delete Leave Requests', description: 'Remove leave requests', category: 'Leave' },
-{ id: 'leave.approve', name: 'Approve Leave', description: 'Approve or reject leave requests', category: 'Leave' },
+  { id: 'leave.view', name: 'View Leave Requests', description: 'View own leave applications', category: 'Leave' },
+  { id: 'leave.create', name: 'Create Leave Requests', description: 'Submit new leave requests', category: 'Leave' },
+  { id: 'leave.edit', name: 'Edit Leave Requests', description: 'Modify own pending leave requests', category: 'Leave' },
+  { id: 'leave.delete', name: 'Delete Leave Requests', description: 'Cancel own leave requests', category: 'Leave' },
+  { id: 'leave.approve', name: 'Approve Leave', description: 'Approve or reject leave requests from others', category: 'Leave' },
+  { id: 'leave.view_all', name: 'View All Leave Requests', description: 'View all leave requests across organization (HR/Admin)', category: 'Leave' },
+  { id: 'leave.view_team', name: 'View Team Leave Requests', description: 'View leave requests from team members (Manager)', category: 'Leave' },
+  { id: 'leave.manage_types', name: 'Manage Leave Types', description: 'Create, edit, and delete leave types (HR/Admin)', category: 'Leave' },
 
 // Individual Profile 
 { id: 'profile.view', name: 'View Profile', description: 'View personal profile information', category: 'Profile' },

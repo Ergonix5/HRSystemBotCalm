@@ -7,7 +7,7 @@ import { type Employee } from "../../types/types"
 import { Button } from "../../../components/ui/button"
 import { Plus } from "lucide-react"
 import { EmployeeDetailsModal } from "../../../components/ViewDetails/employees-details"
-import { EmployeeForm } from "../../../components/forms/addEmployee"
+import { AddEmployeeForm } from "../../../components/forms/addEmployee"
 import { createEmployee, updateEmployee, deleteEmployee } from "../../../services/employee.service"
 import { EditEmployeeForm } from "../../../components/forms/editEmployeeForm"
 import { PermissionCheck } from "../../../components/PermissionCheck";
@@ -118,8 +118,8 @@ export function EmployeeTable({ employees }: Props) {
       {/* add new employee  */}
       {isAddOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <EmployeeForm
-            onSubmit={async (data) => {
+          <AddEmployeeForm
+            onSubmit={async (data: Employee) => {
               try {
                 await createEmployee(data)
                 setIsAddOpen(false)

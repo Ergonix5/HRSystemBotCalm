@@ -9,8 +9,7 @@ import { Plus } from "lucide-react"
 import { createDesignation, updateDesignation, deleteDesignation } from "../../../services/designation.service"
 import { EditDesignationForm } from "@/src/components/forms/editDesignationForm"
 import { DesignationDetailsModal } from "../../../components/ViewDetails/designation-details"
-import { DesignationForm } from "../../../components/forms/addDesignation"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { AddDesignationForm } from "../../../components/forms/addDesignation"
 import { PermissionCheck } from "../../../components/PermissionCheck";
 
 type Props = {
@@ -105,8 +104,8 @@ export function DesignationTable({ designations }: Props) {
       {/* adding a new designation */}
       {isAddOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <DesignationForm
-            onSubmit={async (data) => {
+          <AddDesignationForm
+            onSubmit={async (data: Designation) => {
               try {
                 await createDesignation(data)
                 setIsAddOpen(false)
