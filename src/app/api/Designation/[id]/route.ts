@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/src/lib/db";
 import { Designation } from "../../../models/designations.model";
+import { logAction } from "@/src/lib/logger";
 
 // Type for dynamic route params (Next.js 15+ requires Promise)
 // Type for dynamic route params (Next.js 15+ requires Promise)
@@ -40,6 +41,13 @@ export async function PUT(req: Request, { params }: Params) {
     const Designations = await Designation.findByIdAndUpdate(id, data, { new: true });
     // Return 404 if not found
     if (!Designations) return NextResponse.json({ message: "Not found" }, { status: 404 });
+
+    await logAction("DESIGNATION_UPDATE", {
+      designationId: Designations._id,
+      title: Designations.title,
+      status: Designations.status
+    });
+
     return NextResponse.json({
       success: true,
       message: "Designation updated successfully",
@@ -59,8 +67,21 @@ export async function DELETE(_req: Request, { params }: Params) {
     await connectDB();
     // Extract ID from dynamic route params
     const { id } = await params;
+    // Find designation before deletion to log details
+    const designation = await Designation.findById(id);
+    if (!designation) {
+      return NextResponse.json({ message: "Designation not found" }, { status: 404 });
+    }
+
     // Delete designation from database
     await Designation.findByIdAndDelete(id);
+
+    await logAction("DESIGNATION_DELETE", {
+      designationId: id,
+      title: designation.title,
+      status: designation.status
+    });
+
     return NextResponse.json({ message: "Designation Deleted successfully" });
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });

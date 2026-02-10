@@ -4,6 +4,7 @@ import { Candidate } from "../../models/candidate.model";
 import { validateBody } from "../../../lib/validate";
 import { candidateCreateSchema } from "../../../validators/candidate.schema";
 import { paginate } from "../../service/pagination.service";
+import { logAction } from "@/src/lib/logger";
 
 export async function GET(req: Request) {
   try {
@@ -49,15 +50,21 @@ export async function POST(req: Request) {
 
     // Create new designation in database
     const created = await Candidate.create(result.data);
-    
+
+    await logAction("CANDIDATE_CREATE", {
+      candidateId: created._id,
+      name: `${created.first_name} ${created.last_name}`,
+      email: created.email
+    });
+
     // Return success response with created data
     return NextResponse.json(
       {
-        success:true,
+        success: true,
         message: "Candidate created successfully",
         data: created,
       },
-      {status: 201}
+      { status: 201 }
     );
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 400 });

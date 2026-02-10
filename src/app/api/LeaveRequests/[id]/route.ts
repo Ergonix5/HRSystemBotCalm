@@ -9,6 +9,7 @@ import { leaveRequestStatusSchema, leaveRequestUpdateSchema } from "@/src/valida
 import { NextResponse } from "next/server";
 import { success } from "zod";
 import { createNotification, NotificationTemplates } from "@/src/app/service/notification.service";
+import { logAction } from "@/src/lib/logger";
 import { requirePermission } from "@/src/lib/permissions";
 
 
@@ -49,8 +50,7 @@ export async function GET(req: Request, { params }: Params)
         const organizationId = searchParams.get('organizationId')?.trim();
 
         const filter: any = { _id: id };
-        if (organizationId)
-        {
+        if (organizationId) {
             filter.organization = organizationId;
         }
 
@@ -59,8 +59,7 @@ export async function GET(req: Request, { params }: Params)
             .populate('leave_type', 'leave_type_id name decription')
             .populate('organization', 'name');
 
-        if (!leaveRequest)
-        {
+        if (!leaveRequest) {
             return NextResponse.json(
                 { message: "Leave request not found" },
                 { status: 404 }
@@ -75,8 +74,7 @@ export async function GET(req: Request, { params }: Params)
             { status: 200 }
         );
 
-    } catch (err: any)
-    {
+    } catch (err: any) {
         console.error('Error fetching leave request:', err);
         return NextResponse.json(
             { message: err instanceof Error ? err.message : 'Internal server error' },
@@ -110,8 +108,7 @@ export async function PUT(req: Request, { params }: Params)
         // Find existing leave request
         const existingRequest = await LeaveRequest.findById(id);
 
-        if (!existingRequest)
-        {
+        if (!existingRequest) {
             return NextResponse.json(
                 { message: "Leave request not found" },
                 { status: 404 }
@@ -127,8 +124,7 @@ export async function PUT(req: Request, { params }: Params)
         }
 
         // Only pending requests can be updated
-        if (existingRequest.status !== 'pending')
-        {
+        if (existingRequest.status !== 'pending') {
             return NextResponse.json(
                 {
                     message: "Only pending leave request can be updated",
@@ -148,8 +144,7 @@ export async function PUT(req: Request, { params }: Params)
         const updateData: any = {};
 
         // If dates are being updated, validate them
-        if (data.start_date || data.end_date)
-        {
+        if (data.start_date || data.end_date) {
             const start = data.start_date ? new Date(data.start_date) : existingRequest.start_date;
             const end = data.end_date ? new Date(data.end_date) : existingRequest.end_date;
 
@@ -170,8 +165,7 @@ export async function PUT(req: Request, { params }: Params)
                 ]
             })
 
-            if (overlapping)
-            {
+            if (overlapping) {
                 return NextResponse.json(
                     {
                         message: 'Updated dates overlapping with another leave request',
@@ -194,16 +188,14 @@ export async function PUT(req: Request, { params }: Params)
                 year: currentYear
             });
 
-            if (!leaveBalance)
-            {
+            if (!leaveBalance) {
                 return NextResponse.json(
                     { message: "Leave balance not found for the employee and leave type" },
                     { status: 400 }
                 )
             }
 
-            if (leaveBalance.remaining_days < total_days)
-            {
+            if (leaveBalance.remaining_days < total_days) {
                 return NextResponse.json(
                     {
                         message: 'Insufficient leave balance for the updated leave request',
@@ -221,8 +213,7 @@ export async function PUT(req: Request, { params }: Params)
         }
 
         // Update reason if provided
-        if (data.reason !== undefined)
-        {
+        if (data.reason !== undefined) {
             updateData.reason = data.reason;
         }
 
@@ -236,6 +227,11 @@ export async function PUT(req: Request, { params }: Params)
             .populate('leave_type', 'leave_type_id name description')
             .populate('organization', 'name');
 
+        await logAction("LEAVE_REQUEST_UPDATE", {
+            leaveRequestId: updatedRequest._id,
+            updatedFields: Object.keys(updateData)
+        });
+
         return NextResponse.json({
             success: true,
             message: "Leave request updated successfully",
@@ -243,8 +239,7 @@ export async function PUT(req: Request, { params }: Params)
         })
 
 
-    } catch (err: any)
-    {
+    } catch (err: any) {
         console.error('Error updating leave request:', err);
         return NextResponse.json(
             { message: err instanceof Error ? err.message : 'Internal server error' },
@@ -278,8 +273,7 @@ export async function DELETE(req: Request, { params }: Params)
         // Find the leave request
         const leaveRequest = await LeaveRequest.findById(id);
 
-        if (!leaveRequest)
-        {
+        if (!leaveRequest) {
             return NextResponse.json(
                 { message: 'Leave request not found' },
                 { status: 404 }
@@ -295,8 +289,7 @@ export async function DELETE(req: Request, { params }: Params)
         }
 
         // Check if request can be cancelled
-        if (leaveRequest.status !== 'cancelled')
-        {
+        if (leaveRequest.status !== 'cancelled') {
             return NextResponse.json(
                 { message: 'Leave request already cancelled' },
                 { status: 400 }
@@ -304,8 +297,7 @@ export async function DELETE(req: Request, { params }: Params)
         }
 
         // If approved, restore leave blance
-        if (leaveRequest.status === 'approved')
-        {
+        if (leaveRequest.status === 'approved') {
             const currentYear = new Date().getFullYear();
             await restoreLeaveBalance(
                 leaveRequest.employee,
@@ -325,8 +317,7 @@ export async function DELETE(req: Request, { params }: Params)
             .populate('leave_type', 'leave_type_id name description');
 
         // Send notification to HR/Manager about cancellation
-        try
-        {
+        try {
             const employeeData = populatedRequest.employee as any;
             const leaveTypeData = populatedRequest.leave_type as any;
 
@@ -335,8 +326,7 @@ export async function DELETE(req: Request, { params }: Params)
                 organization: leaveRequest.organization,
             }).select('_id');
 
-            for (const hrManager of hrManagers)
-            {
+            for (const hrManager of hrManagers) {
                 await createNotification({
                     organizationId: leaveRequest.organization.toString(),
                     recipientId: hrManager._id.toString(),
@@ -352,18 +342,21 @@ export async function DELETE(req: Request, { params }: Params)
                     sendEmail: false,
                 });
             }
-        } catch (notificationError)
-        {
+        } catch (notificationError) {
             console.error('Failed to send cancellation notification:', notificationError);
         }
+
+        await logAction("LEAVE_REQUEST_CANCEL", {
+            leaveRequestId: id,
+            status: "cancelled"
+        });
 
         return NextResponse.json({
             success: true,
             message: "Leave request cancelled successfully",
             data: populatedRequest
         });
-    } catch (err: any)
-    {
+    } catch (err: any) {
         console.error('Error cancelling leave request:', err);
         return NextResponse.json(
             { message: err.message || 'Internal server error' },
@@ -403,8 +396,7 @@ export async function PATCH(req: Request, { params }: Params)
         // Find exsisting leave request
         const leaveRequest = await LeaveRequest.findById(id);
 
-        if (!leaveRequest)
-        {
+        if (!leaveRequest) {
             return NextResponse.json(
                 { message: 'Leave request not found' },
                 { status: 404 }
@@ -412,8 +404,7 @@ export async function PATCH(req: Request, { params }: Params)
         }
 
         // Validate status transition - only pending request can be approved/rejected
-        if (status !== 'Cancelled' && leaveRequest.status !== 'pending')
-        {
+        if (status !== 'Cancelled' && leaveRequest.status !== 'pending') {
             return NextResponse.json(
                 {
                     message: 'Invalid status transition',
@@ -425,8 +416,7 @@ export async function PATCH(req: Request, { params }: Params)
 
         // Varify approver exists
         const approver = await Employee.findById(approver_employee_id);
-        if (!approver)
-        {
+        if (!approver) {
             return NextResponse.json(
                 { message: 'Approver employee not founded' },
                 { status: 400 }
@@ -438,8 +428,7 @@ export async function PATCH(req: Request, { params }: Params)
 
         // Handle leave balance updates base on status change
 
-        if (normalizedStatus === 'approved')
-        {
+        if (normalizedStatus === 'approved') {
             // Deduct from leave blance when approved
             const currentYear = new Date().getFullYear();
             const deductionResult = await deductLeaveBalance(
@@ -449,8 +438,7 @@ export async function PATCH(req: Request, { params }: Params)
                 currentYear
             );
 
-            if (!deductionResult.success)
-            {
+            if (!deductionResult.success) {
                 return NextResponse.json(
                     {
                         message: deductionResult.message,
@@ -461,8 +449,7 @@ export async function PATCH(req: Request, { params }: Params)
             }
 
 
-        } else if (normalizedStatus === 'rejected' || normalizedStatus === 'cancelled')
-        {
+        } else if (normalizedStatus === 'rejected' || normalizedStatus === 'cancelled') {
             // No balance changes needed for rejection or cancellation of pending requests
             // (Blance is only deducted on approval)
         }
@@ -479,23 +466,20 @@ export async function PATCH(req: Request, { params }: Params)
             .populate('organization', 'name');
 
         // Send notification to employee about status change
-        try
-        {
+        try {
             const employeeData = updatedRequest.employee as any;
             const leaveTypeData = updatedRequest.leave_type as any;
             const approverName = `${approver.first_name} ${approver.last_name}`;
 
             let template;
-            if (normalizedStatus === 'approved')
-            {
+            if (normalizedStatus === 'approved') {
                 template = NotificationTemplates.leaveRequestApproved(
                     leaveTypeData.name,
                     new Date(leaveRequest.start_date).toLocaleDateString(),
                     new Date(leaveRequest.end_date).toLocaleDateString(),
                     approverName
                 );
-            } else if (normalizedStatus === 'rejected')
-            {
+            } else if (normalizedStatus === 'rejected') {
                 template = NotificationTemplates.leaveRequestRejected(
                     leaveTypeData.name,
                     new Date(leaveRequest.start_date).toLocaleDateString(),
@@ -504,8 +488,7 @@ export async function PATCH(req: Request, { params }: Params)
                 );
             }
 
-            if (template)
-            {
+            if (template) {
                 await createNotification({
                     organizationId: leaveRequest.organization.toString(),
                     recipientId: leaveRequest.employee.toString(),
@@ -522,10 +505,15 @@ export async function PATCH(req: Request, { params }: Params)
                     sendEmail: true,
                 });
             }
-        } catch (notificationError)
-        {
+        } catch (notificationError) {
             console.error('Failed to send status change notification:', notificationError);
         }
+
+        await logAction("LEAVE_REQUEST_STATUS_UPDATE", {
+            leaveRequestId: id,
+            newStatus: normalizedStatus,
+            approverId: approver_employee_id
+        });
 
         return NextResponse.json({
             success: true,
@@ -533,8 +521,7 @@ export async function PATCH(req: Request, { params }: Params)
             data: updatedRequest
         });
 
-    } catch (err: any)
-    {
+    } catch (err: any) {
         console.error('Error updating leave request status:', err);
         return NextResponse.json(
             { message: err instanceof Error ? err.message : 'Internal server error' },

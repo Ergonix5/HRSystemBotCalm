@@ -3,6 +3,7 @@ import { connectDB } from "@/src/lib/db";
 import { validateBody } from "@/src/lib/validate";
 import { leaveTypeCreateSchema } from "@/src/validators/leaveType.schema";
 import { NextResponse } from "next/server";
+import { logAction } from "@/src/lib/logger";
 import { requirePermission } from "@/src/lib/permissions";
 
 
@@ -32,8 +33,7 @@ export async function GET(req: Request, { params }: Params)
         const { searchParams } = new URL(req.url);
         const organizationId = (searchParams.get("organizationId") ?? "").trim();
 
-        if (!organizationId)
-        {
+        if (!organizationId) {
             return NextResponse.json(
                 { message: "organizationId is required" },
                 { status: 400 }
@@ -53,8 +53,7 @@ export async function GET(req: Request, { params }: Params)
         const leaveType = await LeaveType.findOne({ _id: id, organization: organizationId })
             .populate("organization", "name");
 
-        if (!leaveType)
-        {
+        if (!leaveType) {
             return NextResponse.json(
                 { message: "Not found" },
                 { status: 404 }
@@ -63,8 +62,7 @@ export async function GET(req: Request, { params }: Params)
 
         return NextResponse.json(leaveType, { status: 200 });
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 400 });
     }
 }
@@ -108,8 +106,7 @@ export async function PUT(req: Request, { params }: Params)
             organization: data.organization,
         });
 
-        if (!existing)
-        {
+        if (!existing) {
             return NextResponse.json(
                 { message: "Leave Type not found for this organization" },
                 { status: 404 }
@@ -117,16 +114,14 @@ export async function PUT(req: Request, { params }: Params)
         }
 
         // heck duplicate leave_type_id in organization
-        if (data.leave_type_id !== existing.leave_type_id)
-        {
+        if (data.leave_type_id !== existing.leave_type_id) {
             const duplicate = await LeaveType.findOne({
                 _id: { $ne: id },
                 leave_type_id: data.leave_type_id,
                 organization: data.organization
             });
 
-            if (duplicate)
-            {
+            if (duplicate) {
                 return NextResponse.json(
                     { message: "Leave type ID already exists in this organization" },
                     { status: 409 }
@@ -140,16 +135,20 @@ export async function PUT(req: Request, { params }: Params)
             { new: true, runValidators: true }
         ).populate("organization", "name");
 
+        await logAction("LEAVE_TYPE_UPDATE", {
+            leaveTypeId: updated._id,
+            name: updated.name,
+            updatedFields: Object.keys(data)
+        });
+
         return NextResponse.json({
             success: true,
             message: "Leave type updated successfully",
             data: updated,
         });
 
-    } catch (error: any)
-    {
-        if (error?.code === 11000)
-        {
+    } catch (error: any) {
+        if (error?.code === 11000) {
             return NextResponse.json(
                 { message: "Leave type ID already exists in this organization" },
                 { status: 409 }
@@ -180,8 +179,7 @@ export async function DELETE(req: Request, { params }: Params)
         const { searchParams } = new URL(req.url);
         const organizationId = (searchParams.get("organizationId") ?? "").trim();
 
-        if (!organizationId)
-        {
+        if (!organizationId) {
             return NextResponse.json(
                 { message: "organizationId is required" },
                 { status: 400 }
@@ -204,8 +202,7 @@ export async function DELETE(req: Request, { params }: Params)
             organization: organizationId
         });
 
-        if (!leaveType)
-        {
+        if (!leaveType) {
             return NextResponse.json(
                 { message: "Leave type not found in this organization" },
                 { status: 404 }
@@ -214,13 +211,18 @@ export async function DELETE(req: Request, { params }: Params)
 
         await LeaveType.findByIdAndDelete(id);
 
+        await logAction("LEAVE_TYPE_DELETE", {
+            leaveTypeId: id,
+            name: leaveType.name,
+            organizationId: organizationId
+        });
+
         return NextResponse.json({
             success: true,
             message: "Leave type deleted successfully",
         })
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 400 });
     }
 }

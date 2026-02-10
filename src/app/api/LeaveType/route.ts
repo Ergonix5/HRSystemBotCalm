@@ -8,21 +8,19 @@ import { validateBody } from "../../../lib/validate";
 import { Employee } from "../../models/employee.model";
 import { initializeLeaveBalance } from "../../service/leaveBalance.service";
 import "@/src/app/models/organization.model";
+import { logAction } from "@/src/lib/logger";
 
 
 
 // GET ALL LEAVE TYPES WITH PAGINATION AND SEARCH
-export async function GET(req: Request)
-{
-    try
-    {
+export async function GET(req: Request) {
+    try {
         await connectDB();
 
         const { searchParams } = new URL(req.url);
 
         const organizationId = (searchParams.get("organizationId") ?? "").trim();
-        if (!organizationId)
-        {
+        if (!organizationId) {
             return NextResponse.json(
                 { message: "organizationId is required" },
                 { status: 400 }
@@ -52,8 +50,7 @@ export async function GET(req: Request)
 
         return NextResponse.json(result, { status: 200 });
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
@@ -62,10 +59,8 @@ export async function GET(req: Request)
 
 // CREATE A NEW LEAVE TYPE
 
-export async function POST(req: Request)
-{
-    try
-    {
+export async function POST(req: Request) {
+    try {
         await connectDB();
 
         const result = await validateBody(req, leaveTypeCreateSchema);
@@ -79,8 +74,7 @@ export async function POST(req: Request)
             organization: data.organization,
         });
 
-        if (existing)
-        {
+        if (existing) {
             return NextResponse.json(
                 { message: "Leave type ID already exists in the organization" },
                 { status: 409 }
@@ -125,6 +119,12 @@ export async function POST(req: Request)
         const populate = await LeaveType.findById(created._id)
             .populate("organization", "name");
 
+        await logAction("LEAVE_TYPE_CREATE", {
+            leaveTypeId: created._id,
+            name: created.name,
+            organizationId: created.organization
+        });
+
         return NextResponse.json(
             {
                 success: true,
@@ -134,11 +134,9 @@ export async function POST(req: Request)
             { status: 201 }
         );
 
-    } catch (error: any)
-    {
+    } catch (error: any) {
         // Handle MongoDB duplicate key error
-        if (error?.code === 11000)
-        {
+        if (error?.code === 11000) {
             return NextResponse.json(
                 { message: "Leave type already exists." },
                 { status: 409 }

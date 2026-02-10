@@ -4,6 +4,7 @@ import { Designation } from "../../models/designations.model";
 import { validateBody } from "../../../lib/validate";
 import { designationCreateSchema } from "../../../validators/designation.schema";
 import { paginate } from "../../service/pagination.service";
+import { logAction } from "@/src/lib/logger";
 
 /**
  * GET /api/Designation - Fetch paginated designations with search
@@ -53,6 +54,12 @@ export async function POST(req: Request) {
 
     // Create new designation in database
     const created = await Designation.create(result.data);
+
+     await logAction("DESIGNATION_CREATE", {
+          designationId:  created._id,
+          title: created.title,
+          status: created.status
+        });
     
     // Return success response with created data
     return NextResponse.json(
