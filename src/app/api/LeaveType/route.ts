@@ -5,7 +5,8 @@ import { paginate } from "../../service/pagination.service";
 import { LeaveType } from "../../models/leaveType.model";
 import { leaveTypeCreateSchema } from "@/src/validators/leaveType.schema";
 import { validateBody } from "../../../lib/validate";
-import { Organization } from "../../models/organization.model";
+import { Employee } from "../../models/employee.model";
+import { initializeLeaveBalance } from "../../service/leaveBalance.service";
 import "@/src/app/models/organization.model";
 
 
@@ -86,7 +87,40 @@ export async function POST(req: Request)
             );
         }
 
-        const created = await LeaveType.create(data);
+        const created = await LeaveType.create(
+            {
+                leave_type_id: data.leave_type_id,
+                name: data.name,
+                description: data.description,
+                anual_allocation: data.anual_allocation,
+                organization: data.organization,
+            }
+        );
+
+        try
+        {
+            const employees = await Employee.find({
+                organization: data.organization,
+            });
+
+            const currentYear = new Date().getFullYear();
+
+            for (const employee of employees)
+            {
+                await initializeLeaveBalance(
+                    employee._id,
+                    created._id,
+                    data.anual_allocation,
+                    currentYear
+                )
+            }
+            
+            console.log(`Allocated new leave type to ${employees.length} employees`);
+
+        } catch (allocationError)
+        {
+            console.error("Failed to allocate leave type to existing employees:", allocationError);
+        }
 
         const populate = await LeaveType.findById(created._id)
             .populate("organization", "name");

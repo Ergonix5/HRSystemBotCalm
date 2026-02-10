@@ -148,7 +148,7 @@ export default function LeaveManagementHeader({
 
   const openDialog = (
     mode: "add" | "edit",
-    leaveType: { id: number; name: string; amount: number } | null = null
+    leaveType: { id: number; name: string; amount: number; organization: string } | null = null
   ) =>
   {
     setDialogMode(mode);
