@@ -45,11 +45,18 @@ export function LeaveActions({
     onReject,
 }: LeaveActionsProps)
 {
+    // ✅ GET LOGGED-IN USER AND PERMISSION CHECK FUNCTION
     const { user, has } = useAuth();
     const { toast } = useToast();
     const [showApproveDialog, setShowApproveDialog] = useState(false);
     const [showRejectDialog, setShowRejectDialog] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // ✅ PERMISSION CHECKS - Check if logged-in user has each permission
+    const canView = has && has(PERMS.LEAVE_VIEW);           // Check "leave.view" permission
+    const canEdit = has && has(PERMS.LEAVE_EDIT) && leave.status === "Pending";  // Check "leave.edit" permission
+    const canDelete = has && has(PERMS.LEAVE_DELETE) && leave.status === "Pending"; // Check "leave.delete" permission
+    const canApprove = has && has(PERMS.LEAVE_APPROVE) && leave.status === "Pending"; // Check "leave.approve" permission
 
     const handleView = () =>
     {
@@ -183,9 +190,6 @@ export function LeaveActions({
         }
     };
 
-    // Check if user can approve/reject (has LEAVE_APPROVE permission)
-    const canApprove = has(PERMS.LEAVE_APPROVE);
-
     return (
         <>
             <DropdownMenu>
@@ -203,15 +207,22 @@ export function LeaveActions({
                         Copy Leave ID
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleView}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleEdit}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit Request
-                    </DropdownMenuItem>
-                    {leave.status === "Pending" && canApprove && (
+                    {/* ✅ SHOW "View Details" ONLY IF USER HAS "leave.view" PERMISSION */}
+                    {canView && (
+                        <DropdownMenuItem onClick={handleView}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Details
+                        </DropdownMenuItem>
+                    )}
+                    {/* ✅ SHOW "Edit Request" ONLY IF USER HAS "leave.edit" PERMISSION */}
+                    {canEdit && (
+                        <DropdownMenuItem onClick={handleEdit}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Request
+                        </DropdownMenuItem>
+                    )}
+                    {/* ✅ SHOW "Approve/Reject" ONLY IF USER HAS "leave.approve" PERMISSION */}
+                    {canApprove && (
                         <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -240,20 +251,20 @@ export function LeaveActions({
                         <AlertDialogTitle>Approve Leave Request</AlertDialogTitle>
                         <AlertDialogDescription>
                             Are you sure you want to approve this leave request for{" "}
-                            <strong>{leave.name}</strong>?
-                            <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                                <p className="text-sm text-gray-700">
-                                    <strong>Leave Type:</strong> {leave.leaveType}
-                                </p>
-                                <p className="text-sm text-gray-700">
-                                    <strong>Duration:</strong> {leave.duration}
-                                </p>
-                                <p className="text-sm text-gray-700">
-                                    <strong>Reason:</strong> {leave.reason}
-                                </p>
-                            </div>
+                            <span className="font-semibold">{leave.name}</span>?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-700">
+                            <strong>Leave Type:</strong> {leave.leaveType}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                            <strong>Duration:</strong> {leave.duration}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                            <strong>Reason:</strong> {leave.reason}
+                        </p>
+                    </div>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
@@ -274,20 +285,20 @@ export function LeaveActions({
                         <AlertDialogTitle>Reject Leave Request</AlertDialogTitle>
                         <AlertDialogDescription>
                             Are you sure you want to reject this leave request for{" "}
-                            <strong>{leave.name}</strong>?
-                            <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                                <p className="text-sm text-gray-700">
-                                    <strong>Leave Type:</strong> {leave.leaveType}
-                                </p>
-                                <p className="text-sm text-gray-700">
-                                    <strong>Duration:</strong> {leave.duration}
-                                </p>
-                                <p className="text-sm text-gray-700">
-                                    <strong>Reason:</strong> {leave.reason}
-                                </p>
-                            </div>
+                            <span className="font-semibold">{leave.name}</span>?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-700">
+                            <strong>Leave Type:</strong> {leave.leaveType}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                            <strong>Duration:</strong> {leave.duration}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                            <strong>Reason:</strong> {leave.reason}
+                        </p>
+                    </div>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
                         <AlertDialogAction

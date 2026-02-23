@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Download, 
@@ -138,64 +138,69 @@ const LogCard: React.FC<LogCardProps> = ({
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
-  const logs: LogCardProps[] = [
-    {
-      status: "Critical",
-      type: "System",
-      module: "Server",
-      title: "Kernel Panic - Auto-reboot initiated",
-      description: "Critical system failure on Node-04. Resources reaching 99% utilization. Failover to Node-05 successful.",
-      meta: "Server: US-EAST-1 · Action: Failover",
-      time: "10 mins ago"
-    },
-    {
-      status: "Success",
-      type: "User Action",
-      module: "Leave Management",
-      title: "Admin User - Approved leave request",
-      description: "Leave request LVE-002 approved for Jane Smith (EMP-002) - Annual Leave from 2024-12-20 to 2024-12-27",
-      meta: "IP: 192.168.1.101 · Tech Solutions Inc.",
-      time: "Today, 02:32 PM"
-    },
-    {
-      status: "Warning",
-      type: "Performance",
-      module: "Database",
-      title: "Slow query detected",
-      description: "Query execution time exceeded 500ms for 'SELECT * FROM employees WHERE status=active'.",
-      meta: "Source: Reporting DB · Latency: 840ms",
-      time: "Today, 02:20 PM"
-    },
-    {
-      status: "Info",
-      type: "Data Change",
-      module: "Employee",
-      title: "Admin User - Updated employee record",
-      description: "Modified employee details for John Doe (EMP-001) - Updated phone number and address records.",
-      meta: "IP: 192.168.1.101 · Changed: +1-555-0100 → +1-555-0101",
-      time: "Today, 02:15 PM"
-    },
-    {
-      status: "Error",
-      type: "Security",
-      module: "Authentication",
-      title: "Failed login attempt detected",
-      description: "Multiple failed login attempts detected for account user_test_01. Authentication blocked for 15 minutes.",
-      meta: "IP: 45.22.11.09 · Action: Account Locked",
-      time: "Today, 01:58 PM"
+  useEffect(() => {
+    fetchLogs();
+  }, []);
+
+  const fetchLogs = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/logs?page=1&limit=50');
+      const data = await response.json();
+      setLogs(data.data || []);
+      setTotal(data.pagination?.total || 0);
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const displayLogs = [...logs, ...logs, ...logs];
+  const formatTimeAgo = (date: string) => {
+    const now = new Date();
+    const logDate = new Date(date);
+    const diffMs = now.getTime() - logDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `${diffMins} mins ago`;
+    if (diffHours < 24) return `${diffHours} hours ago`;
+    return `${diffDays} days ago`;
+  };
+
+  const displayLogs: LogCardProps[] = logs.map((log) => ({
+    status: "Info" as const,
+    type: log.role || 'System',
+    module: log.action?.split('_')[0] || 'General',
+    title: `${log.username} - ${log.action?.replace(/_/g, ' ') || 'Action'}`,
+    description: JSON.stringify(log.details || {}),
+    meta: `User: ${log.username} · Role: ${log.role}`,
+    time: formatTimeAgo(log.createdAt)
+  }));
   
   const stats = {
-    total: displayLogs.length,
+    total: total,
     success: displayLogs.filter(l => l.status === 'Success').length,
     warning: displayLogs.filter(l => l.status === 'Warning').length,
     error: displayLogs.filter(l => l.status === 'Error').length,
     critical: displayLogs.filter(l => l.status === 'Critical').length,
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-[#F9FAFB]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B91434] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading logs...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-[#F9FAFB] font-sans text-gray-900 overflow-hidden border border-gray-200 rounded-md">

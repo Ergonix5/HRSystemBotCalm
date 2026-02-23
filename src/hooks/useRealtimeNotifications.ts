@@ -58,6 +58,10 @@ export function useRealtimeNotifications({
 
             // Get Pusher client instance
             const pusher = getPusherClient();
+            if (!pusher) {
+                console.log('⚠️ Pusher client not available');
+                return;
+            }
             pusherRef.current = pusher;
 
             console.log('📡 Pusher client created, connection state:', pusher.connection.state);

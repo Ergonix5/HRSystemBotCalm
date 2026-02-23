@@ -1,3 +1,6 @@
+
+
+
 "use client"
 import { useRouter } from 'next/navigation';
 
@@ -7,7 +10,7 @@ import { columns } from "./columns"
 import { type Company } from "../../types/types"
 import { Spinner } from "@/src/components/ui/spinner"
 import { Button } from "../../../components/ui/button"
-import { Dialog, DialogContent } from "../../../components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "../../../components/ui/dialog"
 import { CompanyDetailsModal } from "../../../components/ViewDetails/company-details-"
 import {AddCompanyForm} from "../../../components/forms/addcompany"
 import { createOrganization, updateOrganization, deleteOrganization } from "../../../services/organization.service"
@@ -164,6 +167,7 @@ export function CompanyTable({ organizations, onRefresh }: Props)
       {/* Edit company details */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl">
+          <DialogTitle>Edit Organization</DialogTitle>
           {companyToEdit && (
             <EditCompanyForm
               company={companyToEdit}

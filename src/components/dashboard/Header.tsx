@@ -118,7 +118,7 @@ export default function Header()
   };
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-end gap-4 px-6 py-3   bg-zinc-50">
+    <header className="sticky top-0 z-50 flex items-center justify-end gap-4 px-6 py-3   bg-zinc-50" suppressHydrationWarning>
       <span className="text-sm text-muted-foreground">{dateTime}</span>
 
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>

@@ -35,18 +35,21 @@ export default function RequestLeave() {
     async function fetchLeaveBalances() {
       try {
         setStatus("loading");
-        const response = await fetch("/api/employee/leave-balance");
+        const response = await fetch("/api/employee/leave-balance", {
+          credentials: "include"
+        });
         
-        if (!response.ok) {
-          throw new Error("Failed to fetch leave balances");
-        }
-
         const data = await response.json();
         
-        if (data.success && data.balances && data.balances.length > 0) {
+        if (!response.ok) {
+          setError(data.message || "Failed to fetch leave balances");
+          setStatus("idle");
+          return;
+        }
+        
+        if (data.balances && data.balances.length > 0) {
           setLeaveBalanceData(data.balances);
           
-          // Convert to balances object for component compatibility
           const balancesObj: LeaveBalances = {};
           const typeMap = new Map<string, string>();
           
@@ -58,13 +61,12 @@ export default function RequestLeave() {
           setBalances(balancesObj);
           setLeaveTypeMap(typeMap);
           
-          // Set initial leave type to first available
           const firstLeaveType = data.balances[0]?.leaveTypeName;
           if (firstLeaveType) {
             setSelectedLeaveType(firstLeaveType);
           }
         } else {
-          setError("No leave balances found. Please contact HR.");
+          setError(data.message || "No leave balances found. Please contact HR.");
         }
         
         setStatus("idle");
@@ -138,6 +140,7 @@ export default function RequestLeave() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(requestBody),
       });
 
@@ -191,14 +194,18 @@ export default function RequestLeave() {
     return (
       <div className="min-h-screen bg-[#FDFCFB] flex items-center justify-center p-4">
         <Card className="w-full max-w-md p-8 text-center">
-          <div className="text-red-500 text-5xl mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold mb-2">Unable to Load Leave Balances</h2>
+          <div className="text-yellow-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold mb-2">Leave Balance Not Set Up</h2>
           <p className="text-gray-600 mb-4">
             {!user 
               ? "You must be logged in to request leave." 
-              : "No leave balances found. Please contact HR to set up your leave balance."}
+              : "Your leave balance has not been set up yet. Please contact your HR department to initialize your leave balance."}
           </p>
-          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
         </Card>
       </div>
     );

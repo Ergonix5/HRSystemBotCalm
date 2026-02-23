@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "../../app/store/authStore";
+import { PERMS } from "../../app/config/perms";
 
 import {
   AlertCircle,
@@ -50,6 +52,13 @@ export default function AnnouncementsList() {
 
 function AnnouncementCard({ announcement }: { announcement: Announcement }) {
   const [open, setOpen] = useState(false);
+  
+  // ✅ GET LOGGED-IN USER AND PERMISSION CHECK FUNCTION
+  const { has } = useAuth();
+  
+  // ✅ PERMISSION CHECKS - Check if logged-in user has each permission
+  const canEdit = has && has(PERMS.ANN_EDIT);     // Check "announcement.edit" permission
+  const canDelete = has && has(PERMS.ANN_DELETE); // Check "announcement.delete" permission
 
   const getPriorityStyles = () => {
     switch (announcement.priority) {
@@ -120,14 +129,20 @@ function AnnouncementCard({ announcement }: { announcement: Announcement }) {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <button className="h-7 px-3 text-xs rounded-md hover:bg-[#B91434] hover:text-white transition-colors font-medium flex items-center gap-1 text-gray-700">
-            <Pencil className="h-3 w-3" />
-            Edit
-          </button>
-          <button className="h-7 px-3 text-xs rounded-md hover:bg-red-600 hover:text-white transition-colors font-medium flex items-center gap-1 text-gray-700">
-            <Trash2 className="h-3 w-3" />
-            Delete
-          </button>
+          {/* ✅ SHOW "Edit" ONLY IF USER HAS "announcement.edit" PERMISSION */}
+          {canEdit && (
+            <button className="h-7 px-3 text-xs rounded-md hover:bg-[#B91434] hover:text-white transition-colors font-medium flex items-center gap-1 text-gray-700">
+              <Pencil className="h-3 w-3" />
+              Edit
+            </button>
+          )}
+          {/* ✅ SHOW "Delete" ONLY IF USER HAS "announcement.delete" PERMISSION */}
+          {canDelete && (
+            <button className="h-7 px-3 text-xs rounded-md hover:bg-red-600 hover:text-white transition-colors font-medium flex items-center gap-1 text-gray-700">
+              <Trash2 className="h-3 w-3" />
+              Delete
+            </button>
+          )}
         </div>
       </div>
 
