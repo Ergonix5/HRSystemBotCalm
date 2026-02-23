@@ -43,4 +43,18 @@ export const candidateCreateSchema = z.object({
     .default("Applied"),
 
   notes: z.string().optional(),
+
+  cv_file: z
+    .object({
+      file_name: z.string().min(1, "File name is required"),
+      file_url: z.string().url("Invalid file URL"),
+      file_type: z.enum(["application/pdf"], {
+        error: "Only PDF files are allowed",
+      }),
+      file_size: z
+        .number()
+        .max(5 * 1024 * 1024, "File size must be less than 5MB"),
+      uploaded_at: z.coerce.date().optional(),
+    })
+    .optional(),
 });

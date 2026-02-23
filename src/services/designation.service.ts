@@ -2,17 +2,22 @@ import { Designation } from "../app/types/types"
 import { apiFetch } from "./apiClient"
 
 export async function getDesignations(): Promise<Designation[]> {
-  const result = await apiFetch<any>("/api/Designation")
+  try {
+    const result = await apiFetch<any>("/api/Designation")
 
-  return (
-    result.data?.map((des: any) => ({
-      _id: des._id,
-      designation_id: des.designation_id || des._id,
-      title: des.title,
-      description: des.description,
-      status: des.status,
-    })) || []
-  )
+    return (
+      result.data?.map((des: any) => ({
+        _id: des._id,
+        designation_id: des.designation_id || des._id,
+        title: des.title,
+        description: des.description,
+        status: des.status,
+      })) || []
+    )
+  } catch (error: any) {
+    console.error("getDesignations error:", error)
+    throw new Error(error.message || "Failed to fetch designations")
+  }
 }
 
 export async function createDesignation(data: any) {

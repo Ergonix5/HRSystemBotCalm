@@ -12,15 +12,24 @@ export default function CompanyPage()
 {
   const [organizations, setOrganizations] = useState<Company[]>([]) //store the list of companies fetched from the API
   const [loading, setLoading] = useState(true) //track loading status while fetching data
+  const [error, setError] = useState<string | null>(null)
 
 
   //load companies asynchronously
   const loadData = async () =>
   {
-    setLoading(true)
-    const data = await getOrganizations()
-    setOrganizations(data)
-    setLoading(false)
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await getOrganizations()
+      setOrganizations(data)
+    } catch (err: any) {
+      console.error("Failed to load organizations:", err)
+      setError(err.message || "Failed to load organizations")
+      setOrganizations([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() =>
@@ -40,6 +49,25 @@ export default function CompanyPage()
     return (
       <div className="p-6 flex justify-center items-center h-64">
         <Spinner />
+      </div>
+    )
+  }
+
+  // Error state
+  if (error)
+  {
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <p className="font-semibold">Error loading organizations</p>
+          <p className="text-sm mt-1">{error}</p>
+          <button 
+            onClick={loadData}
+            className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }

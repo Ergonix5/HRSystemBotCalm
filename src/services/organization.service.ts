@@ -2,17 +2,22 @@ import { Company } from "../app/types/types"
 import { apiFetch } from "./apiClient"
 
 export async function getOrganizations(): Promise<Company[]> {
-  const result = await apiFetch<any>("/api/Organization")
+  try {
+    const result = await apiFetch<any>("/api/Organization")
 
-  return (
-    result.data?.map((org: any) => ({
-      _id: org._id,
-      company_id: org.organization_id || org._id,
-      company_name: org.name,
-      company_description: org.description,
-      status: org.status,
-    })) || []
-  )
+    return (
+      result.data?.map((org: any) => ({
+        _id: org._id,
+        company_id: org.organization_id || org._id,
+        company_name: org.name,
+        company_description: org.description,
+        status: org.status,
+      })) || []
+    )
+  } catch (error: any) {
+    console.error("getOrganizations error:", error)
+    throw new Error(error.message || "Failed to fetch organizations")
+  }
 }
 
 export async function createOrganization(data: any) {

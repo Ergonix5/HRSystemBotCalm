@@ -97,9 +97,33 @@ const candidateSchema = new Schema(
       trim: true,
       maxlength: 2000,
     },
+
+    cv_file: {
+      file_name: {
+        type: String,
+        trim: true,
+      },
+      file_url: {
+        type: String, // stored file path or cloud URL
+        trim: true,
+      },
+      file_type: {
+        type: String,
+        enum: ["application/pdf"],
+        default: "application/pdf",
+      },
+      file_size: {
+        type: Number, // size in bytes
+        max: 5 * 1024 * 1024, // 5MB max
+      },
+      uploaded_at: {
+        type: Date,
+        default: Date.now,
+      },
+    },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 

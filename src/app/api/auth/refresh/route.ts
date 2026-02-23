@@ -20,7 +20,7 @@ export async function POST() {
       secure: isProd,
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 15,
+      maxAge: 60 * 1, // 1 day in seconds
     });
 
     return NextResponse.json({ message: "Refreshed" }, { status: 200 });
